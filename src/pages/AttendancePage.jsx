@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Search, Download, Calendar } from 'lucide-react';
 import StatCard from '@/components/ui/StatCard';
-import AttendanceListTable from '@/components/cards/AttendanceListTable';
-import AttendanceGantt from '@/components/cards/AttendanceGantt';
+import AttendanceListTable from '@/components/cards/attendance/AttendanceListTable';
+import AttendanceGantt from '@/components/cards/attendance/AttendanceGantt';
 import { attendanceStats, attendanceTabs, legend } from '@/mock/attendance';
 import { cn } from '@/utils/cn';
 

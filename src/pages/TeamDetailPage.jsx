@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Download, Plus, Users } from 'lucide-react';
 import StatCard from '@/components/ui/StatCard';
-import CalendarHeatmap from '@/components/cards/CalendarHeatmap';
+import CalendarHeatmap from '@/components/cards/teams/CalendarHeatmap';
 import EmployeeTable from '@/components/tables/EmployeeTable';
-import TopAppsPanel from '@/components/cards/TopAppsPanel';
-import WeeklyPerformancePanel from '@/components/cards/WeeklyPerformancePanel';
-import IdleAlertsPanel from '@/components/cards/IdleAlertsPanel';
-import QuickActionsPanel from '@/components/cards/QuickActionsPanel';
+import TopAppsPanel from '@/components/cards/teams/TopAppsPanel';
+import WeeklyPerformancePanel from '@/components/cards/teams/WeeklyPerformancePanel';
+import IdleAlertsPanel from '@/components/cards/teams/IdleAlertsPanel';
+import QuickActionsPanel from '@/components/cards/teams/QuickActionsPanel';
 import { teamInfo, teamDetailStats } from '@/mock/teamDetail';
 
 export default function TeamDetailPage() {

@@ -1,13 +1,13 @@
 import { Calendar, ChevronRight } from 'lucide-react';
-import StatsRow from '@/components/cards/StatsRow';
-import OrgProductivityScore from '@/components/cards/OrgProductivityScore';
-import OrgHealthCard from '@/components/cards/OrgHealthCard';
-import WorkSummaryCard from '@/components/cards/WorkSummaryCard';
-import AppUsageCard from '@/components/cards/AppUsageCard';
-import ScreenshotFeedCard from '@/components/cards/ScreenshotFeedCard';
-import TopProductiveCard from '@/components/cards/TopProductiveCard';
-import AttendanceCard from '@/components/cards/AttendanceCard';
-import LiveActivityCard from '@/components/cards/LiveActivityCard';
+import StatsRow from '@/components/cards/dashboard/StatsRow';
+import OrgProductivityScore from '@/components/cards/dashboard/OrgProductivityScore';
+import OrgHealthCard from '@/components/cards/dashboard/OrgHealthCard';
+import WorkSummaryCard from '@/components/cards/dashboard/WorkSummaryCard';
+import AppUsageCard from '@/components/cards/dashboard/AppUsageCard';
+import ScreenshotFeedCard from '@/components/cards/dashboard/ScreenshotFeedCard';
+import TopProductiveCard from '@/components/cards/dashboard/TopProductiveCard';
+import AttendanceCard from '@/components/cards/dashboard/AttendanceCard';
+import LiveActivityCard from '@/components/cards/dashboard/LiveActivityCard';
 
 export default function DashboardPage() {
   return (

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
-import ProfileCard from '@/components/cards/ProfileCard';
-import ActivityTimeline from '@/components/cards/ActivityTimeline';
-import AppUsageTable from '@/components/cards/AppUsageTable';
-import AttendanceSummary from '@/components/cards/AttendanceSummary';
-import DailyRecordsTable from '@/components/cards/DailyRecordsTable';
+import ProfileCard from '@/components/cards/employee/ProfileCard';
+import ActivityTimeline from '@/components/cards/employee/ActivityTimeline';
+import AppUsageTable from '@/components/cards/employee/AppUsageTable';
+import AttendanceSummary from '@/components/cards/employee/AttendanceSummary';
+import DailyRecordsTable from '@/components/cards/employee/DailyRecordsTable';
 import { employeeTabs, miniStats } from '@/mock/employeeProfile';
 import { cn } from '@/utils/cn';
 

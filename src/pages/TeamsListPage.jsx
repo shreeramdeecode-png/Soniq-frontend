@@ -3,7 +3,7 @@ import PageHeader from '@/components/common/PageHeader';
 import StatCard from '@/components/ui/StatCard';
 import FilterBar from '@/components/ui/FilterBar';
 import Button from '@/components/ui/Button';
-import TeamCard, { CreateTeamCard } from '@/components/cards/TeamCard';
+import TeamCard, { CreateTeamCard } from '@/components/cards/teams/TeamCard';
 import { teamsStats, teamsFilterChips, teams } from '@/mock/teams';
 
 export default function TeamsListPage() {

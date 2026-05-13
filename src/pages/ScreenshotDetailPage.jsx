@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Download } from 'lucide-react';
-import ScreenshotViewer from '@/components/cards/ScreenshotViewer';
-import FilmStrip from '@/components/cards/FilmStrip';
-import ScreenshotDetailPanel from '@/components/cards/ScreenshotDetailPanel';
+import ScreenshotViewer from '@/components/cards/screenshots/ScreenshotViewer';
+import FilmStrip from '@/components/cards/screenshots/FilmStrip';
+import ScreenshotDetailPanel from '@/components/cards/screenshots/ScreenshotDetailPanel';
 
 export default function ScreenshotDetailPage() {
   const navigate = useNavigate();

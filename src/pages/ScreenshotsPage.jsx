@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Search, Calendar, ArrowRight, ChevronLeft } from 'lucide-react';
-import ScreenshotSidebar from '@/components/cards/ScreenshotSidebar';
-import ScreenshotPersonHeader from '@/components/cards/ScreenshotPersonHeader';
-import ScreenshotGrid from '@/components/cards/ScreenshotGrid';
+import ScreenshotSidebar from '@/components/cards/screenshots/ScreenshotSidebar';
+import ScreenshotPersonHeader from '@/components/cards/screenshots/ScreenshotPersonHeader';
+import ScreenshotGrid from '@/components/cards/screenshots/ScreenshotGrid';
 import { filterChips, screenshotPageStats } from '@/mock/screenshots';
 import { cn } from '@/utils/cn';
 
