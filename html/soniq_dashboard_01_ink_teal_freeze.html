@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#4A5A56 0%,#6A7A76 50%,#5A6A62 100%);
+  display:flex;align-items:flex-start;justify-content:center;
+  min-height:100vh;padding:24px;
+}
+
+/* GLOSSY SHELL */
+.shell{
+  width:1180px;
+  background:linear-gradient(135deg,#E8EDEB 0%,#ECF0EE 30%,#F2F5F3 65%,#EAF2EE 100%);
+  border-radius:28px;
+  overflow:hidden;
+  position:relative;
+  /* Glossy overlay */
+  box-shadow:0 2px 0 rgba(255,255,255,0.8) inset, 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.10);
+}
+/* Top gloss sheen */
+.shell::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:180px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0) 100%);
+  pointer-events:none;z-index:0;border-radius:28px 28px 0 0;
+}
+
+/* TOP NAV */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px 0;position:relative;z-index:10;}
+.logo-pill{
+  border:1.5px solid rgba(255,255,255,0.6);border-radius:50px;
+  padding:7px 20px;font-size:15px;font-weight:600;color:#1A1A1A;
+  background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);
+  box-shadow:0 1px 0 rgba(255,255,255,0.8) inset;
+}
+.nav-center{display:flex;align-items:center;gap:2px;}
+.nav-item{padding:8px 16px;border-radius:50px;font-size:12.5px;font-weight:500;color:#555;cursor:pointer;transition:all .2s;}
+.nav-item.active{
+  background:linear-gradient(135deg,#0F6E56 0%,#1D9E75 100%);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,0.25),0 1px 0 rgba(255,255,255,0.1) inset;
+}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-icon-wrap{
+  display:flex;align-items:center;gap:7px;padding:7px 14px;
+  border:1.5px solid rgba(255,255,255,0.6);border-radius:50px;
+  background:rgba(255,255,255,0.45);backdrop-filter:blur(8px);
+  cursor:pointer;font-size:12px;font-weight:500;color:#444;
+  box-shadow:0 1px 0 rgba(255,255,255,0.8) inset;
+}
+.nav-circle{
+  width:32px;height:32px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.6);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:rgba(255,255,255,0.45);backdrop-filter:blur(8px);
+  box-shadow:0 1px 0 rgba(255,255,255,0.8) inset;
+}
+
+/* WELCOME */
+.welcome-h1{font-size:42px;font-weight:700;color:#1A1A1A;letter-spacing:-1.5px;line-height:1.05;padding:16px 32px 12px;position:relative;z-index:2;}
+
+/* TOP STATS ROW */
+.top-stats-row{display:flex;align-items:center;justify-content:space-between;padding:0 32px 12px;}
+.progress-row{display:flex;align-items:center;gap:9px;flex:1;}
+.prog-label{font-size:11.5px;color:#888;font-weight:400;white-space:nowrap;}
+.prog-pill-dark{
+  background:linear-gradient(135deg,#111111,#1D2D28);
+  border-radius:50px;padding:8px 16px;font-size:11.5px;font-weight:500;color:#fff;
+  display:flex;align-items:center;gap:5px;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.08) inset;
+}
+.prog-pill-yellow{
+  background:linear-gradient(135deg,#1D9E75,#0F6E56);
+  border-radius:50px;padding:8px 16px;font-size:11.5px;font-weight:600;color:#fff;
+  white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15),0 1px 0 rgba(255,255,255,0.2) inset;
+}
+.prog-bar-striped{
+  height:38px;border-radius:50px;
+  background:repeating-linear-gradient(45deg,#D8D8D0,#D8D8D0 4px,#E5E5DC 4px,#E5E5DC 10px);
+  display:flex;align-items:center;padding:0 14px;font-size:11.5px;color:#888;white-space:nowrap;
+  box-shadow:0 1px 0 rgba(255,255,255,0.6) inset;
+}
+.prog-pill-outline{
+  height:38px;border-radius:50px;border:1.5px solid rgba(255,255,255,0.7);
+  padding:0 16px;display:flex;align-items:center;font-size:11.5px;color:#888;
+  background:rgba(255,255,255,0.5);backdrop-filter:blur(4px);white-space:nowrap;
+  box-shadow:0 1px 0 rgba(255,255,255,0.8) inset;
+}
+.big-numbers{display:flex;gap:22px;align-items:flex-end;flex-shrink:0;margin-left:20px;}
+.bnum-item{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.bnum-val{font-size:42px;font-weight:700;color:#1A1A1A;line-height:1;letter-spacing:-2px;}
+.bnum-label{font-size:10.5px;color:#888;font-weight:400;}
+
+/* MAIN GRID — tight, no flex-grow stretching */
+.main-grid{display:grid;grid-template-columns:245px 1fr 1fr 245px;gap:12px;padding:0 32px 24px;}
+.col{display:flex;flex-direction:column;gap:12px;}
+
+/* GLOSSY CARD */
+.card{
+  background:rgba(255,255,255,0.82);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.9);
+  box-shadow:0 2px 0 rgba(255,255,255,0.95) inset,0 4px 16px rgba(0,0,0,0.07);
+  backdrop-filter:blur(12px);
+  overflow:hidden;
+}
+
+/* DARK CARD — Org Productivity Score (UNCHANGED) */
+.dark-card{
+  background:linear-gradient(160deg,#162E24 0%,#0F6E56 60%,#0A5040 100%);
+  border-radius:18px;padding:20px;display:flex;flex-direction:column;
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 8px 24px rgba(0,0,0,0.25);
+}
+.gauge-title{font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);margin-bottom:2px;}
+.gauge-sub{font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px;}
+.gauge-ring-wrap{position:relative;width:136px;height:136px;margin:0 auto 12px;}
+.gauge-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.gauge-score{font-size:34px;font-weight:700;color:#fff;line-height:1;letter-spacing:-1px;}
+.gauge-score-label{font-size:9px;color:rgba(255,255,255,0.35);margin-top:1px;}
+.gauge-legend{display:flex;flex-direction:column;gap:7px;width:100%;}
+.gauge-leg-row{display:flex;align-items:center;justify-content:space-between;}
+.gauge-leg-left{display:flex;align-items:center;gap:6px;font-size:10.5px;color:rgba(255,255,255,0.5);}
+.gauge-leg-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.gauge-bar-mini{flex:1;height:2.5px;background:rgba(255,255,255,0.06);border-radius:2px;margin:0 8px;overflow:hidden;}
+.gauge-bar-fill{height:100%;border-radius:2px;}
+.gauge-leg-val{font-size:10.5px;font-weight:600;color:rgba(255,255,255,0.8);}
+
+/* ORG HEALTH — NEW 2x2 TILE FORMAT (no bars, no list rows) */
+.org-health-card{padding:16px;}
+.oh-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.oh-title{font-size:14px;font-weight:600;color:#1A1A1A;}
+.oh-badge{
+  background:linear-gradient(135deg,#1D9E75,#0F6E56);
+  border-radius:20px;padding:3px 11px;font-size:10.5px;font-weight:700;color:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15),0 1px 0 rgba(255,255,255,0.2) inset;
+}
+.oh-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.oh-tile{
+  border-radius:12px;padding:11px 12px;
+  background:linear-gradient(135deg,rgba(15,110,86,0.10),rgba(15,110,86,0.04));
+  border:1px solid rgba(15,110,86,0.18);
+}
+.oh-tile.dark{
+  background:linear-gradient(135deg,rgba(26,26,26,0.06) 0%,rgba(26,26,26,0.02) 100%);
+  border:1px solid rgba(26,26,26,0.1);
+}
+.oh-tile-val{font-size:18px;font-weight:700;color:#1A1A1A;letter-spacing:-0.5px;line-height:1;}
+.oh-tile-label{font-size:9.5px;color:#AAA;margin-top:3px;font-weight:400;}
+.oh-tile-change{font-size:9.5px;font-weight:600;margin-top:2px;}
+
+/* BAR CHART */
+.bar-chart{display:flex;align-items:flex-end;gap:7px;height:82px;margin-bottom:6px;}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+.bbar{width:100%;border-radius:5px 5px 0 0;position:relative;}
+.bbar.dark{background:linear-gradient(180deg,#2D2D2D,#1A1A1A);}
+.bbar.gray{background:linear-gradient(180deg,#D8D8D0,#C8C8C0);}
+.bbar.yellow{background:linear-gradient(180deg,#1D9E75,#0F6E56);}
+.bbar-tooltip{
+  position:absolute;top:-24px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#1D9E75,#0F6E56);
+  color:#fff;font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;white-space:nowrap;
+  box-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+.bbar-dot{width:4px;height:4px;border-radius:50%;background:#1A1A1A;}
+.bbar-day{font-size:9.5px;color:#AAA;}
+
+/* APP USAGE — 4 rows only */
+.app-row{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.app-row:last-of-type{margin-bottom:0;}
+.app-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.app-name{font-size:11.5px;font-weight:500;color:#1A1A1A;margin-bottom:2px;}
+.app-bar-track{height:3px;background:#F0F0EC;border-radius:2px;overflow:hidden;}
+.app-bar-fill{height:100%;border-radius:2px;}
+.app-time{font-size:10.5px;font-weight:600;color:#1A1A1A;white-space:nowrap;flex-shrink:0;}
+.app-badge{font-size:8.5px;padding:2px 6px;border-radius:6px;font-weight:600;flex-shrink:0;}
+.badge-prod{background:#F0F0EC;color:#1A1A1A;}
+.badge-unprod{background:#111111;color:#1D9E75;}
+.badge-neutral{background:#F5F5F0;color:#888;}
+
+/* SCREENSHOT FEED — ON-PALETTE THUMBNAILS (dark/amber/charcoal only) */
+.ss-feed-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.04);}
+.ss-feed-item:last-of-type{border-bottom:none;padding-bottom:0;}
+.ss-thumb-mini{
+  width:48px;height:34px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+}
+/* Glossy sheen on thumbnails */
+.ss-thumb-mini::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%);
+  border-radius:8px 8px 0 0;
+}
+.ss-feed-name{font-size:11.5px;font-weight:600;color:#1A1A1A;}
+.ss-feed-app{font-size:10px;color:#AAA;margin-top:1px;}
+.ss-feed-time{font-size:9.5px;color:#BBB;flex-shrink:0;}
+
+/* TOP PRODUCTIVE — 3 rows only */
+.tp-row{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.tp-row:last-of-type{margin-bottom:0;}
+
+/* ATTENDANCE — UNCHANGED */
+.pblock{height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;}
+.pblock.yellow{background:linear-gradient(135deg,#1D9E75,#0F6E56);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.12),0 1px 0 rgba(255,255,255,0.2) inset;}
+.pblock.dark{background:linear-gradient(135deg,#252525,#1A1A1A);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.06) inset;}
+.pblock.gray{background:linear-gradient(135deg,#C8C8C0,#B8B8B0);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+
+/* DARK TASK CARD */
+.task-card{
+  background:linear-gradient(160deg,#162E24 0%,#0F6E56 60%,#0A5040 100%);
+  border-radius:18px;padding:16px;display:flex;flex-direction:column;
+  border:1px solid rgba(255,255,255,0.07);
+  box-shadow:0 1px 0 rgba(255,255,255,0.05) inset,0 8px 24px rgba(0,0,0,0.2);
+}
+.task-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.task-item:last-child{border-bottom:none;padding-bottom:0;}
+.task-icon{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.task-name{font-size:11.5px;font-weight:500;color:rgba(255,255,255,0.85);}
+.task-name.done{text-decoration:line-through;color:rgba(255,255,255,0.3);}
+.task-time{font-size:9.5px;color:rgba(255,255,255,0.3);margin-top:1px;}
+.task-check{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.task-check.done{background:linear-gradient(135deg,#1D9E75,#0F6E56);box-shadow:0 2px 6px rgba(0,0,0,0.2);}
+.task-check.pending{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);}
+
+.card-label{font-size:14px;font-weight:600;color:#1A1A1A;}
+.card-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.arrow-btn{width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:#888;flex-shrink:0;background:rgba(255,255,255,0.6);}
+.view-all{font-size:10.5px;color:#AAA;cursor:pointer;text-align:right;margin-top:10px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.05);}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="logo-pill">Soniq</div>
+    <div class="nav-center">
+      <div class="nav-item active">Dashboard</div>
+      <div class="nav-item">Teams</div>
+      <div class="nav-item">Screenshots</div>
+      <div class="nav-item">Attendance</div>
+      <div class="nav-item">Reports</div>
+      <div class="nav-item">Settings</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-icon-wrap">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Setting
+      </div>
+      <div class="nav-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <div class="nav-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    </div>
+  </nav>
+
+  <div class="welcome-h1">Welcome in, Kiran</div>
+
+  <!-- TOP STATS ROW — no overlap -->
+  <div class="top-stats-row">
+    <div class="progress-row">
+      <span class="prog-label">Working Mode</span>
+      <div class="prog-pill-dark">89 <span style="opacity:0.5;font-weight:400;font-size:10.5px;">Active Now</span></div>
+      <span class="prog-label">Checked In</span>
+      <div class="prog-pill-yellow">112</div>
+      <span class="prog-label">Absent</span>
+      <div class="prog-bar-striped">16 employees</div>
+      <span class="prog-label">Avg Productivity</span>
+      <div class="prog-pill-outline">6h 42m / day</div>
+    </div>
+    <div class="big-numbers">
+      <div class="bnum-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8" style="opacity:0.45;margin-bottom:1px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="bnum-val">128</span><span class="bnum-label">Employees</span>
+      </div>
+      <div class="bnum-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8" style="opacity:0.45;margin-bottom:1px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <span class="bnum-val">112</span><span class="bnum-label">Checked In</span>
+      </div>
+      <div class="bnum-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8" style="opacity:0.45;margin-bottom:1px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span class="bnum-val">5</span><span class="bnum-label">Teams</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- COL 1: Org Productivity Score + Org Health (NEW tile format) -->
+    <div class="col">
+      <div class="dark-card">
+        <div class="gauge-title">Org Productivity Score</div>
+        <div class="gauge-sub">Today · All Teams · Apr 16</div>
+        <div class="gauge-ring-wrap">
+          <svg width="136" height="136" viewBox="0 0 136 136">
+            <circle cx="68" cy="68" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="13"/>
+            <circle cx="68" cy="68" r="52" fill="none" stroke="url(#yg)" stroke-width="13" stroke-dasharray="213 327" stroke-dashoffset="82" stroke-linecap="round" transform="rotate(-90 68 68)"/>
+            <circle cx="68" cy="68" r="52" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="13" stroke-dasharray="50 327" stroke-dashoffset="-131" stroke-linecap="round" transform="rotate(-90 68 68)"/>
+            <circle cx="68" cy="68" r="52" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="13" stroke-dasharray="64 327" stroke-dashoffset="-181" stroke-linecap="round" transform="rotate(-90 68 68)"/>
+            <defs>
+              <linearGradient id="yg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1D9E75"/>
+                <stop offset="100%" stop-color="#0F6E56"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-score">78</div>
+            <div class="gauge-score-label">/ 100 score</div>
+          </div>
+        </div>
+        <div class="gauge-legend">
+          <div class="gauge-leg-row">
+            <div class="gauge-leg-left"><div class="gauge-leg-dot" style="background:#F5C518;"></div>Productive</div>
+            <div class="gauge-bar-mini"><div class="gauge-bar-fill" style="width:65%;background:#1D9E75;"></div></div>
+            <div class="gauge-leg-val">65%</div>
+          </div>
+          <div class="gauge-leg-row">
+            <div class="gauge-leg-left"><div class="gauge-leg-dot" style="background:rgba(255,255,255,0.28);"></div>Idle</div>
+            <div class="gauge-bar-mini"><div class="gauge-bar-fill" style="width:15%;background:rgba(255,255,255,0.28);"></div></div>
+            <div class="gauge-leg-val">15%</div>
+          </div>
+          <div class="gauge-leg-row">
+            <div class="gauge-leg-left"><div class="gauge-leg-dot" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);"></div>Unproductive</div>
+            <div class="gauge-bar-mini"><div class="gauge-bar-fill" style="width:20%;background:rgba(255,255,255,0.12);"></div></div>
+            <div class="gauge-leg-val">20%</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;">
+          <div style="font-size:9.5px;color:rgba(255,255,255,0.25);">Target: 80%</div>
+          <div style="font-size:9.5px;color:#1D9E75;font-weight:600;">▲ +3% vs yesterday</div>
+        </div>
+      </div>
+
+      <!-- ORG HEALTH — NEW 2×2 TILE FORMAT -->
+      <div class="card org-health-card">
+        <div class="oh-header">
+          <span class="oh-title">Org Health</span>
+          <div class="oh-badge">Good</div>
+        </div>
+        <div class="oh-tiles">
+          <div class="oh-tile">
+            <div class="oh-tile-val">65%</div>
+            <div class="oh-tile-label">Productivity rate</div>
+            <div class="oh-tile-change" style="color:#1D9E75;">↑ +3% today</div>
+          </div>
+          <div class="oh-tile dark">
+            <div class="oh-tile-val">87.5%</div>
+            <div class="oh-tile-label">Attendance rate</div>
+            <div class="oh-tile-change" style="color:#888;">→ stable</div>
+          </div>
+          <div class="oh-tile dark">
+            <div class="oh-tile-val">6h 42m</div>
+            <div class="oh-tile-label">Avg work time</div>
+            <div class="oh-tile-change" style="color:#888;">target 8h</div>
+          </div>
+          <div class="oh-tile">
+            <div class="oh-tile-val">72%</div>
+            <div class="oh-tile-label">App compliance</div>
+            <div class="oh-tile-change" style="color:#1D9E75;">4 idle alerts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COL 2: Work Summary + App & Website Usage (4 rows) -->
+    <div class="col">
+      <div class="card" style="padding:18px;">
+        <div class="card-top-row">
+          <span class="card-label">Work Summary</span>
+          <div class="arrow-btn">↗</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:0;margin-bottom:14px;">
+          <span style="font-size:30px;font-weight:700;color:#1A1A1A;letter-spacing:-1px;line-height:1;">6.1<span style="font-size:20px;">h</span></span>
+          <span style="font-size:10px;color:#AAA;font-weight:400;margin-left:7px;line-height:1.3;">Productive<br>today</span>
+        </div>
+        <div class="bar-chart">
+          <div class="bar-col"><div class="bbar gray" style="height:36px;"></div><div class="bbar-dot"></div><div class="bbar-day">M</div></div>
+          <div class="bar-col"><div class="bbar dark" style="height:58px;"></div><div class="bbar-dot"></div><div class="bbar-day">T</div></div>
+          <div class="bar-col"><div class="bbar dark" style="height:45px;"></div><div class="bbar-dot"></div><div class="bbar-day">W</div></div>
+          <div class="bar-col"><div class="bbar dark" style="height:68px;"></div><div class="bbar-dot"></div><div class="bbar-day">T</div></div>
+          <div class="bar-col" style="position:relative;"><div class="bbar yellow" style="height:80px;position:relative;"><div class="bbar-tooltip">6h 42m</div></div><div class="bbar-dot" style="background:#0F6E56;"></div><div class="bbar-day">F</div></div>
+          <div class="bar-col"><div class="bbar gray" style="height:24px;"></div><div class="bbar-dot"></div><div class="bbar-day">S</div></div>
+          <div class="bar-col"><div class="bbar gray" style="height:14px;"></div><div class="bbar-dot"></div><div class="bbar-day">S</div></div>
+        </div>
+      </div>
+
+      <!-- App Usage — 4 rows only -->
+      <div class="card" style="padding:16px;">
+        <div class="card-top-row" style="margin-bottom:12px;">
+          <span class="card-label">App & Website Usage</span>
+          <div style="display:flex;gap:5px;">
+            <div style="padding:3px 10px;border-radius:20px;background:linear-gradient(135deg,#111111,#1D2D28);font-size:10.5px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.2);">Apps</div>
+            <div style="padding:3px 10px;border-radius:20px;background:rgba(0,0,0,0.05);font-size:10.5px;color:#888;">Websites</div>
+          </div>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#162E24,#0F6E56);color:#1D9E75;">VS</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;"><span class="app-name">VS Code</span><span class="app-badge badge-prod">Productive</span></div>
+            <div class="app-bar-track"><div class="app-bar-fill" style="width:100%;background:#1A1A1A;"></div></div>
+          </div>
+          <div class="app-time">3h 12m</div>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#E8E0C8,#D8CEB0);color:#1A1A1A;">CH</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;"><span class="app-name">Chrome</span><span class="app-badge badge-neutral">Neutral</span></div>
+            <div class="app-bar-track"><div class="app-bar-fill" style="width:78%;background:#C8C8C0;"></div></div>
+          </div>
+          <div class="app-time">2h 30m</div>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#1D9E75,#0F6E56);color:#fff;">FG</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;"><span class="app-name">Figma</span><span class="app-badge badge-prod">Productive</span></div>
+            <div class="app-bar-track"><div class="app-bar-fill" style="width:62%;background:#1A1A1A;"></div></div>
+          </div>
+          <div class="app-time">2h 00m</div>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#D8D8D0,#C0C0B8);color:#1A1A1A;">YT</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;"><span class="app-name">YouTube</span><span class="app-badge badge-unprod">Unproductive</span></div>
+            <div class="app-bar-track"><div class="app-bar-fill" style="width:42%;background:#1D9E75;"></div></div>
+          </div>
+          <div class="app-time">1h 22m</div>
+        </div>
+        <div class="view-all">View Full Report →</div>
+      </div>
+    </div>
+
+    <!-- COL 3: Screenshot Feed (4 rows, on-palette) + Top Productive (3 rows) -->
+    <div class="col">
+      <!-- Screenshot Feed — ON-PALETTE dark/amber/charcoal thumbnails, 4 rows -->
+      <div class="card" style="padding:16px;">
+        <div class="card-top-row" style="margin-bottom:12px;">
+          <span class="card-label">Screenshot Feed</span>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:#0F6E56;animation:pulse 1.5s infinite;"></div>
+            <span style="font-size:10.5px;color:#888;">Live</span>
+          </div>
+        </div>
+        <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}</style>
+
+        <!-- Row 1 — dark charcoal -->
+        <div class="ss-feed-item">
+          <div class="ss-thumb-mini" style="background:linear-gradient(135deg,#162E24,#0F6E56);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(29,158,117,0.8)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div class="ss-feed-name">Ravi Shankar</div>
+            <div class="ss-feed-app">VS Code · Engineering</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="ss-feed-time">2:41 PM</div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;box-shadow:0 0 4px rgba(0,0,0,0.2);"></div>
+          </div>
+        </div>
+
+        <!-- Row 2 — amber yellow -->
+        <div class="ss-feed-item">
+          <div class="ss-thumb-mini" style="background:linear-gradient(135deg,#1D9E75,#0A8060);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div class="ss-feed-name">Priya Krishnan</div>
+            <div class="ss-feed-app">Figma · Design</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="ss-feed-time">2:39 PM</div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;box-shadow:0 0 4px rgba(0,0,0,0.2);"></div>
+          </div>
+        </div>
+
+        <!-- Row 3 — medium gray -->
+        <div class="ss-feed-item">
+          <div class="ss-thumb-mini" style="background:linear-gradient(135deg,#C0C0B8,#A8A8A0);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div class="ss-feed-name">Arjun Mehta</div>
+            <div class="ss-feed-app">Chrome · Engineering</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="ss-feed-time">2:37 PM</div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#C8C8C0;"></div>
+          </div>
+        </div>
+
+        <!-- Row 4 — warm dark amber -->
+        <div class="ss-feed-item">
+          <div class="ss-thumb-mini" style="background:linear-gradient(135deg,#3A3520,#2A2818);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(245,197,24,0.5)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div class="ss-feed-name">Karthik Rajan</div>
+            <div class="ss-feed-app">Slack · Support</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="ss-feed-time">2:35 PM</div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#0F6E56;box-shadow:0 0 4px rgba(0,0,0,0.2);"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.05);">
+          <div style="display:flex;gap:10px;">
+            <div style="display:flex;align-items:center;gap:4px;font-size:9.5px;color:#888;"><div style="width:5px;height:5px;border-radius:50%;background:#0F6E56;"></div>Productive</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:9.5px;color:#888;"><div style="width:5px;height:5px;border-radius:50%;background:#C8C8C0;"></div>Idle</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:9.5px;color:#888;"><div style="width:5px;height:5px;border-radius:50%;background:#1A1A1A;"></div>Unproductive</div>
+          </div>
+          <div style="font-size:10px;color:#AAA;cursor:pointer;">View All →</div>
+        </div>
+      </div>
+
+      <!-- Top Productive — 3 rows only -->
+      <div class="card" style="padding:16px;">
+        <div class="card-top-row" style="margin-bottom:12px;">
+          <span class="card-label">Top Productive</span>
+          <div style="display:flex;gap:5px;">
+            <div style="padding:3px 10px;border-radius:20px;background:linear-gradient(135deg,#111111,#1D2D28);font-size:10.5px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.2);">Employee</div>
+            <div style="padding:3px 10px;border-radius:20px;background:rgba(0,0,0,0.05);font-size:10.5px;color:#888;">App</div>
+          </div>
+        </div>
+        <div class="tp-row">
+          <div style="font-size:10.5px;font-weight:600;color:#AAA;width:13px;">1</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#1D9E75,#0F6E56);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,0.2);">RS</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11.5px;font-weight:500;color:#1A1A1A;">Ravi Shankar</div><div style="height:3px;background:#F0F0EC;border-radius:2px;margin-top:4px;overflow:hidden;"><div style="width:100%;height:100%;background:linear-gradient(135deg,#162E24,#0F6E56);border-radius:2px;"></div></div></div>
+          <div style="font-size:11px;font-weight:600;color:#1A1A1A;white-space:nowrap;">7h 14m</div>
+        </div>
+        <div class="tp-row">
+          <div style="font-size:10.5px;font-weight:600;color:#AAA;width:13px;">2</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#E8E0C8,#D8CEB0);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#888;flex-shrink:0;">PK</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11.5px;font-weight:500;color:#1A1A1A;">Priya Krishnan</div><div style="height:3px;background:#F0F0EC;border-radius:2px;margin-top:4px;overflow:hidden;"><div style="width:85%;height:100%;background:#C8C8C0;border-radius:2px;"></div></div></div>
+          <div style="font-size:11px;font-weight:600;color:#888;white-space:nowrap;">6h 08m</div>
+        </div>
+        <div class="tp-row">
+          <div style="font-size:10.5px;font-weight:600;color:#AAA;width:13px;">3</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#D8D8D0,#C8C8C0);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#888;flex-shrink:0;">AM</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11.5px;font-weight:500;color:#1A1A1A;">Arjun Mehta</div><div style="height:3px;background:#F0F0EC;border-radius:2px;margin-top:4px;overflow:hidden;"><div style="width:70%;height:100%;background:#C8C8C0;border-radius:2px;"></div></div></div>
+          <div style="font-size:11px;font-weight:600;color:#888;white-space:nowrap;">5h 11m</div>
+        </div>
+        <div class="view-all">View All →</div>
+      </div>
+    </div>
+
+    <!-- COL 4: Attendance + Live Activity (UNCHANGED) -->
+    <div class="col">
+      <div class="card" style="padding:18px;">
+        <div class="card-top-row">
+          <span class="card-label">Attendance</span>
+          <span style="font-size:26px;font-weight:700;color:#1A1A1A;letter-spacing:-1px;">87%</span>
+        </div>
+        <div style="display:flex;gap:7px;">
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px;"><div style="font-size:10.5px;color:#888;">112</div><div class="pblock yellow">Checked In</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px;"><div style="font-size:10.5px;color:#888;">16</div><div class="pblock dark">Absent</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px;"><div style="font-size:10.5px;color:#888;">23</div><div class="pblock gray">Privacy</div></div>
+        </div>
+      </div>
+
+      <div class="task-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <span style="font-size:14px;font-weight:600;color:#fff;">Live Activity</span>
+          <span style="font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.5px;">89/128</span>
+        </div>
+        <div class="task-item">
+          <div class="task-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg></div>
+          <div style="flex:1;"><div class="task-name done">Ravi Shankar</div><div class="task-time">Work Mode · 9:01 AM</div></div>
+          <div class="task-check done"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <div class="task-item">
+          <div class="task-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div style="flex:1;"><div class="task-name done">Meera Kapoor</div><div class="task-time">Privacy Mode · 9:15 AM</div></div>
+          <div class="task-check done"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <div class="task-item">
+          <div class="task-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div style="flex:1;"><div class="task-name">Arjun Mehta</div><div class="task-time">Work Mode · 9:08 AM</div></div>
+          <div class="task-check pending"></div>
+        </div>
+        <div class="task-item">
+          <div class="task-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <div style="flex:1;"><div class="task-name">Sneha Nair</div><div class="task-time">Idle · Last seen 9:32 AM</div></div>
+          <div class="task-check pending"></div>
+        </div>
+        <div class="task-item">
+          <div class="task-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div style="flex:1;"><div class="task-name">Dev Varma</div><div class="task-time">App Not Installed</div></div>
+          <div class="task-check pending"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

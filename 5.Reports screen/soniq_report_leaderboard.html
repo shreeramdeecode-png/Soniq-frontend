@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=1280"/>
+<title>Soniq — Team Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-width:1280px;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#9A9FAD,#B8BCC8,#A8AC98);}
+body{display:flex;justify-content:center;}
+.shell{width:1280px;background:linear-gradient(135deg,#EEECEA 0%,#ECEAE4 30%,#F5F0DA 65%,#F3EAA8 100%);min-height:100vh;position:relative;}
+.shell::before{content:'';position:absolute;top:0;left:0;right:0;height:180px;background:linear-gradient(180deg,rgba(255,255,255,.48),rgba(255,255,255,0));pointer-events:none;z-index:0;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 36px 0;position:relative;z-index:10;}
+.logo{border:1.5px solid rgba(255,255,255,.65);border-radius:50px;padding:7px 22px;font-size:15px;font-weight:700;color:#1A1A1A;background:rgba(255,255,255,.55);}
+.nc{display:flex;gap:2px;}.ni{padding:8px 14px;border-radius:50px;font-size:12px;font-weight:500;color:#555;cursor:pointer;}.ni.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;}
+.nr{display:flex;gap:10px;}.np{display:flex;align-items:center;gap:6px;padding:7px 13px;border:1.5px solid rgba(255,255,255,.65);border-radius:50px;background:rgba(255,255,255,.48);font-size:11px;font-weight:500;color:#555;}
+.nc2{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.65);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.48);}
+.page{padding:0 36px 36px;position:relative;z-index:2;}
+.ph{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 0;}
+.bc{font-size:10px;color:#BBBBAA;margin-bottom:4px;display:flex;align-items:center;gap:5px;}.bc a{color:#B8860B;font-weight:500;text-decoration:none;}
+.pt{font-size:26px;font-weight:800;color:#1A1A1A;letter-spacing:-.8px;}.psub{font-size:10.5px;color:#AAA;margin-top:2px;}
+.phr{display:flex;gap:8px;}
+.btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:50px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:'Poppins',sans-serif;border:none;}
+.bg{background:rgba(255,255,255,.62);border:1.5px solid rgba(255,255,255,.9);color:#555;}
+.by{background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;}
+.frow{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
+.scope{display:flex;gap:2px;background:rgba(0,0,0,.06);border-radius:30px;padding:3px;}
+.stab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:500;color:#666;cursor:pointer;}.stab.on{background:#fff;color:#1A1A1A;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.dp{display:flex;align-items:center;height:34px;background:rgba(255,255,255,.75);border:1.5px solid rgba(255,255,255,.95);border-radius:50px;padding:0 5px 0 10px;gap:4px;flex-shrink:0;}
+.dpf{display:flex;flex-direction:column;padding:0 6px;}.dpft{font-size:7.5px;color:#CCCCAA;}.dpfv{font-size:10.5px;font-weight:600;color:#1A1A1A;}
+.dps{width:1px;height:14px;background:rgba(0,0,0,.08);}
+.dpa{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#F5C518,#E0AD00);display:flex;align-items:center;justify-content:center;}
+.chip{height:34px;padding:0 13px;border-radius:50px;display:flex;align-items:center;font-size:10.5px;font-weight:500;cursor:pointer;background:rgba(255,255,255,.62);border:1.5px solid rgba(255,255,255,.88);color:#666;white-space:nowrap;}
+.chip.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;border-color:#1A1A1A;}
+.srch{display:flex;align-items:center;gap:6px;height:34px;padding:0 13px;background:rgba(255,255,255,.75);border:1.5px solid rgba(255,255,255,.95);border-radius:50px;font-size:10.5px;color:#CCCCAA;margin-left:auto;min-width:170px;}
+.srch input{border:none;background:transparent;outline:none;font-size:10.5px;font-family:'Poppins',sans-serif;color:#333;width:100%;}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+.kpi{background:rgba(255,255,255,.84);border-radius:14px;border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 0 rgba(255,255,255,.95) inset;padding:12px 14px;}
+.kl{font-size:8.5px;color:#AAA;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}.kv{font-size:17px;font-weight:800;letter-spacing:-.5px;}.ks{font-size:9px;color:#888;margin-top:2px;}
+.card{background:rgba(255,255,255,.84);border-radius:20px;border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 18px rgba(0,0,0,.07);overflow:hidden;margin-bottom:12px;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(0,0,0,.05);}
+.ct{font-size:13px;font-weight:700;color:#1A1A1A;}.cs{font-size:9.5px;color:#AAA;margin-top:1px;}
+.cb{padding:18px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.rt{width:100%;border-collapse:collapse;}
+.rt th{font-size:9.5px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.6px;padding:10px 14px;text-align:left;background:rgba(0,0,0,.02);border-bottom:1px solid rgba(0,0,0,.05);white-space:nowrap;}
+.rt td{font-size:11px;color:#1A1A1A;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle;}
+.rt tr:last-child td{border-bottom:none;}
+.rt tr:hover td{background:rgba(245,197,24,.04);}
+.top3 td{background:rgba(245,197,24,.04);}
+.bot3 td{background:rgba(153,53,53,.02);}
+.ec{display:flex;align-items:center;gap:8px;}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;flex-shrink:0;}
+.en{font-size:11px;font-weight:600;color:#1A1A1A;}.es{font-size:9px;color:#AAA;margin-top:1px;}
+.rank-num{font-size:18px;font-weight:800;width:28px;text-align:center;flex-shrink:0;}
+.spark{display:flex;gap:2px;align-items:flex-end;height:24px;}
+.sb{width:8px;border-radius:1px 1px 0 0;}
+.pg{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid rgba(0,0,0,.05);}
+.pi{font-size:10.5px;color:#AAA;}.pn{display:flex;gap:4px;}
+.pb{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10.5px;cursor:pointer;background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.07);color:#555;}
+.pb.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;border:none;}
+.team-podium{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:10px;padding:18px;}
+.podium-card{border-radius:14px;padding:14px 12px;text-align:center;position:relative;}
+.pod-rank{font-size:22px;font-weight:800;margin-bottom:4px;}
+.pod-name{font-size:12px;font-weight:700;color:#1A1A1A;margin-bottom:2px;}
+.pod-score{font-size:20px;font-weight:800;margin-bottom:2px;}
+.pod-members{font-size:9px;color:#888;}
+.pod-bar{height:4px;border-radius:2px;margin:8px 0 4px;}
+.delta-badge{display:inline-flex;align-items:center;gap:2px;padding:2px 7px;border-radius:8px;font-size:9px;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav>
+    <div class="logo">Soniq</div>
+    <div class="nc"><div class="ni">Dashboard</div><div class="ni">Teams</div><div class="ni">Screenshots</div><div class="ni">Attendance</div><div class="ni on">Reports</div><div class="ni">Settings</div></div>
+    <div class="nr">
+      <div class="np"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Setting</div>
+      <div class="nc2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <div class="nc2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="ph">
+      <div>
+        <div class="bc"><a href="soniq_reports_hub.html">Reports</a><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Team Leaderboard</span></div>
+        <div class="pt">Team Leaderboard</div>
+        <div class="psub">Live productivity rankings — model top performers, identify coaching opportunities & track rank movement over time</div>
+      </div>
+      <div class="phr">
+        <div class="btn bg"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</div>
+        <div class="btn by"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Excel</div>
+      </div>
+    </div>
+
+    <div class="frow">
+      <div class="scope">
+        <div class="stab on">Individual</div><div class="stab">By Team</div><div class="stab">By Department</div>
+      </div>
+      <div class="dp">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#BBBBAA" stroke-width="2" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div class="dpf"><span class="dpft">From</span><span class="dpfv">Apr 01</span></div>
+        <div class="dps"></div>
+        <div class="dpa"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        <div class="dps"></div>
+        <div class="dpf"><span class="dpft">To</span><span class="dpfv">Apr 21</span></div>
+      </div>
+      <div class="chip on">All Teams</div>
+      <div class="chip">Top 10</div>
+      <div class="chip">Bottom 10</div>
+      <div class="chip">Most Improved</div>
+      <div class="chip">Biggest Drop</div>
+      <div class="srch"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search employee..."/></div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="kl">Org Rank Leader</div><div class="kv" style="color:#B8860B;font-size:13px;">Ravi Shankar</div><div class="ks">91% · Engineering</div></div>
+      <div class="kpi"><div class="kl">Top Team</div><div class="kv" style="color:#3D6028;font-size:13px;">Engineering</div><div class="ks">88% avg · 34 employees</div></div>
+      <div class="kpi"><div class="kl">Biggest Mover (↑)</div><div class="kv" style="color:#3D6028;font-size:13px;">Arjun Mehta</div><div class="ks">+14 rank pts this period</div></div>
+      <div class="kpi"><div class="kl">Needs Coaching</div><div class="kv" style="color:#993535;">Sales Team</div><div class="ks">64% avg · 6 below 50%</div></div>
+      <div class="kpi"><div class="kl">Org Avg Score</div><div class="kv">78%</div><div class="ks">↑ 4.2% vs last period</div></div>
+    </div>
+
+    <!-- Team Podium -->
+    <div class="card">
+      <div class="ch"><div><div class="ct">Team Productivity Rankings — This Period</div><div class="cs">Average productivity score per team · sorted highest to lowest</div></div></div>
+      <div class="team-podium">
+        <div class="podium-card" style="background:rgba(245,197,24,.12);border:1.5px solid rgba(245,197,24,.35);">
+          <div class="pod-rank" style="color:#E0AD00;">🥇</div>
+          <div class="pod-name">Engineering</div>
+          <div class="pod-score" style="color:#B8860B;">88%</div>
+          <div class="pod-bar" style="background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>
+          <div class="pod-members">34 members</div>
+          <div style="margin-top:5px;"><span class="delta-badge" style="background:rgba(61,96,40,.1);color:#27500A;">↑ +3.1%</span></div>
+        </div>
+        <div class="podium-card" style="background:#F8F8F5;border:1px solid rgba(0,0,0,.07);">
+          <div class="pod-rank" style="color:#B4B2A9;">🥈</div>
+          <div class="pod-name">Product</div>
+          <div class="pod-score" style="color:#444441;">83%</div>
+          <div class="pod-bar" style="background:linear-gradient(90deg,#B4B2A9,#888780);width:94%;"></div>
+          <div class="pod-members">12 members</div>
+          <div style="margin-top:5px;"><span class="delta-badge" style="background:rgba(61,96,40,.08);color:#27500A;">↑ +1.4%</span></div>
+        </div>
+        <div class="podium-card" style="background:#F8F8F5;border:1px solid rgba(0,0,0,.07);">
+          <div class="pod-rank" style="color:#CD7F32;">🥉</div>
+          <div class="pod-name">Design</div>
+          <div class="pod-score" style="color:#444441;">76%</div>
+          <div class="pod-bar" style="background:linear-gradient(90deg,#CD7F32,#A0632A);width:86%;"></div>
+          <div class="pod-members">18 members</div>
+          <div style="margin-top:5px;"><span class="delta-badge" style="background:rgba(153,53,53,.08);color:#791F1F;">↓ -0.8%</span></div>
+        </div>
+        <div class="podium-card" style="background:#F8F8F5;border:1px solid rgba(0,0,0,.07);">
+          <div class="pod-rank" style="color:#CCCCAA;font-size:18px;font-weight:800;">4th</div>
+          <div class="pod-name">Support</div>
+          <div class="pod-score" style="color:#444441;">71%</div>
+          <div class="pod-bar" style="background:#D3D1C7;width:81%;"></div>
+          <div class="pod-members">20 members</div>
+          <div style="margin-top:5px;"><span class="delta-badge" style="background:rgba(61,96,40,.08);color:#27500A;">↑ +2.2%</span></div>
+        </div>
+        <div class="podium-card" style="background:rgba(153,53,53,.06);border:1.5px solid rgba(153,53,53,.18);">
+          <div class="pod-rank" style="color:#993535;font-size:18px;font-weight:800;">5th</div>
+          <div class="pod-name">Sales</div>
+          <div class="pod-score" style="color:#993535;">64%</div>
+          <div class="pod-bar" style="background:#993535;width:73%;"></div>
+          <div class="pod-members">24 members</div>
+          <div style="margin-top:5px;"><span class="delta-badge" style="background:rgba(153,53,53,.1);color:#791F1F;">↓ -5.3%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="g2">
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div><div class="ct">Team Score Trend — Last 4 Weeks</div><div class="cs">Weekly avg productivity by team</div></div></div>
+        <div class="cb">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:10px;color:#888;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;border-radius:1px;background:#E0AD00;display:inline-block;"></span>Engineering</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;border-radius:1px;background:#888;display:inline-block;"></span>Product</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;border-radius:1px;background:#CD7F32;display:inline-block;"></span>Design</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;border-radius:1px;background:#993535;display:inline-block;"></span>Sales</span>
+          </div>
+          <div style="position:relative;width:100%;height:200px;">
+            <canvas id="teamTrend" role="img" aria-label="Multi-line chart showing team productivity scores over 4 weeks. Engineering consistently highest, Sales lowest and declining.">Engineering leads at 88%, Sales has been declining to 64%.</canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div><div class="ct">Most Improved vs Biggest Drop</div><div class="cs">Individual rank movement this period vs last period</div></div></div>
+        <div class="cb">
+          <div style="position:relative;width:100%;height:230px;">
+            <canvas id="mvmtChart" role="img" aria-label="Horizontal bar chart showing rank changes. Arjun Mehta moved up most, two Sales employees dropped most.">Arjun Mehta improved by 14 positions. Pradeep Pillai dropped by 18 positions.</canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Individual Leaderboard Table -->
+    <div class="card">
+      <div class="ch">
+        <div><div class="ct">Individual Productivity Leaderboard</div><div class="cs">All 128 employees ranked by avg productivity score · Apr 1–21</div></div>
+        <div style="display:flex;gap:6px;">
+          <div style="padding:4px 10px;background:rgba(245,197,24,.1);border-radius:8px;font-size:9px;font-weight:600;color:#B8860B;border:1px solid rgba(245,197,24,.25);">Top 10 highlighted</div>
+          <div style="padding:4px 10px;background:rgba(153,53,53,.08);border-radius:8px;font-size:9px;font-weight:600;color:#993535;border:1px solid rgba(153,53,53,.18);">Bottom 10 flagged</div>
+        </div>
+      </div>
+      <table class="rt">
+        <thead><tr>
+          <th>Rank</th><th>Employee</th><th>Team</th>
+          <th>Productivity Score</th><th>Score Bar</th>
+          <th>Productive Time/Day</th><th>Focus Score</th>
+          <th>Attendance</th>
+          <th>Rank Change (vs last period)</th>
+          <th>7-Day Trend</th>
+          <th>Peer Percentile</th>
+        </tr></thead>
+        <tbody>
+          <tr class="top3">
+            <td><div style="display:flex;align-items:center;gap:5px;"><div class="rank-num" style="color:#E0AD00;">1</div><span style="font-size:9px;">🥇</span></div></td>
+            <td><div class="ec"><div class="av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">RS</div><div><div class="en">Ravi Shankar</div><div class="es">Sr. SWE · Engineering</div></div></div></td>
+            <td>Engineering</td>
+            <td><b style="font-size:16px;color:#E0AD00;">91%</b></td>
+            <td><div style="width:90px;height:8px;background:#F0F0E8;border-radius:4px;overflow:hidden;"><div style="width:91%;height:100%;background:linear-gradient(90deg,#F5C518,#E0AD00);border-radius:4px;"></div></div></td>
+            <td>6h 14m</td><td style="color:#0C447C;font-weight:600;">91</td>
+            <td style="color:#3D6028;">100%</td>
+            <td><span class="delta-badge" style="background:rgba(61,96,40,.08);color:#27500A;">= Same</span></td>
+            <td><div class="spark"><div class="sb" style="height:12px;background:rgba(245,197,24,.5);"></div><div class="sb" style="height:16px;background:rgba(245,197,24,.6);"></div><div class="sb" style="height:14px;background:rgba(245,197,24,.7);"></div><div class="sb" style="height:18px;background:rgba(245,197,24,.8);"></div><div class="sb" style="height:16px;background:rgba(245,197,24,.85);"></div><div class="sb" style="height:20px;background:rgba(245,197,24,.9);"></div><div class="sb" style="height:22px;background:#E0AD00;"></div></div></td>
+            <td><b style="color:#3D6028;">Top 1%</b></td>
+          </tr>
+          <tr class="top3">
+            <td><div style="display:flex;align-items:center;gap:5px;"><div class="rank-num" style="color:#B4B2A9;">2</div><span style="font-size:9px;">🥈</span></div></td>
+            <td><div class="ec"><div class="av" style="background:#E8E0C8;color:#888;">SV</div><div><div class="en">Swetha Varman</div><div class="es">SWE · Engineering</div></div></div></td>
+            <td>Engineering</td>
+            <td><b style="font-size:16px;color:#B4B2A9;">87%</b></td>
+            <td><div style="width:90px;height:8px;background:#F0F0E8;border-radius:4px;overflow:hidden;"><div style="width:87%;height:100%;background:#B4B2A9;border-radius:4px;"></div></div></td>
+            <td>5h 58m</td><td style="color:#0C447C;font-weight:600;">82</td>
+            <td style="color:#3D6028;">97%</td>
+            <td><span class="delta-badge" style="background:rgba(61,96,40,.08);color:#27500A;">↑ +2</span></td>
+            <td><div class="spark"><div class="sb" style="height:14px;background:#D3D1C7;"></div><div class="sb" style="height:16px;background:#C4C2B8;"></div><div class="sb" style="height:18px;background:#B4B2A9;"></div><div class="sb" style="height:16px;background:#B4B2A9;"></div><div class="sb" style="height:20px;background:#B4B2A9;"></div><div class="sb" style="height:18px;background:#B4B2A9;"></div><div class="sb" style="height:20px;background:#B4B2A9;"></div></div></td>
+            <td><b>Top 3%</b></td>
+          </tr>
+          <tr class="top3">
+            <td><div style="display:flex;align-items:center;gap:5px;"><div class="rank-num" style="color:#CD7F32;">3</div><span style="font-size:9px;">🥉</span></div></td>
+            <td><div class="ec"><div class="av" style="background:#E8E0C8;color:#888;">AM</div><div><div class="en">Arjun Mehta</div><div class="es">SWE · Engineering</div></div></div></td>
+            <td>Engineering</td>
+            <td><b style="font-size:16px;color:#CD7F32;">84%</b></td>
+            <td><div style="width:90px;height:8px;background:#F0F0E8;border-radius:4px;overflow:hidden;"><div style="width:84%;height:100%;background:#CD7F32;border-radius:4px;"></div></div></td>
+            <td>5h 52m</td><td style="color:#185FA5;font-weight:600;">78</td>
+            <td>90%</td>
+            <td><span class="delta-badge" style="background:rgba(61,96,40,.1);color:#27500A;">↑ +14 🔥</span></td>
+            <td><div class="spark"><div class="sb" style="height:10px;background:rgba(205,127,50,.4);"></div><div class="sb" style="height:12px;background:rgba(205,127,50,.5);"></div><div class="sb" style="height:14px;background:rgba(205,127,50,.6);"></div><div class="sb" style="height:16px;background:rgba(205,127,50,.7);"></div><div class="sb" style="height:18px;background:rgba(205,127,50,.8);"></div><div class="sb" style="height:20px;background:rgba(205,127,50,.9);"></div><div class="sb" style="height:22px;background:#CD7F32;"></div></div></td>
+            <td><b>Top 5%</b></td>
+          </tr>
+          <tr>
+            <td><div class="rank-num" style="color:#888;font-size:14px;">4</div></td>
+            <td><div class="ec"><div class="av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">PK</div><div><div class="en">Priya Krishnan</div><div class="es">Sr. Designer · Design</div></div></div></td>
+            <td>Design</td>
+            <td><b>76%</b></td>
+            <td><div style="width:90px;height:8px;background:#F0F0E8;border-radius:4px;overflow:hidden;"><div style="width:76%;height:100%;background:#B8860B;border-radius:4px;"></div></div></td>
+            <td>5h 22m</td><td style="color:#378ADD;font-weight:600;">65</td>
+            <td style="color:#3D6028;">97%</td>
+            <td><span class="delta-badge" style="background:#F5F5F0;color:#888;">= Same</span></td>
+            <td><div class="spark"><div class="sb" style="height:14px;background:rgba(184,134,11,.4);"></div><div class="sb" style="height:14px;background:rgba(184,134,11,.5);"></div><div class="sb" style="height:16px;background:rgba(184,134,11,.55);"></div><div class="sb" style="height:14px;background:rgba(184,134,11,.6);"></div><div class="sb" style="height:16px;background:rgba(184,134,11,.65);"></div><div class="sb" style="height:14px;background:rgba(184,134,11,.7);"></div><div class="sb" style="height:16px;background:#B8860B;"></div></div></td>
+            <td>Top 8%</td>
+          </tr>
+          <!-- Bottom performers section -->
+          <tr>
+            <td colspan="11" style="padding:6px 14px;background:rgba(153,53,53,.03);border-bottom:1px solid rgba(153,53,53,.08);">
+              <div style="font-size:9.5px;font-weight:700;color:#993535;">⚠ Below Average — Coaching Recommended</div>
+            </td>
+          </tr>
+          <tr class="bot3">
+            <td><div class="rank-num" style="color:#993535;font-size:13px;">123</div></td>
+            <td><div class="ec"><div class="av" style="background:rgba(153,53,53,.12);color:#993535;">SN</div><div><div class="en">Sneha Nair</div><div class="es">Sales Exec. · Sales</div></div></div></td>
+            <td>Sales</td>
+            <td><b style="color:#993535;">48%</b></td>
+            <td><div style="width:90px;height:8px;background:#F0F0E8;border-radius:4px;overflow:hidden;"><div style="width:48%;height:100%;background:#993535;border-radius:4px;"></div></div></td>
+            <td>3h 02m</td><td style="color:#993535;font-weight:600;">28</td>
+            <td>88%</td>
+            <td><span class="delta-badge" style="background:rgba(153,53,53,.1);color:#791F1F;">↓ -8</span></td>
+            <td><div class="spark"><div class="sb" style="height:18px;background:rgba(153,53,53,.5);"></div><div class="sb" style="height:16px;background:rgba(153,53,53,.45);"></div><div class="sb" style="height:14px;background:rgba(153,53,53,.4);"></div><div class="sb" style="height:12px;background:rgba(153,53,53,.35);"></div><div class="sb" style="height:12px;background:rgba(153,53,53,.4);"></div><div class="sb" style="height:10px;background:rgba(153,53,53,.45);"></div><div class="sb" style="height:10px;background:#993535;"></div></div></td>
+            <td style="color:#993535;font-weight:600;">Bottom 5%</td>
+          </tr>
+          <tr class="bot3">
+            <td><div class="rank-num" style="color:#993535;font-size:13px;">126</div></td>
+            <td><div class="ec"><div class="av" style="background:rgba(153,53,53,.12);color:#993535;">PP</div><div><div class="en">Pradeep Pillai</div><div class="es">Sales Exec. · Sales</div></div></div></td>
+            <td>Sales</td>
+            <td><b style="color:#993535;">38%</b></td>
+            <td><div style="width:90px;height:8px;background:#F0F0E8;border-radius:4px;overflow:hidden;"><div style="width:38%;height:100%;background:#993535;border-radius:4px;"></div></div></td>
+            <td>2h 12m</td><td style="color:#993535;font-weight:600;">22</td>
+            <td style="color:#993535;font-weight:600;">62%</td>
+            <td><span class="delta-badge" style="background:rgba(153,53,53,.1);color:#791F1F;">↓ -18</span></td>
+            <td><div class="spark"><div class="sb" style="height:20px;background:rgba(153,53,53,.5);"></div><div class="sb" style="height:16px;background:rgba(153,53,53,.45);"></div><div class="sb" style="height:14px;background:rgba(153,53,53,.4);"></div><div class="sb" style="height:12px;background:rgba(153,53,53,.38);"></div><div class="sb" style="height:10px;background:rgba(153,53,53,.38);"></div><div class="sb" style="height:8px;background:rgba(153,53,53,.42);"></div><div class="sb" style="height:8px;background:#993535;"></div></div></td>
+            <td style="color:#993535;font-weight:600;">Bottom 2%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pg">
+        <div class="pi">Showing 7 of 128 employees · Sorted by productivity score</div>
+        <div class="pn"><div class="pb">‹</div><div class="pb on">1</div><div class="pb">2</div><div class="pb">3</div><div class="pb">…</div><div class="pb">6</div><div class="pb">›</div></div>
+      </div>
+    </div>
+
+    <!-- Coaching insights -->
+    <div class="card">
+      <div class="ch"><div><div class="ct">Performance Gap Analysis — Coaching Opportunities</div><div class="cs">Based on productivity delta between top and bottom performers within same team</div></div></div>
+      <div class="cb" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div style="padding:12px 14px;background:rgba(245,197,24,.08);border-radius:12px;border:1px solid rgba(245,197,24,.2);">
+          <div style="font-size:10px;font-weight:700;color:#B8860B;margin-bottom:5px;">Sales Team Gap: 53 pts</div>
+          <div style="font-size:9.5px;color:#888;line-height:1.6;">Best Sales performer (Arun Thomas, 91%) vs. worst (Pradeep Pillai, 38%) shows a 53-point gap — the widest of any team. This suggests inconsistent work practices, not team-wide skill gaps. A peer mentoring program could close this gap by 20+ points.</div>
+        </div>
+        <div style="padding:12px 14px;background:#EAF3DE;border-radius:12px;border:1px solid rgba(61,96,40,.16);">
+          <div style="font-size:10px;font-weight:700;color:#27500A;margin-bottom:5px;">Arjun Mehta: Most Improved (+14 ranks)</div>
+          <div style="font-size:9.5px;color:#888;line-height:1.6;">Moved from rank 17 to rank 3 in a single period. Pattern shows increase in morning deep-work sessions, fewer app switches post 10 AM, and consistent 9 AM check-ins. Document this workflow as a template for the Engineering team.</div>
+        </div>
+        <div style="padding:12px 14px;background:#FEF0F0;border-radius:12px;border:1px solid rgba(153,53,53,.12);">
+          <div style="font-size:10px;font-weight:700;color:#993535;margin-bottom:5px;">Sales team declining 3 weeks straight</div>
+          <div style="font-size:9.5px;color:#888;line-height:1.6;">Sales avg has dropped from 69% → 64% over 3 consecutive periods. High distraction app usage (YouTube 72 avg min/day) and attendance gaps suggest the team needs both tooling intervention and a manager conversation this week.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+new Chart(document.getElementById('teamTrend'),{
+  type:'line',
+  data:{
+    labels:['Week 1','Week 2','Week 3','Week 4'],
+    datasets:[
+      {label:'Engineering',data:[85,86,87,88],borderColor:'#E0AD00',borderWidth:2.5,tension:0.3,pointRadius:4,pointBackgroundColor:'#E0AD00'},
+      {label:'Product',data:[81,82,80,83],borderColor:'#888',borderWidth:2,tension:0.3,pointRadius:3,pointBackgroundColor:'#888'},
+      {label:'Design',data:[78,77,76,76],borderColor:'#CD7F32',borderWidth:2,tension:0.3,pointRadius:3,pointBackgroundColor:'#CD7F32'},
+      {label:'Sales',data:[69,67,65,64],borderColor:'#993535',borderWidth:2,tension:0.3,pointRadius:3,pointBackgroundColor:'#993535'}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'Poppins',size:10},color:'#AAA'}},y:{min:55,max:95,grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'Poppins',size:10},color:'#AAA',callback:v=>v+'%'}}}}
+});
+new Chart(document.getElementById('mvmtChart'),{
+  type:'bar',
+  data:{
+    labels:['Arjun Mehta','Vikram Bose','Nisha Iyer','Karthik R.','Meera K.','Pradeep P.'],
+    datasets:[{label:'Rank Change',data:[14,8,6,-5,-9,-18],backgroundColor:d=>d.raw>=0?'rgba(61,96,40,0.5)':'rgba(153,53,53,0.5)',borderRadius:4}]
+  },
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'Poppins',size:10},color:'#AAA',callback:v=>(v>0?'+':'')+v}},y:{grid:{display:false},ticks:{font:{family:'Poppins',size:10},color:'#AAA'}}}}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+export const ROUTES = {
+  DASHBOARD: '/',
+  TEAMS: '/teams',
+  TEAMS_DETAIL: '/teams/:teamId',
+  TEAMS_EMPLOYEE: '/teams/:teamId/employee/:employeeId',
+  SCREENSHOTS: '/screenshots',
+  SCREENSHOTS_DETAIL: '/screenshots/:id',
+  ATTENDANCE: '/attendance',
+  ATTENDANCE_TIMELINE: '/attendance/timeline',
+  REPORTS: '/reports',
+  REPORTS_ATTENDANCE: '/reports/attendance',
+  REPORTS_BURNOUT: '/reports/burnout',
+  REPORTS_FOCUS: '/reports/focus',
+  REPORTS_LEADERBOARD: '/reports/leaderboard',
+  REPORTS_TOOLS: '/reports/tools',
+  REPORTS_WORKPULSE: '/reports/workpulse',
+  SETTINGS: '/settings',
+};

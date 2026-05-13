@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=1280"/>
+<title>Soniq — Attendance & Punctuality</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-width:1280px;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#9A9FAD,#B8BCC8,#A8AC98);}
+body{display:flex;justify-content:center;}
+.shell{width:1280px;background:linear-gradient(135deg,#EEECEA 0%,#ECEAE4 30%,#F5F0DA 65%,#F3EAA8 100%);min-height:100vh;position:relative;}
+.shell::before{content:'';position:absolute;top:0;left:0;right:0;height:180px;background:linear-gradient(180deg,rgba(255,255,255,.48),rgba(255,255,255,0));pointer-events:none;z-index:0;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 36px 0;position:relative;z-index:10;}
+.logo{border:1.5px solid rgba(255,255,255,.65);border-radius:50px;padding:7px 22px;font-size:15px;font-weight:700;color:#1A1A1A;background:rgba(255,255,255,.55);}
+.nc{display:flex;gap:2px;}.ni{padding:8px 14px;border-radius:50px;font-size:12px;font-weight:500;color:#555;cursor:pointer;}.ni.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;}
+.nr{display:flex;gap:10px;}.np{display:flex;align-items:center;gap:6px;padding:7px 13px;border:1.5px solid rgba(255,255,255,.65);border-radius:50px;background:rgba(255,255,255,.48);font-size:11px;font-weight:500;color:#555;}
+.nc2{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.65);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.48);}
+.page{padding:0 36px 36px;position:relative;z-index:2;}
+.ph{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 0;}
+.bc{font-size:10px;color:#BBBBAA;margin-bottom:4px;display:flex;align-items:center;gap:5px;}.bc a{color:#B8860B;font-weight:500;text-decoration:none;}
+.pt{font-size:26px;font-weight:800;color:#1A1A1A;letter-spacing:-.8px;}.psub{font-size:10.5px;color:#AAA;margin-top:2px;}
+.phr{display:flex;gap:8px;}
+.btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:50px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:'Poppins',sans-serif;border:none;}
+.bg{background:rgba(255,255,255,.62);border:1.5px solid rgba(255,255,255,.9);color:#555;}
+.by{background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;}
+.frow{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:nowrap;}
+.scope{display:flex;gap:2px;background:rgba(0,0,0,.06);border-radius:30px;padding:3px;}
+.stab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:500;color:#666;cursor:pointer;}.stab.on{background:#fff;color:#1A1A1A;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.dp{display:flex;align-items:center;height:34px;background:rgba(255,255,255,.75);border:1.5px solid rgba(255,255,255,.95);border-radius:50px;padding:0 5px 0 10px;gap:4px;flex-shrink:0;}
+.dpf{display:flex;flex-direction:column;padding:0 6px;}.dpft{font-size:7.5px;color:#CCCCAA;}.dpfv{font-size:10.5px;font-weight:600;color:#1A1A1A;}
+.dps{width:1px;height:14px;background:rgba(0,0,0,.08);}
+.dpa{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#F5C518,#E0AD00);display:flex;align-items:center;justify-content:center;}
+.chip{height:34px;padding:0 13px;border-radius:50px;display:flex;align-items:center;font-size:10.5px;font-weight:500;cursor:pointer;background:rgba(255,255,255,.62);border:1.5px solid rgba(255,255,255,.88);color:#666;white-space:nowrap;}
+.chip.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;border-color:#1A1A1A;}
+.srch{display:flex;align-items:center;gap:6px;height:34px;padding:0 13px;background:rgba(255,255,255,.75);border:1.5px solid rgba(255,255,255,.95);border-radius:50px;font-size:10.5px;color:#CCCCAA;margin-left:auto;min-width:180px;}
+.srch input{border:none;background:transparent;outline:none;font-size:10.5px;font-family:'Poppins',sans-serif;color:#333;width:100%;}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px;}
+.kpi{background:rgba(255,255,255,.84);border-radius:14px;border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 0 rgba(255,255,255,.95) inset;padding:12px 14px;}
+.kl{font-size:8px;color:#AAA;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}.kv{font-size:17px;font-weight:800;letter-spacing:-.5px;}.ks{font-size:9px;color:#888;margin-top:2px;}
+.card{background:rgba(255,255,255,.84);border-radius:20px;border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 18px rgba(0,0,0,.07);overflow:hidden;margin-bottom:12px;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(0,0,0,.05);}
+.ct{font-size:13px;font-weight:700;color:#1A1A1A;}.cs{font-size:9.5px;color:#AAA;margin-top:1px;}
+.cb{padding:18px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.rt{width:100%;border-collapse:collapse;}
+.rt th{font-size:9.5px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.6px;padding:10px 14px;text-align:left;background:rgba(0,0,0,.02);border-bottom:1px solid rgba(0,0,0,.05);white-space:nowrap;}
+.rt td{font-size:11px;color:#1A1A1A;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle;}
+.rt tr:last-child td{border-bottom:none;}
+.rt tr:hover td{background:rgba(245,197,24,.04);}
+.team-row td{background:rgba(245,197,24,.07);font-weight:700;font-size:10px;color:#B8860B;letter-spacing:.5px;}
+.b{display:inline-flex;padding:2px 9px;border-radius:8px;font-size:9px;font-weight:600;}
+.bg2{background:rgba(61,96,40,.1);color:#27500A;border:1px solid rgba(61,96,40,.2);}
+.br{background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.2);}
+.ba{background:rgba(245,197,24,.12);color:#633806;border:1px solid rgba(245,197,24,.25);}
+.bn{background:#F5F5F0;color:#888;}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.ec{display:flex;align-items:center;gap:8px;}
+.en{font-size:11px;font-weight:600;color:#1A1A1A;}.es{font-size:9px;color:#AAA;margin-top:1px;}
+.mini-tl{display:flex;height:8px;border-radius:4px;overflow:hidden;min-width:100px;}
+.streak-pips{display:flex;gap:2px;align-items:center;}
+.pip{width:8px;height:14px;border-radius:2px;}
+.pg{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid rgba(0,0,0,.05);}
+.pi{font-size:10.5px;color:#AAA;}.pn{display:flex;gap:4px;}
+.pb{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10.5px;cursor:pointer;background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.07);color:#555;}
+.pb.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;border:none;}
+.hr-bar{display:flex;gap:2px;align-items:center;}
+.hb{flex:1;border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav>
+    <div class="logo">Soniq</div>
+    <div class="nc"><div class="ni">Dashboard</div><div class="ni">Teams</div><div class="ni">Screenshots</div><div class="ni">Attendance</div><div class="ni on">Reports</div><div class="ni">Settings</div></div>
+    <div class="nr">
+      <div class="np"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Setting</div>
+      <div class="nc2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <div class="nc2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="ph">
+      <div>
+        <div class="bc"><a href="soniq_reports_hub.html">Reports</a><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Attendance & Punctuality</span></div>
+        <div class="pt">Attendance & Punctuality</div>
+        <div class="psub">Late arrivals, early exits, absence streaks, habitual offenders & pattern intelligence — beyond just present/absent</div>
+      </div>
+      <div class="phr">
+        <div class="btn bg"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</div>
+        <div class="btn by"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Excel</div>
+      </div>
+    </div>
+
+    <div class="frow">
+      <div class="scope">
+        <div class="stab on">Individual</div><div class="stab">By Team</div><div class="stab">By Dept</div>
+      </div>
+      <div class="dp">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#BBBBAA" stroke-width="2" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div class="dpf"><span class="dpft">From</span><span class="dpfv">Apr 01</span></div>
+        <div class="dps"></div>
+        <div class="dpa"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        <div class="dps"></div>
+        <div class="dpf"><span class="dpft">To</span><span class="dpfv">Apr 21</span></div>
+      </div>
+      <div class="chip on">All</div>
+      <div class="chip" style="background:rgba(153,53,53,.08);color:#791F1F;border-color:rgba(153,53,53,.2);">Late Arrivals</div>
+      <div class="chip" style="background:rgba(245,197,24,.1);color:#633806;border-color:rgba(245,197,24,.25);">Early Exits</div>
+      <div class="chip" style="background:rgba(61,96,40,.08);color:#27500A;border-color:rgba(61,96,40,.2);">Perfect Attendance</div>
+      <div class="chip" style="background:rgba(88,88,88,.08);color:#444;border-color:rgba(88,88,88,.18);">Absent Patterns</div>
+      <div class="srch"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search employee..."/></div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpis">
+      <div class="kpi"><div class="kl">Attendance Rate</div><div class="kv" style="color:#3D6028;">94.5%</div><div class="ks" style="color:#3D6028;">↑ 1.8% vs last period</div></div>
+      <div class="kpi"><div class="kl">Late Arrivals Today</div><div class="kv" style="color:#993535;">7</div><div class="ks">Avg delay 18 min</div></div>
+      <div class="kpi"><div class="kl">Early Exits (This Week)</div><div class="kv" style="color:#B8860B;">12</div><div class="ks">Left &gt;30 min before shift end</div></div>
+      <div class="kpi"><div class="kl">Avg Check-In Time</div><div class="kv">9:06 AM</div><div class="ks">Target: 9:00 AM</div></div>
+      <div class="kpi"><div class="kl">Avg Check-Out Time</div><div class="kv">6:22 PM</div><div class="ks">Shift ends 6:00 PM</div></div>
+      <div class="kpi"><div class="kl">Perfect Attendance</div><div class="kv" style="color:#3D6028;">38</div><div class="ks">Employees · Zero late/absent</div></div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="g3">
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div><div class="ct">Daily Attendance Rate</div><div class="cs">Present % across Apr 1–21</div></div></div>
+        <div class="cb">
+          <div style="position:relative;width:100%;height:180px;">
+            <canvas id="attChart" role="img" aria-label="Line chart showing daily attendance rate fluctuating between 88 and 100 percent over April.">Attendance trends slightly downward toward end of April with a dip mid-month.</canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div><div class="ct">Late Arrivals by Hour</div><div class="cs">How late employees arrive (distribution)</div></div></div>
+        <div class="cb">
+          <div style="position:relative;width:100%;height:180px;">
+            <canvas id="lateChart" role="img" aria-label="Bar chart showing late arrival distribution: most are 5-15 minutes late.">Most late arrivals are 5 to 15 minutes. Very few are over 30 minutes late.</canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div><div class="ct">Absence by Day of Week</div><div class="cs">Which days see the most no-shows</div></div></div>
+        <div class="cb">
+          <div style="position:relative;width:100%;height:180px;">
+            <canvas id="absChart" role="img" aria-label="Bar chart showing most absences on Monday and Friday.">Monday has most absences at 14, Friday second at 11. Mid-week absences are lowest.</canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Habitual Offenders panel -->
+    <div class="card">
+      <div class="ch">
+        <div><div class="ct">Habitual Patterns — Repeat Offenders</div><div class="cs">Employees with 3+ late arrivals or 2+ unexplained absences in this period</div></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="padding:4px 10px;background:#FEF0F0;border-radius:8px;font-size:9px;font-weight:600;color:#993535;border:1px solid rgba(153,53,53,.15);">Needs HR attention</div>
+        </div>
+      </div>
+      <table class="rt">
+        <thead><tr>
+          <th>Employee</th><th>Team</th>
+          <th>Late Arrivals</th><th>Avg Delay</th>
+          <th>Worst Day Pattern</th><th>Early Exits</th>
+          <th>Absences (period)</th><th>Absence Streak</th>
+          <th>Last 21 Days (attendance map)</th>
+          <th>Risk Flag</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="ec"><div class="av" style="background:rgba(153,53,53,.12);color:#993535;">PP</div><div><div class="en">Pradeep Pillai</div><div class="es">Sales · Exec</div></div></div></td>
+            <td>Sales</td>
+            <td style="color:#993535;font-weight:700;">11</td>
+            <td style="color:#993535;">34 min</td>
+            <td>Monday (8/11 lates)</td>
+            <td style="color:#B8860B;">4</td>
+            <td style="color:#993535;font-weight:700;">4</td>
+            <td style="color:#993535;">2 days consecutive</td>
+            <td>
+              <div class="streak-pips">
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#993535;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#993535;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#993535;"></div>
+                <div class="pip" style="background:#993535;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#993535;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#993535;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+              </div>
+            </td>
+            <td><span class="b br">High Risk</span></td>
+          </tr>
+          <tr>
+            <td><div class="ec"><div class="av" style="background:rgba(245,197,24,.15);color:#B8860B;">MK</div><div><div class="en">Meera Kapoor</div><div class="es">Design · UI</div></div></div></td>
+            <td>Design</td>
+            <td style="color:#B8860B;font-weight:700;">6</td>
+            <td style="color:#B8860B;">22 min</td>
+            <td>Friday (5/6 lates)</td>
+            <td style="color:#B8860B;">2</td>
+            <td>1</td>
+            <td>None</td>
+            <td>
+              <div class="streak-pips">
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#993535;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+              </div>
+            </td>
+            <td><span class="b ba">Watch</span></td>
+          </tr>
+          <tr>
+            <td><div class="ec"><div class="av" style="background:rgba(245,197,24,.15);color:#B8860B;">KR</div><div><div class="en">Karthik Rajan</div><div class="es">Eng · SWE</div></div></div></td>
+            <td>Engineering</td>
+            <td style="color:#B8860B;font-weight:700;">4</td>
+            <td>12 min</td>
+            <td>Monday (3/4 lates)</td>
+            <td>1</td>
+            <td>0</td>
+            <td>None</td>
+            <td>
+              <div class="streak-pips">
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:#E0E0D8;"></div>
+                <div class="pip" style="background:rgba(245,197,24,.7);"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+                <div class="pip" style="background:#3D6028;"></div>
+              </div>
+            </td>
+            <td><span class="b ba">Watch</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Full attendance table -->
+    <div class="card">
+      <div class="ch">
+        <div><div class="ct">Full Attendance Log — Day Wise</div><div class="cs">Apr 1–21 · 128 employees · Color-coded check-in status, timeline bars & streak data</div></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="display:flex;gap:8px;font-size:9px;color:#888;">
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:#3D6028;display:inline-block;"></span>On-time</span>
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:rgba(245,197,24,.7);display:inline-block;"></span>Late</span>
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:#993535;display:inline-block;"></span>Absent</span>
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:8px;height:8px;border-radius:2px;background:#E0E0D8;display:inline-block;"></span>Weekend</span>
+          </div>
+        </div>
+      </div>
+      <table class="rt">
+        <thead><tr>
+          <th>Date</th><th>Employee</th><th>Team</th>
+          <th>Status</th><th>Check-In</th><th>Delay</th>
+          <th>Check-Out</th><th>Early Exit</th>
+          <th>Total Hours</th>
+          <th>Day Activity Bar</th>
+          <th>Present Streak</th><th>Attend. Score</th>
+        </tr></thead>
+        <tbody>
+          <tr class="team-row"><td colspan="12">ENGINEERING TEAM (34 employees)</td></tr>
+          <tr>
+            <td style="color:#AAA;">Apr 21</td>
+            <td><div class="ec"><div class="av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">RS</div><div><div class="en">Ravi Shankar</div><div class="es">Sr. SWE</div></div></div></td>
+            <td>Engineering</td>
+            <td><span class="b bg2">On Time</span></td>
+            <td><b>09:01 AM</b></td>
+            <td style="color:#AAA;">+1 min</td>
+            <td>06:44 PM</td>
+            <td style="color:#AAA;">—</td>
+            <td><b>9h 43m</b></td>
+            <td>
+              <div class="mini-tl">
+                <div style="width:55%;background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>
+                <div style="width:8%;background:rgba(153,53,53,.4);"></div>
+                <div style="width:20%;background:rgba(245,197,24,.4);"></div>
+                <div style="width:17%;background:#E0E0D8;"></div>
+              </div>
+            </td>
+            <td style="color:#3D6028;font-weight:700;">21 days <span style="font-size:9px;background:rgba(61,96,40,.1);padding:1px 6px;border-radius:6px;">🔥</span></td>
+            <td style="color:#3D6028;font-weight:700;">100%</td>
+          </tr>
+          <tr>
+            <td style="color:#AAA;">Apr 21</td>
+            <td><div class="ec"><div class="av" style="background:#E8E0C8;color:#888;">AM</div><div><div class="en">Arjun Mehta</div><div class="es">SWE</div></div></div></td>
+            <td>Engineering</td>
+            <td><span class="b ba">Late</span></td>
+            <td><b style="color:#B8860B;">09:18 AM</b></td>
+            <td style="color:#B8860B;font-weight:600;">+18 min</td>
+            <td>06:58 PM</td>
+            <td style="color:#AAA;">—</td>
+            <td>9h 40m</td>
+            <td>
+              <div class="mini-tl">
+                <div style="width:48%;background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>
+                <div style="width:10%;background:rgba(153,53,53,.4);"></div>
+                <div style="width:24%;background:rgba(245,197,24,.35);"></div>
+                <div style="width:18%;background:#E0E0D8;"></div>
+              </div>
+            </td>
+            <td style="color:#B8860B;font-weight:600;">14 days</td>
+            <td style="color:#B8860B;font-weight:600;">90%</td>
+          </tr>
+          <tr>
+            <td style="color:#AAA;">Apr 21</td>
+            <td><div class="ec"><div class="av" style="background:#D8D8D0;color:#888;">KR</div><div><div class="en">Karthik Rajan</div><div class="es">SWE</div></div></div></td>
+            <td>Engineering</td>
+            <td><span class="b ba">Late</span></td>
+            <td><b style="color:#B8860B;">09:34 AM</b></td>
+            <td style="color:#993535;font-weight:600;">+34 min</td>
+            <td>05:52 PM</td>
+            <td style="color:#B8860B;">-8 min</td>
+            <td>8h 18m</td>
+            <td>
+              <div class="mini-tl">
+                <div style="width:40%;background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>
+                <div style="width:14%;background:rgba(153,53,53,.4);"></div>
+                <div style="width:28%;background:rgba(245,197,24,.35);"></div>
+                <div style="width:18%;background:#E0E0D8;"></div>
+              </div>
+            </td>
+            <td>8 days</td>
+            <td style="color:#B8860B;font-weight:600;">76%</td>
+          </tr>
+          <tr class="team-row"><td colspan="12">SALES TEAM (24 employees)</td></tr>
+          <tr>
+            <td style="color:#AAA;">Apr 21</td>
+            <td><div class="ec"><div class="av" style="background:rgba(153,53,53,.12);color:#993535;">PP</div><div><div class="en">Pradeep Pillai</div><div class="es">Sales Exec.</div></div></div></td>
+            <td>Sales</td>
+            <td><span class="b br">Absent</span></td>
+            <td style="color:#CCC;">—</td>
+            <td style="color:#CCC;">—</td>
+            <td style="color:#CCC;">—</td>
+            <td style="color:#CCC;">—</td>
+            <td style="color:#CCC;">—</td>
+            <td>
+              <div class="mini-tl" style="background:#F5F5F0;">
+              </div>
+            </td>
+            <td style="color:#993535;font-weight:700;">0 days</td>
+            <td style="color:#993535;font-weight:700;">62%</td>
+          </tr>
+          <tr>
+            <td style="color:#AAA;">Apr 21</td>
+            <td><div class="ec"><div class="av" style="background:#E8E0C8;color:#888;">SN</div><div><div class="en">Sneha Nair</div><div class="es">Sales Exec.</div></div></div></td>
+            <td>Sales</td>
+            <td><span class="b bg2">On Time</span></td>
+            <td><b>09:04 AM</b></td>
+            <td style="color:#AAA;">+4 min</td>
+            <td>05:52 PM</td>
+            <td style="color:#B8860B;">-8 min early</td>
+            <td>8h 48m</td>
+            <td>
+              <div class="mini-tl">
+                <div style="width:44%;background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>
+                <div style="width:12%;background:rgba(153,53,53,.4);"></div>
+                <div style="width:22%;background:rgba(245,197,24,.35);"></div>
+                <div style="width:22%;background:#E0E0D8;"></div>
+              </div>
+            </td>
+            <td style="color:#3D6028;font-weight:600;">7 days</td>
+            <td>88%</td>
+          </tr>
+          <tr class="team-row"><td colspan="12">DESIGN TEAM (18 employees)</td></tr>
+          <tr>
+            <td style="color:#AAA;">Apr 21</td>
+            <td><div class="ec"><div class="av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">PK</div><div><div class="en">Priya Krishnan</div><div class="es">Sr. Designer</div></div></div></td>
+            <td>Design</td>
+            <td><span class="b bg2">On Time</span></td>
+            <td><b>09:02 AM</b></td>
+            <td style="color:#AAA;">+2 min</td>
+            <td>06:22 PM</td>
+            <td style="color:#AAA;">—</td>
+            <td>9h 20m</td>
+            <td>
+              <div class="mini-tl">
+                <div style="width:50%;background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>
+                <div style="width:9%;background:rgba(153,53,53,.4);"></div>
+                <div style="width:22%;background:rgba(245,197,24,.35);"></div>
+                <div style="width:19%;background:#E0E0D8;"></div>
+              </div>
+            </td>
+            <td style="color:#3D6028;font-weight:700;">18 days <span style="font-size:9px;background:rgba(61,96,40,.1);padding:1px 6px;border-radius:6px;">🔥</span></td>
+            <td style="color:#3D6028;font-weight:700;">97%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pg">
+        <div class="pi">Showing 6 of 2,688 rows · 25 per page</div>
+        <div class="pn">
+          <div class="pb">‹</div><div class="pb on">1</div><div class="pb">2</div><div class="pb">3</div><div class="pb">…</div><div class="pb">108</div><div class="pb">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pattern Insight Cards -->
+    <div class="card">
+      <div class="ch"><div><div class="ct">Attendance Intelligence — Pattern Insights</div><div class="cs">Auto-detected patterns from this period's data</div></div></div>
+      <div class="cb" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div style="padding:12px 14px;background:#FEF0F0;border-radius:12px;border:1px solid rgba(153,53,53,.12);">
+          <div style="font-size:10px;font-weight:700;color:#993535;margin-bottom:5px;">Monday Avoidance Pattern</div>
+          <div style="font-size:9.5px;color:#888;line-height:1.6;">14 of 21 recorded absences this month occurred on Mondays. 3 employees have been absent every Monday. This is a strong recurring pattern requiring HR follow-up.</div>
+        </div>
+        <div style="padding:12px 14px;background:#FFFBE8;border-radius:12px;border:1px solid rgba(245,197,24,.2);">
+          <div style="font-size:10px;font-weight:700;color:#B8860B;margin-bottom:5px;">Friday Afternoon Early Exits</div>
+          <div style="font-size:9.5px;color:#888;line-height:1.6;">12 employees consistently log out before 5 PM on Fridays. The Sales team accounts for 7 of these. Average early departure is 38 minutes before shift end.</div>
+        </div>
+        <div style="padding:12px 14px;background:#E6F1FB;border-radius:12px;border:1px solid rgba(55,138,221,.15);">
+          <div style="font-size:10px;font-weight:700;color:#0C447C;margin-bottom:5px;">Post-Holiday Absence Spike</div>
+          <div style="font-size:9.5px;color:#888;line-height:1.6;">Apr 15 (day after long weekend) saw 9.4% absence rate — highest this month. Historically post-holiday Mondays see 2–3× normal absence rate.</div>
+        </div>
+        <div style="padding:12px 14px;background:#F0F9F4;border-radius:12px;border:1px solid rgba(61,96,40,.14);">
+          <div style="font-size:10px;font-weight:700;color:#27500A;margin-bottom:5px;">Engineering Perfect Attendance</div>
+          <div style="font-size:9.5px;color:#888;line-height:1.6;">22 of 34 Engineering employees have zero absences and zero late arrivals this month. This team is the strongest attendance performer with a 98.4% rate.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+new Chart(document.getElementById('attChart'),{
+  type:'line',
+  data:{
+    labels:['Apr1','3','5','7','9','11','13','15','17','19','21'],
+    datasets:[{label:'Attendance %',data:[96,98,95,100,94,97,96,88,95,93,94],borderColor:'#3D6028',backgroundColor:'rgba(61,96,40,0.08)',borderWidth:2.5,fill:true,tension:0.4,pointBackgroundColor:'#3D6028',pointRadius:3.5}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'Poppins',size:9.5},color:'#AAA'}},y:{min:80,max:100,grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'Poppins',size:9.5},color:'#AAA',callback:v=>v+'%'}}}}
+});
+new Chart(document.getElementById('lateChart'),{
+  type:'bar',
+  data:{
+    labels:['1–5m','6–10m','11–15m','16–20m','21–30m','30–45m','>45m'],
+    datasets:[{label:'Employees',data:[12,28,22,14,8,4,2],backgroundColor:['rgba(245,197,24,0.3)','rgba(245,197,24,0.5)','rgba(245,197,24,0.7)','rgba(184,134,11,0.6)','rgba(153,53,53,0.4)','rgba(153,53,53,0.6)','rgba(153,53,53,0.8)'],borderRadius:4}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{family:'Poppins',size:9},color:'#AAA'}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'Poppins',size:9},color:'#AAA'}}}}
+});
+new Chart(document.getElementById('absChart'),{
+  type:'bar',
+  data:{
+    labels:['Mon','Tue','Wed','Thu','Fri'],
+    datasets:[{label:'Absences',data:[14,4,3,5,11],backgroundColor:['rgba(153,53,53,0.6)','rgba(61,96,40,0.4)','rgba(61,96,40,0.4)','rgba(61,96,40,0.4)','rgba(153,53,53,0.45)'],borderRadius:4}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{family:'Poppins',size:10},color:'#AAA'}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'Poppins',size:9},color:'#AAA'}}}}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+@import "tailwindcss";
+
+@theme {
+  --font-poppins: 'Poppins', sans-serif;
+
+  /* Font sizes — exact pixel values from the HTML design */
+  --text-2xs: 9px;
+  --text-2xs-plus: 9.5px;
+  --text-xs: 10px;
+  --text-xs-plus: 10.5px;
+  --text-sm: 13px;
+  --text-sm-plus: 12px;
+  --text-base: 12.5px;
+  --text-md: 13px;
+  --text-lg: 14px;
+  --text-xl: 15px;
+  --text-2xl: 18px;
+  --text-3xl: 20px;
+  --text-4xl: 26px;
+  --text-5xl: 30px;
+  --text-6xl: 34px;
+  --text-7xl: 42px;
+
+  /* Primary palette */
+  --color-primary: #0F6E56;
+  --color-primary-light: #1D9E75;
+  --color-primary-dark: #0A5040;
+  --color-primary-darker: #162E24;
+
+  /* Surface */
+  --color-surface-shell: #ECF0EE;
+  --color-surface-muted: #F0F0EC;
+  --color-surface-subtle: #F5F5F0;
+
+  /* Ink / Dark */
+  --color-ink: #1A1A1A;
+  --color-ink-dark: #111111;
+  --color-ink-mid: #2D2D2D;
+  --color-ink-blend: #1D2D28;
+
+  /* Text */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #555555;
+  --color-text-muted: #888888;
+  --color-text-light: #AAAAAA;
+  --color-text-lighter: #BBBBBB;
+
+  /* Neutral */
+  --color-neutral-warm: #D8D8D0;
+  --color-neutral-cool: #C8C8C0;
+  --color-neutral-pale: #E5E5DC;
+  --color-neutral-bone: #B8B8B0;
+  --color-neutral-cream: #E8E0C8;
+  --color-neutral-sand: #D8CEB0;
+
+  /* Status */
+  --color-status-success: #1D9E75;
+  --color-status-warning: #F5C518;
+  --color-status-danger: #E53E3E;
+  --color-status-info: #3B82F6;
+
+  /* Radius */
+  --radius-shell: 28px;
+  --radius-card: 18px;
+  --radius-tile: 12px;
+  --radius-pill: 50px;
+
+  /* Z-index */
+  --z-shell: 0;
+  --z-content: 2;
+  --z-nav: 10;
+  --z-overlay: 20;
+  --z-modal: 30;
+  --z-toast: 40;
+
+  /* Animation */
+  --animate-pulse: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* ── Base ── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ── Component Classes ── */
+@layer components {
+  .page-bg {
+    background: linear-gradient(135deg, #E8EDEB 0%, #ECF0EE 30%, #F2F5F3 65%, #EAF2EE 100%);
+    min-height: 100vh;
+  }
+
+  .shell {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #E8EDEB 0%, #ECF0EE 30%, #F2F5F3 65%, #EAF2EE 100%);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .shell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 180px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glossy-card {
+    background: rgba(255, 255, 255, 0.82);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow:
+      0 2px 0 rgba(255, 255, 255, 0.95) inset,
+      0 4px 16px rgba(0, 0, 0, 0.07);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+  }
+
+  .dark-card {
+    background: linear-gradient(160deg, #162E24 0%, #0F6E56 60%, #0A5040 100%);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.06) inset,
+      0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .task-dark-card {
+    background: linear-gradient(160deg, #162E24 0%, #0F6E56 60%, #0A5040 100%);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .glass-pill {
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  }
+
+  .nav-active-pill {
+    background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 100%);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.25),
+      0 1px 0 rgba(255, 255, 255, 0.1) inset;
+  }
+
+  .dark-pill {
+    background: linear-gradient(135deg, #111111, #1D2D28);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.2),
+      0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  }
+
+  .primary-pill {
+    background: linear-gradient(135deg, #1D9E75, #0F6E56);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.15),
+      0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  }
+
+  .striped-bar {
+    background: repeating-linear-gradient(
+      45deg,
+      #D8D8D0,
+      #D8D8D0 4px,
+      #E5E5DC 4px,
+      #E5E5DC 10px
+    );
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  }
+
+  .outline-pill {
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  }
+
+  .primary-badge {
+    background: linear-gradient(135deg, #1D9E75, #0F6E56);
+    box-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.15),
+      0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  }
+
+  .bar-dark {
+    background: linear-gradient(180deg, #2D2D2D, #1A1A1A);
+  }
+
+  .bar-gray {
+    background: linear-gradient(180deg, #D8D8D0, #C8C8C0);
+  }
+
+  .bar-primary {
+    background: linear-gradient(180deg, #1D9E75, #0F6E56);
+  }
+
+  .bar-tooltip {
+    background: linear-gradient(135deg, #1D9E75, #0F6E56);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .pblock-primary {
+    background: linear-gradient(135deg, #1D9E75, #0F6E56);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.12),
+      0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  }
+
+  .pblock-dark {
+    background: linear-gradient(135deg, #252525, #1A1A1A);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.2),
+      0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  }
+
+  .pblock-gray {
+    background: linear-gradient(135deg, #C8C8C0, #B8B8B0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .check-done {
+    background: linear-gradient(135deg, #1D9E75, #0F6E56);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .thumb-sheen::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 8px 8px 0 0;
+  }
+
+  /* Heatmap cell variants */
+  .hmap-excellent {
+    background: linear-gradient(135deg, #1D9E75, #0F6E56);
+  }
+
+  .hmap-good {
+    background: linear-gradient(135deg, #2D2D2D, #1A1A1A);
+  }
+
+  .hmap-avg {
+    background: linear-gradient(135deg, #888, #666);
+  }
+
+  .hmap-low {
+    background: linear-gradient(135deg, #D8D8D0, #C0C0B8);
+  }
+}

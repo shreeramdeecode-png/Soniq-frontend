@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=1280"/>
+<title>Soniq — Tool Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}html,body{width:100%;min-width:1280px;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#9A9FAD,#B8BCC8,#A8AC98);}body{display:flex;justify-content:center;}
+.shell{width:1280px;min-width:1280px;background:linear-gradient(135deg,#EEECEA 0%,#ECEAE4 30%,#F5F0DA 65%,#F3EAA8 100%);min-height:100vh;position:relative;}
+.shell::before{content:'';position:absolute;top:0;left:0;right:0;height:180px;background:linear-gradient(180deg,rgba(255,255,255,.48),rgba(255,255,255,0));pointer-events:none;z-index:0;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 36px 0;position:relative;z-index:10;}
+.logo{border:1.5px solid rgba(255,255,255,.65);border-radius:50px;padding:7px 22px;font-size:15px;font-weight:700;color:#1A1A1A;background:rgba(255,255,255,.55);}
+.nc{display:flex;gap:2px;}.ni{padding:8px 14px;border-radius:50px;font-size:12px;font-weight:500;color:#555;cursor:pointer;}.ni.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;}
+.nr{display:flex;gap:10px;}.np{display:flex;align-items:center;gap:6px;padding:7px 13px;border:1.5px solid rgba(255,255,255,.65);border-radius:50px;background:rgba(255,255,255,.48);font-size:11px;font-weight:500;color:#555;}
+.nc2{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.65);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.48);}
+.content{padding:0 36px 36px;position:relative;z-index:2;}
+.ph{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 0;}
+.bc{font-size:10px;color:#BBBBAA;margin-bottom:4px;display:flex;align-items:center;gap:5px;}.bc a{color:#B8860B;font-weight:500;text-decoration:none;}
+.pt{font-size:26px;font-weight:800;color:#1A1A1A;letter-spacing:-.8px;}.psub{font-size:10.5px;color:#AAA;margin-top:2px;}
+.phr{display:flex;gap:8px;}
+.btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:50px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:'Poppins',sans-serif;border:none;}
+.btn-g{background:rgba(255,255,255,.62);border:1.5px solid rgba(255,255,255,.9);color:#555;}.btn-y{background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;}
+.frow{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
+.scope{display:flex;gap:2px;background:rgba(0,0,0,.06);border-radius:30px;padding:3px;}
+.stab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:500;color:#666;cursor:pointer;}.stab.on{background:#fff;color:#1A1A1A;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.dp{display:flex;align-items:center;height:34px;background:rgba(255,255,255,.75);border:1.5px solid rgba(255,255,255,.95);border-radius:50px;padding:0 5px 0 10px;gap:4px;}
+.dpf{display:flex;flex-direction:column;padding:0 6px;}.dpft{font-size:7.5px;color:#CCCCAA;line-height:1.1;}.dpfv{font-size:10.5px;font-weight:600;color:#1A1A1A;}
+.dps{width:1px;height:14px;background:rgba(0,0,0,.08);}
+.dpa{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#F5C518,#E0AD00);display:flex;align-items:center;justify-content:center;}
+.chip{height:34px;padding:0 13px;border-radius:50px;display:flex;align-items:center;font-size:10.5px;font-weight:500;cursor:pointer;white-space:nowrap;background:rgba(255,255,255,.62);border:1.5px solid rgba(255,255,255,.88);color:#666;}
+.chip.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;border-color:#1A1A1A;}
+.srch{display:flex;align-items:center;gap:6px;height:34px;padding:0 13px;background:rgba(255,255,255,.75);border:1.5px solid rgba(255,255,255,.95);border-radius:50px;font-size:10.5px;color:#CCCCAA;margin-left:auto;min-width:170px;}
+.srch input{border:none;background:transparent;outline:none;font-size:10.5px;font-family:'Poppins',sans-serif;color:#333;width:100%;}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+.kpi{background:rgba(255,255,255,.84);border-radius:14px;border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 0 rgba(255,255,255,.95) inset;padding:12px 14px;}
+.kl{font-size:8.5px;color:#AAA;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}.kv{font-size:17px;font-weight:800;color:#1A1A1A;letter-spacing:-.5px;}.ks{font-size:9px;color:#888;margin-top:2px;}
+.card{background:rgba(255,255,255,.84);border-radius:20px;border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 18px rgba(0,0,0,.07);overflow:hidden;margin-bottom:12px;}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(0,0,0,.05);}
+.card-title{font-size:13px;font-weight:700;color:#1A1A1A;}.card-sub{font-size:9.5px;color:#AAA;margin-top:1px;}
+.card-body{padding:18px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.rtable{width:100%;border-collapse:collapse;}
+.rtable th{font-size:9.5px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.7px;padding:10px 14px;text-align:left;background:rgba(0,0,0,.02);border-bottom:1px solid rgba(0,0,0,.05);}
+.rtable td{font-size:11px;color:#1A1A1A;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle;}
+.rtable tr:last-child td{border-bottom:none;}
+.rtable tr:hover td{background:rgba(8,80,65,.03);}
+.badge{display:inline-flex;padding:2px 9px;border-radius:8px;font-size:9px;font-weight:600;}
+.badge-p{background:rgba(8,80,65,.1);color:#085041;border:1px solid rgba(8,80,65,.2);}
+.badge-n{background:#F5F5F0;color:#888;}
+.badge-r{background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.2);}
+.badge-w{background:rgba(245,197,24,.1);color:#633806;border:1px solid rgba(245,197,24,.25);}
+.app-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.app-cell{display:flex;align-items:center;gap:8px;}
+.bar-cell{display:flex;align-items:center;gap:6px;}
+.bc-bar{flex:1;height:6px;background:#F0F0E8;border-radius:3px;overflow:hidden;}
+.bc-fill{height:100%;border-radius:3px;}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid rgba(0,0,0,.05);}
+.pag-info{font-size:10.5px;color:#AAA;}.pag-nav{display:flex;gap:4px;}
+.pag-btn{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10.5px;cursor:pointer;background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.07);color:#555;}
+.pag-btn.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;border:none;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav>
+    <div class="logo">Soniq</div>
+    <div class="nc"><div class="ni">Dashboard</div><div class="ni">Teams</div><div class="ni">Screenshots</div><div class="ni">Attendance</div><div class="ni on">Reports</div><div class="ni">Settings</div></div>
+    <div class="nr"><div class="np"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Setting</div><div class="nc2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><div class="nc2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div>
+  </nav>
+  <div class="content">
+    <div class="ph">
+      <div>
+        <div class="bc"><a href="soniq_reports_hub.html">Reports</a><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Tool Intelligence</span></div>
+        <div class="pt">Tool Intelligence</div>
+        <div class="psub">Which tools drive output vs. drain time? Adoption, ROI, underused seats & cost analysis</div>
+      </div>
+      <div class="phr">
+        <div class="btn btn-g"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</div>
+        <div class="btn btn-y"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Excel</div>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="scope"><div class="stab on">All Tools</div><div class="stab">Apps</div><div class="stab">Websites</div><div class="stab">Underused</div></div>
+      <div class="dp"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#BBBBAA" stroke-width="2" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/></svg><div class="dpf"><span class="dpft">From</span><span class="dpfv">Apr 01</span></div><div class="dps"></div><div class="dpa"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div><div class="dps"></div><div class="dpf"><span class="dpft">To</span><span class="dpfv">Apr 21</span></div></div>
+      <div class="chip on">Productive</div>
+      <div class="chip">Neutral</div>
+      <div class="chip">Unproductive</div>
+      <div class="srch"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search tool or app..."/></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="kl">Tools Tracked</div><div class="kv">184</div><div class="ks">Across all employees</div></div>
+      <div class="kpi"><div class="kl">Top Productive App</div><div class="kv" style="color:#085041;">VS Code</div><div class="ks">4h 18m avg/user/day</div></div>
+      <div class="kpi"><div class="kl">Top Time Waster</div><div class="kv" style="color:#993535;">YouTube</div><div class="ks">48m avg/user/day</div></div>
+      <div class="kpi"><div class="kl">Underused Seats</div><div class="kv" style="color:#B8860B;">12</div><div class="ks">Licensed tools barely used</div></div>
+      <div class="kpi"><div class="kl">Est. Wasted Seat Cost</div><div class="kv" style="color:#993535;">₹18k</div><div class="ks">Per month · underused licenses</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-head"><div><div class="card-title">Top Tools by Productive Time</div><div class="card-sub">Avg hrs/user/day across Apr 1–21</div></div></div>
+        <div class="card-body">
+          <div style="position:relative;width:100%;height:220px;">
+            <canvas id="topToolsChart" role="img" aria-label="Horizontal bar chart of top tools by productive time">VS Code leads at 4.3 hours, followed by Figma at 3.1 hours, GitHub at 2.2 hours, Jira at 1.8 hours, Slack at 1.4 hours.</canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-head"><div><div class="card-title">Productive vs Unproductive Tool Split</div><div class="card-sub">% of total tracked time · all employees</div></div></div>
+        <div class="card-body">
+          <div style="position:relative;width:100%;height:220px;">
+            <canvas id="splitChart" role="img" aria-label="Doughnut chart showing 61% productive tools, 24% neutral tools, 15% unproductive tools">61% productive tools, 24% neutral, 15% unproductive.</canvas>
+          </div>
+          <div style="display:flex;gap:14px;margin-top:10px;font-size:10px;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#085041;display:inline-block;"></span>Productive 61%</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#888;display:inline-block;"></span>Neutral 24%</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#993535;display:inline-block;"></span>Unproductive 15%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Full Tool Intelligence Table</div><div class="card-sub">All tracked apps and websites with adoption %, avg usage time, ROI classification, and user count</div></div></div>
+      <table class="rtable">
+        <thead><tr>
+          <th>Tool / App</th><th>Category</th><th>Type</th><th>Productivity</th>
+          <th>Users (of 128)</th><th>Adoption %</th>
+          <th>Avg Time/User/Day</th><th>Total Org Hours/Day</th>
+          <th>ROI Signal</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="app-cell"><div class="app-icon" style="background:#1E1E1E;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(245,197,24,0.8)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#1A1A1A;">VS Code</div><div style="font-size:9px;color:#AAA;">Dev Tools</div></div></div></td>
+            <td>Development</td><td><span class="badge" style="background:#F5F5F0;color:#888;">Application</span></td>
+            <td><span class="badge badge-p">Productive</span></td>
+            <td>74</td>
+            <td><div class="bar-cell"><div class="bc-bar"><div class="bc-fill" style="width:58%;background:#085041;"></div></div><span style="font-size:10px;font-weight:600;color:#085041;width:32px;">58%</span></div></td>
+            <td><b>4h 18m</b></td><td>318h</td>
+            <td><span style="font-size:10px;font-weight:600;color:#085041;">High ROI</span></td>
+          </tr>
+          <tr>
+            <td><div class="app-cell"><div class="app-icon" style="background:#F24E1E;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#1A1A1A;">Figma</div><div style="font-size:9px;color:#AAA;">Design Tools</div></div></div></td>
+            <td>Design</td><td><span class="badge" style="background:#F5F5F0;color:#888;">Application</span></td>
+            <td><span class="badge badge-p">Productive</span></td>
+            <td>22</td>
+            <td><div class="bar-cell"><div class="bc-bar"><div class="bc-fill" style="width:17%;background:#085041;"></div></div><span style="font-size:10px;font-weight:600;color:#085041;width:32px;">17%</span></div></td>
+            <td><b>3h 08m</b></td><td>68h</td>
+            <td><span style="font-size:10px;font-weight:600;color:#085041;">High ROI</span></td>
+          </tr>
+          <tr>
+            <td><div class="app-cell"><div class="app-icon" style="background:#4A154B;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#1A1A1A;">Slack</div><div style="font-size:9px;color:#AAA;">Communication</div></div></div></td>
+            <td>Communication</td><td><span class="badge" style="background:#F5F5F0;color:#888;">Application</span></td>
+            <td><span class="badge badge-n">Neutral</span></td>
+            <td>128</td>
+            <td><div class="bar-cell"><div class="bc-bar"><div class="bc-fill" style="width:100%;background:#B8860B;"></div></div><span style="font-size:10px;font-weight:600;color:#B8860B;width:36px;">100%</span></div></td>
+            <td>1h 24m</td><td>179h</td>
+            <td><span style="font-size:10px;font-weight:600;color:#B8860B;">Monitor usage</span></td>
+          </tr>
+          <tr>
+            <td><div class="app-cell"><div class="app-icon" style="background:#FF0000;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#1A1A1A;">YouTube</div><div style="font-size:9px;color:#AAA;">Entertainment</div></div></div></td>
+            <td>Entertainment</td><td><span class="badge" style="background:#F5F5F0;color:#888;">Website</span></td>
+            <td><span class="badge badge-r">Unproductive</span></td>
+            <td>88</td>
+            <td><div class="bar-cell"><div class="bc-bar"><div class="bc-fill" style="width:69%;background:#993535;"></div></div><span style="font-size:10px;font-weight:600;color:#993535;width:36px;">69%</span></div></td>
+            <td style="color:#993535;"><b>48m</b></td><td>70h</td>
+            <td><span style="font-size:10px;font-weight:600;color:#993535;">Consider blocking</span></td>
+          </tr>
+          <tr>
+            <td><div class="app-cell"><div class="app-icon" style="background:#0052CC;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#1A1A1A;">Jira</div><div style="font-size:9px;color:#AAA;">Project Mgmt</div></div></div></td>
+            <td>Project Mgmt</td><td><span class="badge" style="background:#F5F5F0;color:#888;">Website</span></td>
+            <td><span class="badge badge-p">Productive</span></td>
+            <td>38</td>
+            <td><div class="bar-cell"><div class="bc-bar"><div class="bc-fill" style="width:30%;background:#085041;"></div></div><span style="font-size:10px;font-weight:600;color:#085041;width:32px;">30%</span></div></td>
+            <td>1h 44m</td><td>66h</td>
+            <td><span style="font-size:10px;font-weight:600;color:#085041;">High ROI</span></td>
+          </tr>
+          <tr style="background:rgba(245,197,24,.04);">
+            <td><div class="app-cell"><div class="app-icon" style="background:#1A1A1A;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(245,197,24,.5)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/></svg></div><div><div style="font-size:11px;font-weight:600;color:#1A1A1A;">Notion <span style="font-size:8.5px;font-weight:400;color:#B8860B;">⚠ Underused</span></div><div style="font-size:9px;color:#AAA;">Knowledge Mgmt</div></div></div></td>
+            <td>Documentation</td><td><span class="badge" style="background:#F5F5F0;color:#888;">Application</span></td>
+            <td><span class="badge badge-p">Productive</span></td>
+            <td style="color:#B8860B;"><b>6</b></td>
+            <td><div class="bar-cell"><div class="bc-bar"><div class="bc-fill" style="width:5%;background:#B8860B;"></div></div><span style="font-size:10px;font-weight:600;color:#B8860B;width:32px;">5%</span></div></td>
+            <td style="color:#B8860B;">12m</td><td style="color:#B8860B;">1.2h</td>
+            <td><span style="font-size:10px;font-weight:600;color:#B8860B;">Licensed · Low adoption</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination"><div class="pag-info">Showing 6 of 184 tools</div><div class="pag-nav"><div class="pag-btn">‹</div><div class="pag-btn on">1</div><div class="pag-btn">2</div><div class="pag-btn">…</div><div class="pag-btn">8</div><div class="pag-btn">›</div></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Underused Licensed Tools — Cost Alert</div><div class="card-sub">Tools where your org pays for seats but adoption is below 15%</div></div></div>
+      <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div style="padding:12px 14px;background:rgba(245,197,24,.08);border-radius:12px;border:1px solid rgba(245,197,24,.2);">
+          <div style="font-size:11px;font-weight:700;color:#1A1A1A;margin-bottom:3px;">Notion</div>
+          <div style="font-size:9.5px;color:#888;margin-bottom:6px;">6/128 users · 5% adoption</div>
+          <div style="font-size:16px;font-weight:800;color:#B8860B;">₹4,800/mo</div>
+          <div style="font-size:9px;color:#AAA;margin-top:2px;">Potentially wasted</div>
+        </div>
+        <div style="padding:12px 14px;background:rgba(245,197,24,.08);border-radius:12px;border:1px solid rgba(245,197,24,.2);">
+          <div style="font-size:11px;font-weight:700;color:#1A1A1A;margin-bottom:3px;">Zoom (Pro)</div>
+          <div style="font-size:9.5px;color:#888;margin-bottom:6px;">14/128 users · 11% adoption</div>
+          <div style="font-size:16px;font-weight:800;color:#B8860B;">₹6,200/mo</div>
+          <div style="font-size:9px;color:#AAA;margin-top:2px;">Most use Google Meet instead</div>
+        </div>
+        <div style="padding:12px 14px;background:rgba(245,197,24,.08);border-radius:12px;border:1px solid rgba(245,197,24,.2);">
+          <div style="font-size:11px;font-weight:700;color:#1A1A1A;margin-bottom:3px;">Adobe CC</div>
+          <div style="font-size:9.5px;color:#888;margin-bottom:6px;">8/18 Design users · 44%</div>
+          <div style="font-size:16px;font-weight:800;color:#B8860B;">₹4,400/mo</div>
+          <div style="font-size:9px;color:#AAA;margin-top:2px;">Half the team uses Figma only</div>
+        </div>
+        <div style="padding:12px 14px;background:rgba(245,197,24,.08);border-radius:12px;border:1px solid rgba(245,197,24,.2);">
+          <div style="font-size:11px;font-weight:700;color:#1A1A1A;margin-bottom:3px;">Miro</div>
+          <div style="font-size:9.5px;color:#888;margin-bottom:6px;">4/128 users · 3% adoption</div>
+          <div style="font-size:16px;font-weight:800;color:#B8860B;">₹2,800/mo</div>
+          <div style="font-size:9px;color:#AAA;margin-top:2px;">Rarely opened after Q1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+new Chart(document.getElementById('topToolsChart'),{type:'bar',data:{labels:['VS Code','Figma','GitHub','Jira','Slack','Notion','Chrome'],datasets:[{label:'Avg hrs/user/day',data:[4.3,3.1,2.2,1.8,1.4,0.2,1.1],backgroundColor:['#085041','#085041','#0F6E56','#0F6E56','#B8860B','#993535','#B8860B'],borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'Poppins',size:9},color:'#AAA',callback:v=>v+'h'}},y:{grid:{display:false},ticks:{font:{family:'Poppins',size:10},color:'#AAA'}}}}});
+new Chart(document.getElementById('splitChart'),{type:'doughnut',data:{labels:['Productive','Neutral','Unproductive'],datasets:[{data:[61,24,15],backgroundColor:['#085041','#888780','#993535'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'65%'}});
+</script>
+</body>
+</html>

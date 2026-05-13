@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#9A9FAD 0%,#B8BCC8 50%,#A8AC98 100%);display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:24px;}
+
+.shell{width:1180px;background:linear-gradient(135deg,#EEECEA 0%,#ECEAE4 30%,#F5F0DA 65%,#F3EAA8 100%);border-radius:28px;overflow:hidden;position:relative;box-shadow:0 2px 0 rgba(255,255,255,0.8) inset,0 20px 60px rgba(0,0,0,0.18);}
+.shell::before{content:'';position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0) 100%);pointer-events:none;z-index:0;border-radius:28px 28px 0 0;}
+
+/* NAV */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px 0;position:relative;z-index:10;}
+.logo-pill{border:1.5px solid rgba(255,255,255,0.6);border-radius:50px;padding:7px 20px;font-size:15px;font-weight:600;color:#1A1A1A;background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);}
+.nav-center{display:flex;align-items:center;gap:2px;}
+.nav-item{padding:8px 14px;border-radius:50px;font-size:12px;font-weight:500;color:#555;cursor:pointer;}
+.nav-item.active{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.25);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-icon-wrap{display:flex;align-items:center;gap:6px;padding:7px 13px;border:1.5px solid rgba(255,255,255,0.6);border-radius:50px;background:rgba(255,255,255,0.45);cursor:pointer;font-size:11.5px;font-weight:500;color:#444;}
+.nav-circle{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.45);}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 32px 12px;position:relative;z-index:2;}
+.ph-left .breadcrumb{font-size:10.5px;color:#AAA;margin-bottom:3px;}
+.ph-left .page-title{font-size:26px;font-weight:700;color:#1A1A1A;letter-spacing:-0.8px;}
+.ph-right{display:flex;align-items:center;gap:8px;}
+.btn-ghost{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:50px;background:rgba(255,255,255,0.65);border:1.5px solid rgba(255,255,255,0.9);font-size:11.5px;font-weight:500;color:#555;cursor:pointer;}
+.btn-dark{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:50px;background:linear-gradient(135deg,#1A1A1A,#2D2D2D);font-size:11.5px;font-weight:600;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.btn-yellow{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:50px;background:linear-gradient(135deg,#F5C518,#E0AD00);font-size:11.5px;font-weight:600;color:#1A1A1A;cursor:pointer;}
+
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 32px 14px;}
+.stat-card{background:rgba(255,255,255,0.82);border-radius:14px;border:1px solid rgba(255,255,255,0.9);box-shadow:0 2px 0 rgba(255,255,255,0.95) inset,0 3px 12px rgba(0,0,0,0.06);padding:14px 16px;}
+.sc-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;}
+.sc-val{font-size:22px;font-weight:700;color:#1A1A1A;letter-spacing:-0.8px;line-height:1;}
+.sc-label{font-size:10px;color:#AAA;margin-top:3px;}
+.sc-change{font-size:10px;font-weight:600;margin-top:2px;}
+
+/* CONTROLS ROW */
+.controls-row{display:flex;align-items:center;gap:10px;padding:0 32px 14px;}
+/* Date nav */
+.date-nav{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.72);border:1.5px solid rgba(255,255,255,0.9);border-radius:50px;padding:0 6px;height:36px;backdrop-filter:blur(8px);}
+.dn-arrow{width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.6);}
+.dn-date{font-size:12px;font-weight:600;color:#1A1A1A;padding:0 8px;white-space:nowrap;}
+/* Tab bar */
+.tab-bar{display:flex;gap:2px;background:rgba(0,0,0,0.05);border-radius:10px;padding:3px;}
+.tab{padding:6px 14px;border-radius:8px;font-size:11.5px;font-weight:500;color:#888;cursor:pointer;white-space:nowrap;}
+.tab.active{background:#fff;color:#1A1A1A;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+/* Search */
+.search-box{display:flex;align-items:center;gap:7px;height:36px;padding:0 14px;background:rgba(255,255,255,0.72);border:1.5px solid rgba(255,255,255,0.9);border-radius:50px;font-size:11.5px;color:#BBB;min-width:180px;}
+/* View toggle */
+.view-toggle{display:flex;gap:2px;background:rgba(0,0,0,0.05);border-radius:10px;padding:3px;margin-left:auto;}
+.vt-btn{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:500;color:#888;cursor:pointer;white-space:nowrap;}
+.vt-btn.active{background:#fff;color:#1A1A1A;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+
+/* LEGEND */
+.legend-row{display:flex;align-items:center;gap:14px;padding:0 32px 12px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#888;}
+.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+
+/* TABLE */
+.table-wrap{padding:0 32px 24px;}
+.att-table{width:100%;border-collapse:collapse;background:rgba(255,255,255,0.82);border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,0.9);box-shadow:0 2px 0 rgba(255,255,255,0.95) inset,0 4px 16px rgba(0,0,0,0.07);}
+
+/* Team header row */
+.team-header-row td{padding:8px 16px;background:linear-gradient(135deg,rgba(245,197,24,0.08),rgba(245,197,24,0.03));border-bottom:1px solid rgba(245,197,24,0.12);}
+.team-header-content{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:#B8860B;text-transform:uppercase;letter-spacing:0.6px;}
+
+/* Column headers */
+.att-table thead tr{background:rgba(248,248,245,0.8);}
+.att-table th{font-size:9.5px;font-weight:600;color:#AAA;text-transform:uppercase;letter-spacing:0.5px;padding:10px 14px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.05);}
+.att-table th.timeline-col{width:340px;}
+
+/* Data rows */
+.att-table td{padding:10px 14px;font-size:11.5px;color:#333;border-bottom:1px solid rgba(0,0,0,0.04);vertical-align:middle;}
+.att-table tbody tr:last-child td{border-bottom:none;}
+.att-table tbody tr:hover td{background:rgba(245,197,24,0.03);}
+
+/* Employee cell */
+.emp-cell{display:flex;align-items:center;gap:9px;}
+.emp-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;flex-shrink:0;}
+.emp-name{font-size:11.5px;font-weight:600;color:#1A1A1A;}
+.emp-role{font-size:9.5px;color:#AAA;}
+
+/* Status badge */
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap;}
+.sb-present{background:rgba(245,197,24,0.1);color:#B8860B;border:1px solid rgba(245,197,24,0.2);}
+.sb-absent{background:#FFF5F5;color:#CC4444;border:1px solid rgba(204,68,68,0.15);}
+.sb-late{background:#FFF8E8;color:#D97706;border:1px solid rgba(217,119,6,0.2);}
+.sb-exe{background:#F0F0EC;color:#888;border:1px solid rgba(0,0,0,0.08);}
+
+/* TIMELINE BAR — the key component */
+.timeline-bar-wrap{position:relative;height:28px;background:#F0F0EC;border-radius:6px;overflow:visible;cursor:pointer;}
+.tl-segment{position:absolute;top:0;height:100%;border-radius:3px;cursor:pointer;transition:opacity .15s,filter .15s;}
+.tl-segment:hover{opacity:0.85;filter:brightness(1.08);}
+
+/* Segment colors */
+.seg-productive{background:linear-gradient(90deg,#F5C518,#E0AD00);}
+.seg-neutral{background:linear-gradient(90deg,#C8C8C0,#B8B8B0);}
+.seg-unproductive{background:linear-gradient(90deg,#2D2D2D,#1A1A1A);}
+.seg-idle{background:linear-gradient(90deg,#E8D870,#D8C860);}
+.seg-away{background:linear-gradient(90deg,#E0E0D8,#D0D0C8);}
+.seg-break{background:linear-gradient(90deg,#F0E8C8,#E8D8A8);}
+
+/* Shift markers */
+.shift-start{position:absolute;top:-4px;bottom:-4px;width:2px;background:#1A1A1A;border-radius:1px;z-index:2;}
+.shift-end{position:absolute;top:-4px;bottom:-4px;width:2px;background:#888;border-radius:1px;z-index:2;border:none;border-style:dashed;}
+
+/* TOOLTIP */
+.tl-tooltip{
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#1A1A1A,#252525);
+  color:#fff;border-radius:10px;padding:9px 12px;
+  font-size:10.5px;white-space:nowrap;z-index:100;
+  box-shadow:0 4px 16px rgba(0,0,0,0.3);
+  pointer-events:none;opacity:0;transition:opacity .15s;
+  border:1px solid rgba(255,255,255,0.08);
+  min-width:160px;
+}
+.tl-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#1A1A1A;}
+.tl-tooltip .tt-app{font-weight:600;color:#F5C518;margin-bottom:3px;font-size:11px;}
+.tl-tooltip .tt-time{color:rgba(255,255,255,0.7);font-size:9.5px;margin-bottom:2px;}
+.tl-tooltip .tt-dur{color:rgba(255,255,255,0.5);font-size:9.5px;}
+.tl-tooltip .tt-status{display:inline-flex;padding:2px 7px;border-radius:6px;font-size:9px;font-weight:600;margin-top:4px;}
+.tt-prod{background:rgba(245,197,24,0.2);color:#F5C518;}
+.tt-neutral{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);}
+.tt-unprod{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);}
+.tt-idle{background:rgba(232,216,112,0.2);color:#E8D870;}
+
+/* Hover trigger */
+.seg-wrap{position:absolute;top:0;height:100%;}
+.seg-wrap:hover .tl-tooltip{opacity:1;}
+.seg-wrap:hover .tl-segment{opacity:0.82;filter:brightness(1.1);}
+
+/* Time values */
+.time-val{font-size:11px;font-weight:600;color:#1A1A1A;}
+.time-sub{font-size:9.5px;color:#AAA;}
+.prod-pill{display:inline-flex;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;}
+.pp-high{background:linear-gradient(135deg,rgba(245,197,24,0.15),rgba(245,197,24,0.08));color:#B8860B;border:1px solid rgba(245,197,24,0.2);}
+.pp-med{background:#F0F0EC;color:#888;}
+.pp-low{background:#FFF5F5;color:#CC4444;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <div class="logo-pill">Soniq</div>
+    <div class="nav-center">
+      <div class="nav-item">Dashboard</div>
+      <div class="nav-item">Teams</div>
+      <div class="nav-item">Screenshots</div>
+      <div class="nav-item active">Attendance</div>
+      <div class="nav-item">Reports</div>
+      <div class="nav-item">Settings</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-icon-wrap">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Setting
+      </div>
+      <div class="nav-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <div class="nav-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="ph-left">
+      <div class="breadcrumb">Dashboard → Attendance</div>
+      <div class="page-title">Attendance</div>
+    </div>
+    <div class="ph-right">
+      <div class="btn-ghost">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </div>
+      <div class="btn-yellow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Apr 16, 2026
+      </div>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="sc-icon" style="background:linear-gradient(135deg,#F5C518,#E0AD00);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <div class="sc-val">112</div>
+      <div class="sc-label">Present Today</div>
+      <div class="sc-change" style="color:#F5C518;">87.5% attendance rate</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:linear-gradient(135deg,#1A1A1A,#2D2D2D);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="sc-val">16</div>
+      <div class="sc-label">Absent Today</div>
+      <div class="sc-change" style="color:#AAA;">+2 vs yesterday</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:#F0F0EC;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="sc-val">7h 12m</div>
+      <div class="sc-label">Avg Work Time</div>
+      <div class="sc-change" style="color:#888;">target 8h / day</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:#F0F0EC;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      </div>
+      <div class="sc-val">8</div>
+      <div class="sc-label">Late Check-ins</div>
+      <div class="sc-change" style="color:#D97706;">after 9:10 AM grace</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS ROW -->
+  <div class="controls-row">
+    <div class="date-nav">
+      <div class="dn-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="dn-date">Wednesday, Apr 16, 2026</div>
+      <div class="dn-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active">All (128)</div>
+      <div class="tab">Present (112)</div>
+      <div class="tab">Absent (16)</div>
+    </div>
+    <div class="search-box">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search employee...
+    </div>
+    <div class="view-toggle">
+      <div class="vt-btn active">≡ List View</div>
+      <div class="vt-btn">⧖ Timeline View</div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend-row">
+    <span style="font-size:10px;color:#AAA;font-weight:500;margin-right:4px;">Legend:</span>
+    <div class="leg-item"><div class="leg-dot seg-productive"></div>Productive</div>
+    <div class="leg-item"><div class="leg-dot seg-neutral"></div>Neutral</div>
+    <div class="leg-item"><div class="leg-dot seg-unproductive"></div>Unproductive</div>
+    <div class="leg-item"><div class="leg-dot seg-idle"></div>Idle</div>
+    <div class="leg-item"><div class="leg-dot seg-away"></div>Away</div>
+    <div class="leg-item"><div class="leg-dot seg-break"></div>Break</div>
+    <div class="leg-item"><div style="width:10px;height:10px;background:#1A1A1A;border-radius:1px;"></div>Shift Start</div>
+    <div class="leg-item"><div style="width:10px;height:10px;background:#888;border-radius:1px;opacity:0.5;"></div>Shift End</div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table class="att-table">
+      <thead>
+        <tr>
+          <th style="width:190px;">Employee</th>
+          <th style="width:84px;">Status</th>
+          <th style="width:80px;">Shift</th>
+          <th class="timeline-col">Activity Timeline (8AM → 7PM) · Hover for details</th>
+          <th style="width:72px;">Check In</th>
+          <th style="width:72px;">Check Out</th>
+          <th style="width:70px;">Total Hrs</th>
+          <th style="width:68px;">Productive</th>
+          <th style="width:56px;">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- TEAM: ENGINEERING -->
+        <tr class="team-header-row">
+          <td colspan="9">
+            <div class="team-header-content">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+              Engineering — 34 members · 32 present
+            </div>
+          </td>
+        </tr>
+
+        <!-- ROW: Ravi Shankar -->
+        <tr>
+          <td>
+            <div class="emp-cell">
+              <div class="emp-av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">RS</div>
+              <div><div class="emp-name">Ravi Shankar</div><div class="emp-role">Sr. Engineer</div></div>
+            </div>
+          </td>
+          <td><div class="status-badge sb-present">● Present</div></td>
+          <td><div style="font-size:10px;color:#888;line-height:1.3;">Morning<br/>9AM–6PM</div></td>
+          <td>
+            <div class="timeline-bar-wrap">
+              <!-- Shift start marker at 9AM = left:0% -->
+              <div class="shift-start" style="left:0%;"></div>
+              <!-- Segments: 9AM=0%, 7PM=100%, total=660min -->
+              <!-- Productive 9:01–11:30 = 149min = 22.6% -->
+              <div class="seg-wrap" style="left:0.1%;width:22.5%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">VS Code</div><div class="tt-time">09:01 AM → 11:30 AM</div><div class="tt-dur">Duration: 2h 29m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <!-- Break 11:30–12:00 = 30min = 4.5% -->
+              <div class="seg-wrap" style="left:22.6%;width:4.5%;">
+                <div class="tl-segment seg-break" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Lunch Break</div><div class="tt-time">11:30 AM → 12:00 PM</div><div class="tt-dur">Duration: 30m</div><span class="tt-status tt-neutral">Break</span></div>
+              </div>
+              <!-- Productive 12:00–2:30 = 150min = 22.7% -->
+              <div class="seg-wrap" style="left:27.1%;width:22.7%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">VS Code</div><div class="tt-time">12:00 PM → 02:30 PM</div><div class="tt-dur">Duration: 2h 30m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <!-- Neutral 2:30–3:00 = 30min = 4.5% -->
+              <div class="seg-wrap" style="left:49.8%;width:4.5%;">
+                <div class="tl-segment seg-neutral" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Slack</div><div class="tt-time">02:30 PM → 03:00 PM</div><div class="tt-dur">Duration: 30m</div><span class="tt-status tt-neutral">Neutral</span></div>
+              </div>
+              <!-- Productive 3:00–5:45 = 165min = 25% -->
+              <div class="seg-wrap" style="left:54.3%;width:25%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">VS Code</div><div class="tt-time">03:00 PM → 05:45 PM</div><div class="tt-dur">Duration: 2h 45m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <!-- Idle 5:45–6:00 = 15min = 2.3% -->
+              <div class="seg-wrap" style="left:79.3%;width:2.3%;">
+                <div class="tl-segment seg-idle" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Idle</div><div class="tt-time">05:45 PM → 06:00 PM</div><div class="tt-dur">Duration: 15m</div><span class="tt-status tt-idle">Idle</span></div>
+              </div>
+              <!-- Shift end marker at 6PM = 75% -->
+              <div class="shift-end" style="left:75%;opacity:0.4;border-left:2px dashed #888;width:0;top:-4px;bottom:-4px;position:absolute;"></div>
+            </div>
+          </td>
+          <td><div class="time-val">09:01</div><div class="time-sub">AM</div></td>
+          <td><div class="time-val" style="color:#F5C518;">Active</div></td>
+          <td><div class="time-val">7h 12m</div></td>
+          <td><div class="time-val">5h 44m</div></td>
+          <td><div class="prod-pill pp-high">91%</div></td>
+        </tr>
+
+        <!-- ROW: Arjun Mehta -->
+        <tr>
+          <td>
+            <div class="emp-cell">
+              <div class="emp-av" style="background:#E8E0C8;color:#888;">AM</div>
+              <div><div class="emp-name">Arjun Mehta</div><div class="emp-role">Engineer</div></div>
+            </div>
+          </td>
+          <td><div class="status-badge sb-present">● Present</div></td>
+          <td><div style="font-size:10px;color:#888;line-height:1.3;">Morning<br/>9AM–6PM</div></td>
+          <td>
+            <div class="timeline-bar-wrap">
+              <div class="shift-start" style="left:0%;"></div>
+              <div class="seg-wrap" style="left:0.2%;width:20%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">VS Code</div><div class="tt-time">09:01 AM → 11:13 AM</div><div class="tt-dur">Duration: 2h 12m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:20.2%;width:3%;">
+                <div class="tl-segment seg-idle" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Idle</div><div class="tt-time">11:13 AM → 11:33 AM</div><div class="tt-dur">Duration: 20m</div><span class="tt-status tt-idle">Idle</span></div>
+              </div>
+              <div class="seg-wrap" style="left:23.2%;width:18%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Chrome · Docs</div><div class="tt-time">11:33 AM → 01:21 PM</div><div class="tt-dur">Duration: 1h 48m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:41.2%;width:5%;">
+                <div class="tl-segment seg-break" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Break</div><div class="tt-time">01:21 PM → 01:53 PM</div><div class="tt-dur">Duration: 32m</div><span class="tt-status tt-neutral">Break</span></div>
+              </div>
+              <div class="seg-wrap" style="left:46.2%;width:22%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">VS Code</div><div class="tt-time">01:53 PM → 04:20 PM</div><div class="tt-dur">Duration: 2h 27m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:68.2%;width:6%;">
+                <div class="tl-segment seg-neutral" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">YouTube</div><div class="tt-time">04:20 PM → 04:58 PM</div><div class="tt-dur">Duration: 38m</div><span class="tt-status tt-unprod">Unproductive</span></div>
+              </div>
+              <div class="shift-end" style="left:75%;opacity:0.4;border-left:2px dashed #888;width:0;top:-4px;bottom:-4px;position:absolute;"></div>
+            </div>
+          </td>
+          <td><div class="time-val">09:01</div><div class="time-sub">AM</div></td>
+          <td><div class="time-val" style="color:#F5C518;">Active</div></td>
+          <td><div class="time-val">6h 44m</div></td>
+          <td><div class="time-val">5h 27m</div></td>
+          <td><div class="prod-pill pp-high">84%</div></td>
+        </tr>
+
+        <!-- ROW: Karthik Rajan — Privacy -->
+        <tr>
+          <td>
+            <div class="emp-cell">
+              <div class="emp-av" style="background:#D8D8D0;color:#888;">KR</div>
+              <div><div class="emp-name">Karthik Rajan</div><div class="emp-role">Engineer</div></div>
+            </div>
+          </td>
+          <td><div class="status-badge sb-late">◐ Late</div></td>
+          <td><div style="font-size:10px;color:#888;line-height:1.3;">Morning<br/>9AM–6PM</div></td>
+          <td>
+            <div class="timeline-bar-wrap">
+              <div class="shift-start" style="left:0%;"></div>
+              <!-- Started late at 9:32 = 32min = 4.8% -->
+              <div class="seg-wrap" style="left:4.8%;width:19%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Figma</div><div class="tt-time">09:32 AM → 11:38 AM</div><div class="tt-dur">Duration: 2h 06m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:23.8%;width:4%;">
+                <div class="tl-segment seg-break" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Break</div><div class="tt-time">11:38 AM → 12:12 PM</div><div class="tt-dur">Duration: 34m</div><span class="tt-status tt-neutral">Break</span></div>
+              </div>
+              <div class="seg-wrap" style="left:27.8%;width:3%;">
+                <div class="tl-segment seg-unproductive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">YouTube</div><div class="tt-time">12:12 PM → 12:32 PM</div><div class="tt-dur">Duration: 20m</div><span class="tt-status tt-unprod">Unproductive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:30.8%;width:20%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">VS Code</div><div class="tt-time">12:32 PM → 02:44 PM</div><div class="tt-dur">Duration: 2h 12m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:50.8%;width:5%;">
+                <div class="tl-segment seg-idle" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Idle</div><div class="tt-time">02:44 PM → 03:16 PM</div><div class="tt-dur">Duration: 32m</div><span class="tt-status tt-idle">Idle</span></div>
+              </div>
+              <div class="shift-end" style="left:75%;opacity:0.4;border-left:2px dashed #888;width:0;top:-4px;bottom:-4px;position:absolute;"></div>
+            </div>
+          </td>
+          <td><div class="time-val">09:32</div><div class="time-sub">AM ⚠</div></td>
+          <td><div class="time-val" style="color:#D97706;">Privacy</div></td>
+          <td><div class="time-val">5h 30m</div></td>
+          <td><div class="time-val">4h 18m</div></td>
+          <td><div class="prod-pill pp-med">72%</div></td>
+        </tr>
+
+        <!-- TEAM: DESIGN -->
+        <tr class="team-header-row">
+          <td colspan="9">
+            <div class="team-header-content">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+              Design — 18 members · 16 present
+            </div>
+          </td>
+        </tr>
+
+        <!-- ROW: Priya Krishnan -->
+        <tr>
+          <td>
+            <div class="emp-cell">
+              <div class="emp-av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">PK</div>
+              <div><div class="emp-name">Priya Krishnan</div><div class="emp-role">Lead Designer</div></div>
+            </div>
+          </td>
+          <td><div class="status-badge sb-present">● Present</div></td>
+          <td><div style="font-size:10px;color:#888;line-height:1.3;">Morning<br/>9AM–6PM</div></td>
+          <td>
+            <div class="timeline-bar-wrap">
+              <div class="shift-start" style="left:0%;"></div>
+              <div class="seg-wrap" style="left:0.2%;width:24%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Figma</div><div class="tt-time">09:00 AM → 11:36 AM</div><div class="tt-dur">Duration: 2h 36m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:24.2%;width:4%;">
+                <div class="tl-segment seg-break" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Lunch Break</div><div class="tt-time">11:36 AM → 12:02 PM</div><div class="tt-dur">Duration: 26m</div><span class="tt-status tt-neutral">Break</span></div>
+              </div>
+              <div class="seg-wrap" style="left:28.2%;width:28%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Adobe XD</div><div class="tt-time">12:02 PM → 03:08 PM</div><div class="tt-dur">Duration: 3h 06m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:56.2%;width:3%;">
+                <div class="tl-segment seg-neutral" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Slack</div><div class="tt-time">03:08 PM → 03:28 PM</div><div class="tt-dur">Duration: 20m</div><span class="tt-status tt-neutral">Neutral</span></div>
+              </div>
+              <div class="seg-wrap" style="left:59.2%;width:16%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Figma</div><div class="tt-time">03:28 PM → 05:14 PM</div><div class="tt-dur">Duration: 1h 46m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="shift-end" style="left:75%;opacity:0.4;border-left:2px dashed #888;width:0;top:-4px;bottom:-4px;position:absolute;"></div>
+            </div>
+          </td>
+          <td><div class="time-val">09:00</div><div class="time-sub">AM</div></td>
+          <td><div class="time-val" style="color:#F5C518;">Active</div></td>
+          <td><div class="time-val">7h 08m</div></td>
+          <td><div class="time-val">5h 28m</div></td>
+          <td><div class="prod-pill pp-high">88%</div></td>
+        </tr>
+
+        <!-- ROW: Meera — absent -->
+        <tr>
+          <td>
+            <div class="emp-cell">
+              <div class="emp-av" style="background:#F0F0EC;color:#BBB;">MK</div>
+              <div><div class="emp-name">Meera Kapoor</div><div class="emp-role">Designer</div></div>
+            </div>
+          </td>
+          <td><div class="status-badge sb-absent">✕ Absent</div></td>
+          <td><div style="font-size:10px;color:#CCC;line-height:1.3;">Morning<br/>9AM–6PM</div></td>
+          <td>
+            <div class="timeline-bar-wrap" style="background:repeating-linear-gradient(45deg,#F5F5F0,#F5F5F0 4px,#EEEEE8 4px,#EEEEE8 10px);">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                <span style="font-size:10px;color:#CCC;font-weight:500;">No activity recorded</span>
+              </div>
+            </div>
+          </td>
+          <td><div class="time-val" style="color:#CCC;">—</div></td>
+          <td><div class="time-val" style="color:#CCC;">—</div></td>
+          <td><div class="time-val" style="color:#CCC;">—</div></td>
+          <td><div class="time-val" style="color:#CCC;">—</div></td>
+          <td><div class="prod-pill pp-low">—</div></td>
+        </tr>
+
+        <!-- TEAM: SALES -->
+        <tr class="team-header-row">
+          <td colspan="9">
+            <div class="team-header-content">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+              Sales — 24 members · 20 present
+            </div>
+          </td>
+        </tr>
+
+        <!-- ROW: Arun Thomas -->
+        <tr>
+          <td>
+            <div class="emp-cell">
+              <div class="emp-av" style="background:#E8E0C8;color:#888;">AT</div>
+              <div><div class="emp-name">Arun Thomas</div><div class="emp-role">Sales Rep</div></div>
+            </div>
+          </td>
+          <td><div class="status-badge sb-present">● Present</div></td>
+          <td><div style="font-size:10px;color:#888;line-height:1.3;">Morning<br/>9AM–6PM</div></td>
+          <td>
+            <div class="timeline-bar-wrap">
+              <div class="shift-start" style="left:0%;"></div>
+              <div class="seg-wrap" style="left:0.2%;width:15%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Salesforce CRM</div><div class="tt-time">09:02 AM → 10:38 AM</div><div class="tt-dur">Duration: 1h 36m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:15.2%;width:5%;">
+                <div class="tl-segment seg-unproductive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">YouTube</div><div class="tt-time">10:38 AM → 11:10 AM</div><div class="tt-dur">Duration: 32m</div><span class="tt-status tt-unprod">Unproductive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:20.2%;width:12%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Salesforce CRM</div><div class="tt-time">11:10 AM → 12:26 PM</div><div class="tt-dur">Duration: 1h 16m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:32.2%;width:5%;">
+                <div class="tl-segment seg-break" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Break</div><div class="tt-time">12:26 PM → 12:58 PM</div><div class="tt-dur">Duration: 32m</div><span class="tt-status tt-neutral">Break</span></div>
+              </div>
+              <div class="seg-wrap" style="left:37.2%;width:20%;">
+                <div class="tl-segment seg-productive" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Salesforce CRM</div><div class="tt-time">12:58 PM → 03:10 PM</div><div class="tt-dur">Duration: 2h 12m</div><span class="tt-status tt-prod">Productive</span></div>
+              </div>
+              <div class="seg-wrap" style="left:57.2%;width:4%;">
+                <div class="tl-segment seg-idle" style="width:100%;"></div>
+                <div class="tl-tooltip"><div class="tt-app">Idle</div><div class="tt-time">03:10 PM → 03:36 PM</div><div class="tt-dur">Duration: 26m</div><span class="tt-status tt-idle">Idle</span></div>
+              </div>
+              <div class="shift-end" style="left:75%;opacity:0.4;border-left:2px dashed #888;width:0;top:-4px;bottom:-4px;position:absolute;"></div>
+            </div>
+          </td>
+          <td><div class="time-val">09:02</div><div class="time-sub">AM</div></td>
+          <td><div class="time-val" style="color:#F5C518;">Active</div></td>
+          <td><div class="time-val">6h 34m</div></td>
+          <td><div class="time-val">5h 04m</div></td>
+          <td><div class="prod-pill pp-high">76%</div></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Soniq — Attendance Gantt Timeline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#9A9FAD,#B8BCC8 50%,#A8AC98);display:flex;justify-content:center;padding:24px;min-height:100vh;}
+.shell{width:1180px;background:linear-gradient(135deg,#EEECEA,#ECEAE4 30%,#F5F0DA 65%,#F3EAA8);border-radius:28px;overflow:hidden;position:relative;box-shadow:0 2px 0 rgba(255,255,255,0.8) inset,0 20px 60px rgba(0,0,0,0.18);height:fit-content;}
+.shell::before{content:'';position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(180deg,rgba(255,255,255,0.45),rgba(255,255,255,0));pointer-events:none;z-index:0;border-radius:28px 28px 0 0;}
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px 0;position:relative;z-index:10;}
+.logo{border:1.5px solid rgba(255,255,255,0.6);border-radius:50px;padding:7px 20px;font-size:15px;font-weight:600;color:#1A1A1A;background:rgba(255,255,255,0.55);}
+.nc{display:flex;gap:2px;}
+.ni{padding:8px 14px;border-radius:50px;font-size:12px;font-weight:500;color:#555;cursor:pointer;}
+.ni.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;}
+.nr{display:flex;align-items:center;gap:10px;}
+.np{display:flex;align-items:center;gap:6px;padding:7px 13px;border:1.5px solid rgba(255,255,255,0.6);border-radius:50px;background:rgba(255,255,255,0.45);font-size:11.5px;color:#444;}
+.nc2{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.45);}
+/* HEADER */
+.ph{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 32px 12px;position:relative;z-index:2;}
+.pt{font-size:24px;font-weight:700;color:#1A1A1A;letter-spacing:-.8px;}
+.bc{font-size:10.5px;color:#AAA;margin-bottom:3px;}
+.btn{display:flex;align-items:center;gap:6px;padding:8px 15px;border-radius:50px;font-size:11.5px;font-weight:600;cursor:pointer;}
+.btn-g{background:rgba(255,255,255,0.65);border:1.5px solid rgba(255,255,255,0.9);color:#555;font-weight:500;}
+.btn-y{background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;}
+/* CONTROLS */
+.cr{display:flex;align-items:center;gap:10px;padding:0 32px 14px;flex-wrap:wrap;}
+.dn{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.72);border:1.5px solid rgba(255,255,255,0.9);border-radius:50px;padding:0 8px;height:36px;}
+.da{width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.6);font-size:10px;color:#888;}
+.dd{font-size:12px;font-weight:600;color:#1A1A1A;padding:0 8px;}
+.fc{height:36px;padding:0 14px;border-radius:50px;display:flex;align-items:center;font-size:11.5px;font-weight:500;cursor:pointer;background:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.85);color:#666;}
+.fc.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;border-color:#1A1A1A;}
+.vt{display:flex;gap:2px;background:rgba(0,0,0,0.05);border-radius:10px;padding:3px;margin-left:auto;}
+.t{padding:6px 14px;border-radius:8px;font-size:11.5px;font-weight:500;color:#888;cursor:pointer;}
+.t.on{background:#fff;color:#1A1A1A;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+/* LEGEND */
+.lg{display:flex;align-items:center;gap:13px;padding:0 32px 12px;flex-wrap:wrap;}
+.li{display:flex;align-items:center;gap:5px;font-size:10px;color:#888;}
+.ld{width:10px;height:10px;border-radius:3px;}
+/* GANTT CARD */
+.gc{margin:0 32px 28px;background:rgba(255,255,255,0.85);border-radius:20px;border:1px solid rgba(255,255,255,0.95);box-shadow:0 2px 0 rgba(255,255,255,0.95) inset,0 6px 20px rgba(0,0,0,0.08);overflow:hidden;}
+/* HEADER ROW */
+.gh{display:grid;grid-template-columns:190px 1fr;border-bottom:1px solid rgba(0,0,0,0.06);}
+.gh-l{padding:12px 16px;font-size:9px;font-weight:600;color:#AAA;text-transform:uppercase;letter-spacing:.5px;border-right:1px solid rgba(0,0,0,0.06);background:rgba(248,248,245,0.9);}
+.gh-r{background:rgba(248,248,245,0.9);position:relative;}
+/* Time axis */
+.ax{display:flex;height:42px;position:relative;}
+.atk{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:6px;padding-left:4px;border-left:1px solid rgba(0,0,0,0.06);position:relative;}
+.ath{font-size:9.5px;font-weight:600;color:#888;}
+.atk:last-child{border-right:1px solid rgba(0,0,0,0.06);}
+/* Current time indicator in axis */
+.ct-label{position:absolute;top:6px;transform:translateX(-50%);background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;font-size:8px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(245,197,24,0.4);z-index:30;}
+/* TEAM GROUP */
+.tg{display:grid;grid-template-columns:190px 1fr;border-bottom:1px solid rgba(245,197,24,0.1);}
+.tg-l{padding:7px 14px;background:linear-gradient(135deg,rgba(245,197,24,0.08),rgba(245,197,24,0.02));border-right:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;gap:7px;}
+.tg-lt{font-size:9.5px;font-weight:700;color:#B8860B;text-transform:uppercase;letter-spacing:.6px;}
+.tg-lc{font-size:9px;font-weight:600;background:rgba(245,197,24,0.15);color:#B8860B;padding:1px 7px;border-radius:10px;}
+.tg-r{background:linear-gradient(135deg,rgba(245,197,24,0.04),rgba(245,197,24,0.01));position:relative;height:26px;}
+/* EMPLOYEE ROW */
+.er{display:grid;grid-template-columns:190px 1fr;border-bottom:1px solid rgba(0,0,0,0.04);}
+.er:last-of-type{border-bottom:none;}
+.el{padding:8px 12px;border-right:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;gap:8px;cursor:pointer;transition:background .1s;}
+.er:hover .el{background:rgba(245,197,24,0.04);}
+.er:hover .grb{background:rgba(245,197,24,0.02);}
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.ei{flex:1;min-width:0;}
+.en{font-size:10.5px;font-weight:600;color:#1A1A1A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ec2{font-size:9px;color:#AAA;}
+.ed{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+/* GANTT ROW */
+.grb{position:relative;height:42px;display:flex;align-items:center;padding:6px 0;transition:background .1s;}
+.gri{position:relative;width:100%;height:26px;}
+/* Hour grid lines */
+.hl{position:absolute;top:0;bottom:0;width:1px;background:rgba(0,0,0,0.05);z-index:1;}
+.hhl{position:absolute;top:0;bottom:0;width:1px;background:rgba(0,0,0,0.03);z-index:1;}
+/* Current time vertical line */
+.ctl{position:absolute;top:-3px;bottom:-3px;width:2px;background:linear-gradient(180deg,#F5C518,rgba(245,197,24,0.3));border-radius:1px;z-index:20;}
+/* Shift markers */
+.sms{position:absolute;top:-4px;bottom:-4px;width:2.5px;background:#1A1A1A;border-radius:1px;z-index:10;}
+.sme{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2.5px dashed rgba(100,100,100,0.5);z-index:10;}
+/* GANTT BLOCK — core interactive element */
+.gb{position:absolute;top:0;height:100%;border-radius:5px;cursor:pointer;z-index:5;transition:filter .12s,transform .1s;}
+.gb:hover{filter:brightness(1.1);transform:scaleY(1.1);z-index:15;}
+.gb:hover .gtt{opacity:1;pointer-events:auto;}
+.gp{background:linear-gradient(90deg,#F5C518,#E0AD00);}
+.gn{background:linear-gradient(90deg,#C8C8C0,#B8B8B0);}
+.gu{background:linear-gradient(90deg,#2D2D2D,#1A1A1A);}
+.gi{background:linear-gradient(90deg,#E8D870,#D8C860);}
+.gbr{background:linear-gradient(90deg,#F0E8C8,#E8D8A8);}
+/* GANTT TOOLTIP — advanced dark card */
+.gtt{
+  position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#1A1A1A,#252525);
+  border-radius:14px;padding:13px 16px;z-index:50;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4),0 1px 0 rgba(255,255,255,0.06) inset;
+  border:1px solid rgba(255,255,255,0.08);
+  white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity .15s;min-width:200px;
+}
+.gtt::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#1A1A1A;}
+.tt-h{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.tt-ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.tt-an{font-size:12.5px;font-weight:600;color:#fff;}
+.tt-st{margin-left:auto;padding:2px 8px;border-radius:7px;font-size:9px;font-weight:700;}
+.stp{background:rgba(245,197,24,0.2);color:#F5C518;}
+.stn{background:rgba(200,200,200,0.12);color:#CCC;}
+.stu{background:rgba(255,100,100,0.15);color:#FF8080;}
+.sti{background:rgba(232,216,112,0.2);color:#E8D870;}
+.stb{background:rgba(240,232,200,0.15);color:#D0C088;}
+.tt-row{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:5px;}
+.tt-row:last-child{margin-bottom:0;}
+.tt-k{font-size:9.5px;color:rgba(255,255,255,0.32);}
+.tt-v{font-size:10px;font-weight:500;color:rgba(255,255,255,0.82);}
+.tt-vy{font-size:10px;font-weight:700;color:#F5C518;}
+/* ABSENT ROW */
+.abr{width:100%;height:100%;background:repeating-linear-gradient(45deg,transparent,transparent 6px,rgba(0,0,0,0.025) 6px,rgba(0,0,0,0.025) 12px);border-radius:4px;display:flex;align-items:center;padding-left:10px;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<nav class="nav">
+  <div class="logo">Soniq</div>
+  <div class="nc">
+    <div class="ni">Dashboard</div><div class="ni">Teams</div><div class="ni">Screenshots</div>
+    <div class="ni on">Attendance</div><div class="ni">Reports</div><div class="ni">Settings</div>
+  </div>
+  <div class="nr"><div class="np">⚙ Setting</div><div class="nc2">🔔</div><div class="nc2">👤</div></div>
+</nav>
+
+<div class="ph">
+  <div><div class="bc">Dashboard → Attendance</div><div class="pt">Attendance — Timeline View</div></div>
+  <div style="display:flex;gap:8px;"><div class="btn btn-g">↓ Export</div><div class="btn btn-y">📅 Apr 16, 2026</div></div>
+</div>
+
+<div class="cr">
+  <div class="dn">
+    <div class="da">‹</div><div class="dd">Wednesday, Apr 16, 2026</div><div class="da">›</div>
+  </div>
+  <div class="fc on">All Teams</div>
+  <div class="fc">Engineering</div>
+  <div class="fc">Design</div>
+  <div class="fc">Sales</div>
+  <div class="vt">
+    <div class="t">≡ List View</div><div class="t on">⧖ Timeline Gantt</div>
+  </div>
+</div>
+
+<div class="lg">
+  <span style="font-size:10px;color:#AAA;font-weight:500;">Legend:</span>
+  <div class="li"><div class="ld" style="background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>Productive</div>
+  <div class="li"><div class="ld" style="background:#C8C8C0;"></div>Neutral</div>
+  <div class="li"><div class="ld" style="background:#2D2D2D;"></div>Unproductive</div>
+  <div class="li"><div class="ld" style="background:#E8D870;"></div>Idle</div>
+  <div class="li"><div class="ld" style="background:#F0E8C8;"></div>Break</div>
+  <div class="li"><div style="width:2px;height:12px;background:#1A1A1A;border-radius:1px;"></div>Shift Start</div>
+  <div class="li"><div style="width:0;height:12px;border-left:2px dashed #888;"></div>Shift End</div>
+  <div class="li"><div style="width:2px;height:12px;background:linear-gradient(180deg,#F5C518,rgba(245,197,24,0.3));border-radius:1px;"></div><span style="color:#F5C518;font-weight:600;">Now (2:41 PM)</span></div>
+  <div style="margin-left:auto;font-size:10px;color:#AAA;font-style:italic;">Hover any block for full details</div>
+</div>
+
+<!-- ======================================================= -->
+<!-- GANTT: 8AM to 7PM = 11 hours = 660 min                  -->
+<!-- Each hour = 1/11 = 9.0909...%                           -->
+<!-- 9AM = 9.09%, 12PM = 36.36%, 3PM = 63.63%, 6PM = 81.82% -->
+<!-- Current time 2:41 PM = (6h41m from 8AM) = 401/660=60.76%-->
+<!-- ======================================================= -->
+<div class="gc">
+
+  <!-- AXIS HEADER -->
+  <div class="gh">
+    <div class="gh-l">Employee</div>
+    <div class="gh-r">
+      <div class="ct-label" style="left:60.76%;">Now 2:41 PM</div>
+      <div class="ax">
+        <div class="atk"><span class="ath">8 AM</span></div>
+        <div class="atk"><span class="ath">9 AM</span></div>
+        <div class="atk"><span class="ath">10 AM</span></div>
+        <div class="atk"><span class="ath">11 AM</span></div>
+        <div class="atk"><span class="ath">12 PM</span></div>
+        <div class="atk"><span class="ath">1 PM</span></div>
+        <div class="atk"><span class="ath">2 PM</span></div>
+        <div class="atk"><span class="ath">3 PM</span></div>
+        <div class="atk"><span class="ath">4 PM</span></div>
+        <div class="atk"><span class="ath">5 PM</span></div>
+        <div class="atk"><span class="ath">6 PM</span></div>
+        <div style="position:absolute;right:0;bottom:6px;font-size:9.5px;font-weight:600;color:#888;padding-right:4px;">7 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ENGINEERING ═══ -->
+  <div class="tg">
+    <div class="tg-l"><span class="tg-lt">🔧 Engineering</span><span class="tg-lc">32 present</span></div>
+    <div class="tg-r"><div class="ctl" style="left:60.76%;"></div></div>
+  </div>
+
+  <!-- RAVI SHANKAR -->
+  <div class="er">
+    <div class="el">
+      <div class="av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">RS</div>
+      <div class="ei"><div class="en">Ravi Shankar</div><div class="ec2">In 09:01 · 7h 12m</div></div>
+      <div class="ed" style="background:#F5C518;"></div>
+    </div>
+    <div class="grb"><div class="gri">
+      <!-- Grid lines per hour -->
+      <div class="hl" style="left:9.09%;"></div><div class="hl" style="left:18.18%;"></div><div class="hl" style="left:27.27%;"></div><div class="hl" style="left:36.36%;"></div><div class="hl" style="left:45.45%;"></div><div class="hl" style="left:54.54%;"></div><div class="hl" style="left:63.63%;"></div><div class="hl" style="left:72.72%;"></div><div class="hl" style="left:81.81%;"></div><div class="hl" style="left:90.90%;"></div>
+      <!-- Current time -->
+      <div class="ctl" style="left:60.76%;"></div>
+      <!-- Shift start 9AM -->
+      <div class="sms" style="left:9.09%;"></div>
+      <!-- 9:01-11:30 Productive: left=9.24%, width=22.57% -->
+      <div class="gb gp" style="left:9.24%;width:22.57%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">💻</div><div class="tt-an">VS Code</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">09:01 AM → 11:30 AM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 29m</span></div><div class="tt-row"><span class="tt-k">Category</span><span class="tt-v">Development Tools</span></div><div class="tt-row"><span class="tt-k">Employee</span><span class="tt-v">Ravi Shankar</span></div></div>
+      </div>
+      <!-- 11:30-12:00 Break: left=31.82%, width=4.55% -->
+      <div class="gb gbr" style="left:31.82%;width:4.55%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#F0E8C8;color:#B8860B;">☕</div><div class="tt-an">Lunch Break</div><div class="tt-st stb">Break</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">11:30 AM → 12:00 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">30m</span></div></div>
+      </div>
+      <!-- 12:00-2:30 Productive: left=36.36%, width=22.73% -->
+      <div class="gb gp" style="left:36.36%;width:22.73%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">💻</div><div class="tt-an">VS Code</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">12:00 PM → 02:30 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 30m</span></div></div>
+      </div>
+      <!-- 2:30-3:00 Neutral: left=59.09%, width=4.55% -->
+      <div class="gb gn" style="left:59.09%;width:4.55%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#E8E0C8;color:#888;">💬</div><div class="tt-an">Slack</div><div class="tt-st stn">Neutral</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">02:30 PM → 03:00 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">30m</span></div></div>
+      </div>
+      <!-- 3:00-5:45 Productive: left=63.63%, width=20.45% -->
+      <div class="gb gp" style="left:63.63%;width:20.45%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">💻</div><div class="tt-an">VS Code</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">03:00 PM → 05:45 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 45m</span></div><div class="tt-row"><span class="tt-k">Score today</span><span class="tt-vy">91% — Excellent</span></div></div>
+      </div>
+      <!-- Shift end 6PM = 81.81% -->
+      <div class="sme" style="left:81.81%;"></div>
+    </div></div>
+  </div>
+
+  <!-- ARJUN MEHTA -->
+  <div class="er">
+    <div class="el">
+      <div class="av" style="background:#E8E0C8;color:#888;">AM</div>
+      <div class="ei"><div class="en">Arjun Mehta</div><div class="ec2">In 09:01 · 6h 44m</div></div>
+      <div class="ed" style="background:#1A1A1A;"></div>
+    </div>
+    <div class="grb"><div class="gri">
+      <div class="hl" style="left:9.09%;"></div><div class="hl" style="left:18.18%;"></div><div class="hl" style="left:27.27%;"></div><div class="hl" style="left:36.36%;"></div><div class="hl" style="left:45.45%;"></div><div class="hl" style="left:54.54%;"></div><div class="hl" style="left:63.63%;"></div><div class="hl" style="left:72.72%;"></div><div class="hl" style="left:81.81%;"></div>
+      <div class="ctl" style="left:60.76%;"></div>
+      <div class="sms" style="left:9.09%;"></div>
+      <div class="gb gp" style="left:9.24%;width:19.7%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">💻</div><div class="tt-an">VS Code</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">09:01 AM → 11:13 AM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 12m</span></div></div>
+      </div>
+      <div class="gb gi" style="left:28.94%;width:3.03%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#E8D870;color:#888;">⏱</div><div class="tt-an">Idle</div><div class="tt-st sti">Idle</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">11:13 AM → 11:33 AM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">20m</span></div></div>
+      </div>
+      <div class="gb gp" style="left:31.97%;width:17.42%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#E8E0C8;color:#888;">🌐</div><div class="tt-an">Chrome · Docs</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">11:33 AM → 01:21 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">1h 48m</span></div></div>
+      </div>
+      <div class="gb gbr" style="left:49.39%;width:4.85%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#F0E8C8;color:#B8860B;">☕</div><div class="tt-an">Break</div><div class="tt-st stb">Break</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">32m</span></div></div>
+      </div>
+      <div class="gb gp" style="left:54.24%;width:22.35%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">💻</div><div class="tt-an">VS Code</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">01:53 PM → 04:20 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 27m</span></div></div>
+      </div>
+      <div class="gb gu" style="left:76.59%;width:5.76%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#D8D8D0;color:#1A1A1A;">▶</div><div class="tt-an">YouTube</div><div class="tt-st stu">Unproductive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">04:20 PM → 04:58 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">38m</span></div></div>
+      </div>
+      <div class="sme" style="left:81.81%;"></div>
+    </div></div>
+  </div>
+
+  <!-- KARTHIK — LATE -->
+  <div class="er">
+    <div class="el">
+      <div class="av" style="background:#D8D8D0;color:#888;">KR</div>
+      <div class="ei"><div class="en">Karthik Rajan</div><div class="ec2" style="color:#D97706;">In 09:32 ⚠ Late</div></div>
+      <div class="ed" style="background:#D97706;"></div>
+    </div>
+    <div class="grb"><div class="gri">
+      <div class="hl" style="left:9.09%;"></div><div class="hl" style="left:18.18%;"></div><div class="hl" style="left:27.27%;"></div><div class="hl" style="left:36.36%;"></div><div class="hl" style="left:45.45%;"></div><div class="hl" style="left:54.54%;"></div><div class="hl" style="left:63.63%;"></div><div class="hl" style="left:72.72%;"></div><div class="hl" style="left:81.81%;"></div>
+      <div class="ctl" style="left:60.76%;"></div>
+      <div class="sms" style="left:9.09%;"></div>
+      <!-- Late gap indicator: 9AM to 9:32 = light orange stripe -->
+      <div style="position:absolute;left:9.09%;width:4.85%;top:0;height:100%;background:rgba(217,119,6,0.08);border-radius:3px;border-left:2px solid rgba(217,119,6,0.3);"></div>
+      <!-- 9:32-11:38 Productive: left=13.94%, width=18.79% -->
+      <div class="gb gp" style="left:13.94%;width:18.79%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">🎨</div><div class="tt-an">Figma</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">09:32 AM → 11:38 AM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 06m</span></div><div class="tt-row"><span class="tt-k">Note</span><span class="tt-v" style="color:#D97706;">⚠ 32 min late arrival</span></div></div>
+      </div>
+      <div class="gb gbr" style="left:32.73%;width:3.94%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#F0E8C8;color:#B8860B;">☕</div><div class="tt-an">Break</div><div class="tt-st stb">Break</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">34m</span></div></div>
+      </div>
+      <div class="gb gu" style="left:36.67%;width:3.03%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#D8D8D0;color:#1A1A1A;">▶</div><div class="tt-an">YouTube</div><div class="tt-st stu">Unproductive</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">20m</span></div></div>
+      </div>
+      <div class="gb gp" style="left:39.7%;width:20%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">💻</div><div class="tt-an">VS Code</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">12:32 PM → 02:44 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 12m</span></div></div>
+      </div>
+      <div class="gb gi" style="left:59.7%;width:4.85%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#E8D870;color:#888;">⏱</div><div class="tt-an">Idle</div><div class="tt-st sti">Idle</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">32m</span></div></div>
+      </div>
+      <div class="sme" style="left:81.81%;"></div>
+    </div></div>
+  </div>
+
+  <!-- ═══ DESIGN ═══ -->
+  <div class="tg">
+    <div class="tg-l"><span class="tg-lt">🎨 Design</span><span class="tg-lc">16 present</span></div>
+    <div class="tg-r"><div class="ctl" style="left:60.76%;"></div></div>
+  </div>
+
+  <!-- PRIYA -->
+  <div class="er">
+    <div class="el">
+      <div class="av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">PK</div>
+      <div class="ei"><div class="en">Priya Krishnan</div><div class="ec2">In 09:00 · 7h 08m</div></div>
+      <div class="ed" style="background:#F5C518;"></div>
+    </div>
+    <div class="grb"><div class="gri">
+      <div class="hl" style="left:9.09%;"></div><div class="hl" style="left:18.18%;"></div><div class="hl" style="left:27.27%;"></div><div class="hl" style="left:36.36%;"></div><div class="hl" style="left:45.45%;"></div><div class="hl" style="left:54.54%;"></div><div class="hl" style="left:63.63%;"></div><div class="hl" style="left:72.72%;"></div><div class="hl" style="left:81.81%;"></div>
+      <div class="ctl" style="left:60.76%;"></div>
+      <div class="sms" style="left:9.09%;"></div>
+      <div class="gb gp" style="left:9.09%;width:23.48%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">🎨</div><div class="tt-an">Figma</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">09:00 AM → 11:36 AM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 36m</span></div><div class="tt-row"><span class="tt-k">Category</span><span class="tt-v">Design Tools</span></div></div>
+      </div>
+      <div class="gb gbr" style="left:32.57%;width:3.94%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#F0E8C8;color:#B8860B;">☕</div><div class="tt-an">Lunch Break</div><div class="tt-st stb">Break</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">26m</span></div></div>
+      </div>
+      <div class="gb gp" style="left:36.51%;width:28.03%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#E8E0C8;color:#888;">🎨</div><div class="tt-an">Adobe XD</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">12:02 PM → 03:08 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">3h 06m</span></div></div>
+      </div>
+      <div class="gb gn" style="left:64.54%;width:3.03%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#E8E0C8;color:#888;">💬</div><div class="tt-an">Slack</div><div class="tt-st stn">Neutral</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">20m</span></div></div>
+      </div>
+      <div class="gb gp" style="left:67.57%;width:15.91%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">🎨</div><div class="tt-an">Figma</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">03:28 PM → 05:14 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">1h 46m</span></div></div>
+      </div>
+      <div class="sme" style="left:81.81%;"></div>
+    </div></div>
+  </div>
+
+  <!-- MEERA ABSENT -->
+  <div class="er">
+    <div class="el">
+      <div class="av" style="background:#F0F0EC;color:#CCC;">MK</div>
+      <div class="ei"><div class="en" style="color:#BBB;">Meera Kapoor</div><div class="ec2" style="color:#CC4444;">Absent today</div></div>
+      <div class="ed" style="background:#EEE;border:1px solid #DDD;"></div>
+    </div>
+    <div class="grb"><div class="gri">
+      <div class="ctl" style="left:60.76%;opacity:0.25;"></div>
+      <div class="abr"><span style="font-size:9.5px;color:#CCC;font-weight:500;">No activity — Absent</span></div>
+    </div></div>
+  </div>
+
+  <!-- ═══ SALES ═══ -->
+  <div class="tg">
+    <div class="tg-l"><span class="tg-lt">📊 Sales</span><span class="tg-lc">20 present</span></div>
+    <div class="tg-r"><div class="ctl" style="left:60.76%;"></div></div>
+  </div>
+
+  <!-- ARUN -->
+  <div class="er" style="border-bottom:none;">
+    <div class="el">
+      <div class="av" style="background:#E8E0C8;color:#888;">AT</div>
+      <div class="ei"><div class="en">Arun Thomas</div><div class="ec2">In 09:02 · 6h 34m</div></div>
+      <div class="ed" style="background:#F5C518;"></div>
+    </div>
+    <div class="grb"><div class="gri">
+      <div class="hl" style="left:9.09%;"></div><div class="hl" style="left:18.18%;"></div><div class="hl" style="left:27.27%;"></div><div class="hl" style="left:36.36%;"></div><div class="hl" style="left:45.45%;"></div><div class="hl" style="left:54.54%;"></div><div class="hl" style="left:63.63%;"></div><div class="hl" style="left:72.72%;"></div><div class="hl" style="left:81.81%;"></div>
+      <div class="ctl" style="left:60.76%;"></div>
+      <div class="sms" style="left:9.09%;"></div>
+      <div class="gb gp" style="left:9.24%;width:14.77%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">☁</div><div class="tt-an">Salesforce CRM</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">09:02 AM → 10:38 AM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">1h 36m</span></div></div>
+      </div>
+      <div class="gb gu" style="left:24.01%;width:4.85%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#D8D8D0;color:#1A1A1A;">▶</div><div class="tt-an">YouTube</div><div class="tt-st stu">Unproductive</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">32m</span></div></div>
+      </div>
+      <div class="gb gp" style="left:28.86%;width:11.52%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">☁</div><div class="tt-an">Salesforce CRM</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">11:10 AM → 12:26 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">1h 16m</span></div></div>
+      </div>
+      <div class="gb gbr" style="left:40.38%;width:4.85%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#F0E8C8;color:#B8860B;">☕</div><div class="tt-an">Break</div><div class="tt-st stb">Break</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">32m</span></div></div>
+      </div>
+      <div class="gb gp" style="left:45.23%;width:20.15%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">☁</div><div class="tt-an">Salesforce CRM</div><div class="tt-st stp">● Productive</div></div><div class="tt-row"><span class="tt-k">Time range</span><span class="tt-v">12:58 PM → 03:10 PM</span></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">2h 12m</span></div></div>
+      </div>
+      <div class="gb gi" style="left:65.38%;width:3.94%;">
+        <div class="gtt"><div class="tt-h"><div class="tt-ic" style="background:#E8D870;color:#888;">⏱</div><div class="tt-an">Idle</div><div class="tt-st sti">Idle</div></div><div class="tt-row"><span class="tt-k">Duration</span><span class="tt-vy">26m</span></div></div>
+      </div>
+      <div class="sme" style="left:81.81%;"></div>
+    </div></div>
+  </div>
+
+</div><!-- end gantt-card -->
+</div>
+</body>
+</html>

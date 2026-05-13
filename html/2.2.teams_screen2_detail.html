@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#9A9FAD 0%,#B8BCC8 50%,#A8AC98 100%);display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:24px;}
+.shell{width:1180px;background:linear-gradient(135deg,#EEECEA 0%,#ECEAE4 30%,#F5F0DA 65%,#F3EAA8 100%);border-radius:28px;overflow:hidden;position:relative;padding-bottom:28px;box-shadow:0 2px 0 rgba(255,255,255,0.8) inset,0 20px 60px rgba(0,0,0,0.18);}
+.shell::before{content:'';position:absolute;top:0;left:0;right:0;height:180px;background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0) 100%);pointer-events:none;z-index:0;border-radius:28px 28px 0 0;}
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px 0;position:relative;z-index:10;}
+.logo-pill{border:1.5px solid rgba(255,255,255,0.6);border-radius:50px;padding:7px 20px;font-size:15px;font-weight:600;color:#1A1A1A;background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);}
+.nav-center{display:flex;align-items:center;gap:2px;}
+.nav-item{padding:8px 16px;border-radius:50px;font-size:12.5px;font-weight:500;color:#555;cursor:pointer;}
+.nav-item.active{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-icon-wrap{display:flex;align-items:center;gap:7px;padding:7px 14px;border:1.5px solid rgba(255,255,255,0.6);border-radius:50px;background:rgba(255,255,255,0.45);cursor:pointer;font-size:12px;font-weight:500;color:#444;}
+.nav-circle{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.45);}
+.card{background:rgba(255,255,255,0.85);border-radius:18px;border:1px solid rgba(255,255,255,0.95);box-shadow:0 2px 0 rgba(255,255,255,0.95) inset,0 4px 16px rgba(0,0,0,0.07);backdrop-filter:blur(12px);}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;padding:16px 32px 14px;position:relative;z-index:2;}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:#888;cursor:pointer;margin-bottom:6px;}
+.page-title{font-size:28px;font-weight:700;color:#1A1A1A;letter-spacing:-0.8px;}
+.team-meta{display:flex;align-items:center;gap:10px;margin-top:4px;}
+.meta-chip{display:flex;align-items:center;gap:4px;font-size:11px;color:#888;font-weight:400;}
+.header-actions{display:flex;gap:10px;}
+.btn-primary{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:50px;background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.22);}
+.btn-secondary{display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:50px;background:rgba(255,255,255,0.7);border:1.5px solid rgba(255,255,255,0.9);color:#444;font-size:12px;font-weight:500;cursor:pointer;}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 32px 16px;}
+.stat-card{background:rgba(255,255,255,0.82);border-radius:14px;border:1px solid rgba(255,255,255,0.9);box-shadow:0 2px 0 rgba(255,255,255,0.95) inset,0 3px 12px rgba(0,0,0,0.06);padding:14px 16px;}
+.stat-val{font-size:24px;font-weight:700;color:#1A1A1A;letter-spacing:-0.8px;line-height:1;}
+.stat-label{font-size:10.5px;color:#AAA;margin-top:3px;}
+.stat-change{font-size:10px;font-weight:600;margin-top:3px;}
+
+/* MAIN LAYOUT */
+.main-layout{display:grid;grid-template-columns:1fr 300px;gap:14px;padding:0 32px;}
+
+/* HEATMAP */
+.heatmap-card{padding:18px;}
+.heatmap-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.heatmap-title{font-size:14px;font-weight:600;color:#1A1A1A;}
+.month-nav{display:flex;align-items:center;gap:10px;font-size:12px;color:#1A1A1A;font-weight:500;}
+.month-arrow{width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.6);}
+.day-labels{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px;}
+.day-label{font-size:9.5px;color:#BBB;text-align:center;font-weight:500;}
+.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.hmap-cell{height:36px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:transform .1s;}
+.hmap-cell:hover{transform:scale(1.08);}
+.hmap-date{font-size:10px;font-weight:600;color:#fff;line-height:1;}
+.hmap-hrs{font-size:8px;color:rgba(255,255,255,0.7);margin-top:1px;}
+.hmap-empty{background:rgba(0,0,0,0.04);}
+.hmap-empty .hmap-date{color:#DDD;}
+.hmap-excellent{background:linear-gradient(135deg,#F5C518,#E0AD00);}
+.hmap-excellent .hmap-date,.hmap-excellent .hmap-hrs{color:#1A1A1A;}
+.hmap-good{background:linear-gradient(135deg,#2D2D2D,#1A1A1A);}
+.hmap-avg{background:linear-gradient(135deg,#888,#666);}
+.hmap-low{background:linear-gradient(135deg,#D8D8D0,#C0C0B8);}
+.hmap-low .hmap-date{color:#888;}
+.hmap-low .hmap-hrs{color:#AAA;}
+.hmap-weekend{background:rgba(0,0,0,0.03);}
+.hmap-weekend .hmap-date{color:#DDD;}
+.hmap-legend{display:flex;align-items:center;gap:12px;margin-top:10px;justify-content:flex-end;}
+.hleg{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#888;}
+.hleg-dot{width:10px;height:10px;border-radius:3px;}
+
+/* TAB BAR for employee table */
+.tab-bar{display:flex;align-items:center;gap:2px;background:rgba(0,0,0,0.05);border-radius:10px;padding:3px;width:fit-content;margin-bottom:14px;}
+.tab{padding:6px 14px;border-radius:8px;font-size:11.5px;font-weight:500;color:#888;cursor:pointer;}
+.tab.active{background:#fff;color:#1A1A1A;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+
+/* EMPLOYEE TABLE */
+.emp-table{width:100%;border-collapse:collapse;}
+.emp-table th{font-size:10px;font-weight:600;color:#AAA;text-transform:uppercase;letter-spacing:0.5px;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.06);}
+.emp-table td{padding:10px 12px;font-size:11.5px;color:#333;border-bottom:1px solid rgba(0,0,0,0.04);vertical-align:middle;}
+.emp-table tr:last-child td{border-bottom:none;}
+.emp-table tr:hover td{background:rgba(245,197,24,0.04);}
+.emp-cell{display:flex;align-items:center;gap:9px;}
+.emp-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.emp-name{font-size:12px;font-weight:600;color:#1A1A1A;}
+.emp-email{font-size:10px;color:#AAA;}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:500;}
+.sb-work{background:#F0F0EC;color:#1A1A1A;}
+.sb-privacy{background:#FFF8E8;color:#B8860B;}
+.sb-offline{background:#F5F5F5;color:#999;}
+.sb-absent{background:#FFF0F0;color:#CC4444;}
+.prod-mini{height:4px;border-radius:2px;background:#F0F0EC;overflow:hidden;width:70px;display:inline-block;vertical-align:middle;}
+.prod-mini-fill{height:100%;border-radius:2px;}
+.score-pill{display:inline-flex;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;}
+
+/* RIGHT PANEL */
+.right-panel{display:flex;flex-direction:column;gap:14px;}
+.panel-card{padding:16px;}
+
+/* TOP APP USAGE small */
+.app-mini-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.app-mini-row:last-of-type{margin-bottom:0;}
+.app-mini-icon{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.app-mini-bar-track{flex:1;height:3px;background:#F0F0EC;border-radius:2px;overflow:hidden;}
+.app-mini-bar-fill{height:100%;border-radius:2px;}
+.app-mini-time{font-size:10px;font-weight:600;color:#1A1A1A;white-space:nowrap;flex-shrink:0;}
+
+/* Productivity by day small chart */
+.mini-bars{display:flex;align-items:flex-end;gap:4px;height:50px;}
+.mini-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.mini-bar{width:100%;border-radius:3px 3px 0 0;}
+.mini-bar-label{font-size:8.5px;color:#BBB;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <div class="logo-pill">Soniq</div>
+    <div class="nav-center">
+      <div class="nav-item">Dashboard</div>
+      <div class="nav-item active">Teams</div>
+      <div class="nav-item">Screenshots</div>
+      <div class="nav-item">Attendance</div>
+      <div class="nav-item">Reports</div>
+      <div class="nav-item">Settings</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-icon-wrap"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Setting</div>
+      <div class="nav-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <div class="nav-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="back-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#AAA" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Teams
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#F5C518,#E0AD00);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#1A1A1A;">EN</div>
+        <div>
+          <div class="page-title">Engineering</div>
+          <div class="team-meta">
+            <div class="meta-chip"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#AAA" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> 34 members</div>
+            <div style="width:3px;height:3px;border-radius:50%;background:#DDD;"></div>
+            <div class="meta-chip"><div style="width:6px;height:6px;border-radius:50%;background:#16A34A;"></div> Active</div>
+            <div style="width:3px;height:3px;border-radius:50%;background:#DDD;"></div>
+            <div class="meta-chip">Created Mar 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="btn-secondary"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</div>
+      <div class="btn-primary"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Employee</div>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stat-row">
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#F5C518,#E0AD00);display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div><div class="stat-val">34</div><div class="stat-label">Total Members</div><div class="stat-change" style="color:#888;">32 present today</div></div>
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#1A1A1A,#2D2D2D);display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="stat-val">88%</div><div class="stat-label">Avg Productivity</div><div class="stat-change" style="color:#F5C518;">↑ +5% vs last week</div></div>
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:30px;height:30px;border-radius:9px;background:#F0F0EC;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div><div class="stat-val">7h 12m</div><div class="stat-label">Avg Work Time</div><div class="stat-change" style="color:#888;">target 8h / day</div></div>
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:30px;height:30px;border-radius:9px;background:#F0F0EC;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg></div></div><div class="stat-val">1,248</div><div class="stat-label">Screenshots Today</div><div class="stat-change" style="color:#888;">avg 39 per employee</div></div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main-layout">
+
+    <!-- LEFT: Heatmap + Employee Table -->
+    <div style="display:flex;flex-direction:column;gap:14px;">
+
+      <!-- Calendar Heatmap -->
+      <div class="card heatmap-card">
+        <div class="heatmap-nav">
+          <div class="heatmap-title">Work Hours Calendar — April 2026</div>
+          <div class="month-nav">
+            <div class="month-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+            <span>April 2026</span>
+            <div class="month-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+        <div class="day-labels">
+          <div class="day-label">Mon</div><div class="day-label">Tue</div><div class="day-label">Wed</div><div class="day-label">Thu</div><div class="day-label">Fri</div><div class="day-label">Sat</div><div class="day-label">Sun</div>
+        </div>
+        <div class="heatmap-grid">
+          <!-- Week 1 — Apr starts on Tue -->
+          <div class="hmap-cell hmap-empty"></div>
+          <div class="hmap-cell hmap-excellent"><div class="hmap-date">1</div><div class="hmap-hrs">7.8h</div></div>
+          <div class="hmap-cell hmap-good"><div class="hmap-date">2</div><div class="hmap-hrs">7.2h</div></div>
+          <div class="hmap-cell hmap-excellent"><div class="hmap-date">3</div><div class="hmap-hrs">8.1h</div></div>
+          <div class="hmap-cell hmap-good"><div class="hmap-date">4</div><div class="hmap-hrs">6.9h</div></div>
+          <div class="hmap-cell hmap-weekend"><div class="hmap-date" style="color:#DDD;">5</div></div>
+          <div class="hmap-cell hmap-weekend"><div class="hmap-date" style="color:#DDD;">6</div></div>
+          <!-- Week 2 -->
+          <div class="hmap-cell hmap-good"><div class="hmap-date">7</div><div class="hmap-hrs">7.0h</div></div>
+          <div class="hmap-cell hmap-excellent"><div class="hmap-date">8</div><div class="hmap-hrs">7.9h</div></div>
+          <div class="hmap-cell hmap-avg"><div class="hmap-date">9</div><div class="hmap-hrs">5.5h</div></div>
+          <div class="hmap-cell hmap-good"><div class="hmap-date">10</div><div class="hmap-hrs">7.3h</div></div>
+          <div class="hmap-cell hmap-excellent"><div class="hmap-date">11</div><div class="hmap-hrs">8.0h</div></div>
+          <div class="hmap-cell hmap-weekend"><div class="hmap-date" style="color:#DDD;">12</div></div>
+          <div class="hmap-cell hmap-weekend"><div class="hmap-date" style="color:#DDD;">13</div></div>
+          <!-- Week 3 -->
+          <div class="hmap-cell hmap-low"><div class="hmap-date">14</div><div class="hmap-hrs">3.2h</div></div>
+          <div class="hmap-cell hmap-excellent"><div class="hmap-date">15</div><div class="hmap-hrs">7.6h</div></div>
+          <div class="hmap-cell hmap-excellent" style="outline:2px solid #F5C518;outline-offset:2px;"><div class="hmap-date">16</div><div class="hmap-hrs">7.2h</div></div>
+          <div class="hmap-cell hmap-good"><div class="hmap-date">17</div><div class="hmap-hrs">6.8h</div></div>
+          <div class="hmap-cell hmap-excellent"><div class="hmap-date">18</div><div class="hmap-hrs">8.2h</div></div>
+          <div class="hmap-cell hmap-weekend"><div class="hmap-date" style="color:#DDD;">19</div></div>
+          <div class="hmap-cell hmap-weekend"><div class="hmap-date" style="color:#DDD;">20</div></div>
+          <!-- Week 4 -->
+          <div class="hmap-cell hmap-good"><div class="hmap-date">21</div><div class="hmap-hrs">7.1h</div></div>
+          <div class="hmap-cell hmap-avg"><div class="hmap-date">22</div><div class="hmap-hrs">5.8h</div></div>
+          <div class="hmap-cell hmap-good"><div class="hmap-date">23</div><div class="hmap-hrs">6.5h</div></div>
+          <div class="hmap-cell hmap-excellent"><div class="hmap-date">24</div><div class="hmap-hrs">7.7h</div></div>
+          <div class="hmap-cell hmap-good"><div class="hmap-date">25</div><div class="hmap-hrs">6.9h</div></div>
+          <div class="hmap-cell hmap-weekend"><div class="hmap-date" style="color:#DDD;">26</div></div>
+          <div class="hmap-cell hmap-weekend"><div class="hmap-date" style="color:#DDD;">27</div></div>
+          <!-- Week 5 -->
+          <div class="hmap-cell hmap-good"><div class="hmap-date">28</div><div class="hmap-hrs">7.0h</div></div>
+          <div class="hmap-cell hmap-excellent"><div class="hmap-date">29</div><div class="hmap-hrs">7.8h</div></div>
+          <div class="hmap-cell hmap-good"><div class="hmap-date">30</div><div class="hmap-hrs">7.2h</div></div>
+          <div class="hmap-cell hmap-empty"></div>
+          <div class="hmap-cell hmap-empty"></div>
+          <div class="hmap-cell hmap-empty"></div>
+          <div class="hmap-cell hmap-empty"></div>
+        </div>
+        <div class="hmap-legend">
+          <div class="hleg"><div class="hleg-dot" style="background:linear-gradient(135deg,#F5C518,#E0AD00);"></div> Excellent ≥ 7.5h</div>
+          <div class="hleg"><div class="hleg-dot" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);"></div> Good 6–7.5h</div>
+          <div class="hleg"><div class="hleg-dot" style="background:#888;"></div> Average 4–6h</div>
+          <div class="hleg"><div class="hleg-dot" style="background:#D8D8D0;"></div> Low &lt; 4h</div>
+          <div class="hleg"><div class="hleg-dot" style="background:rgba(0,0,0,0.04);border:1px solid #E0E0E0;"></div> Weekend</div>
+        </div>
+      </div>
+
+      <!-- Employee Table -->
+      <div class="card" style="padding:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:600;color:#1A1A1A;">Team Members</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="display:flex;align-items:center;gap:6px;padding:0 12px;height:32px;background:rgba(255,255,255,0.7);border:1.5px solid rgba(255,255,255,0.9);border-radius:50px;font-size:11px;color:#BBB;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#BBB" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Search member...
+            </div>
+            <div style="padding:0 12px;height:32px;border-radius:50px;background:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.9);font-size:11px;color:#666;display:flex;align-items:center;gap:5px;cursor:pointer;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              Filter
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active">All (34)</div>
+          <div class="tab">Working (28)</div>
+          <div class="tab">Privacy (3)</div>
+          <div class="tab">Offline (3)</div>
+        </div>
+        <table class="emp-table">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Status</th>
+              <th>Check In</th>
+              <th>Active Hrs</th>
+              <th>Productivity</th>
+              <th>Score</th>
+              <th>Most Used App</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="cursor:pointer;">
+              <td><div class="emp-cell"><div class="emp-av" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">RS</div><div><div class="emp-name">Ravi Shankar</div><div class="emp-email">ravi@techcorp.com</div></div></div></td>
+              <td><div class="status-badge sb-work"><div class="status-dot" style="background:#1A1A1A;"></div>Work Mode</div></td>
+              <td style="color:#666;font-size:11px;">09:01 AM</td>
+              <td style="font-weight:600;color:#1A1A1A;font-size:11.5px;">7h 12m</td>
+              <td><div class="prod-mini"><div class="prod-mini-fill" style="width:91%;background:linear-gradient(90deg,#F5C518,#E0AD00);"></div></div></td>
+              <td><span class="score-pill" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">91%</span></td>
+              <td style="font-size:11px;color:#888;">VS Code</td>
+            </tr>
+            <tr style="cursor:pointer;">
+              <td><div class="emp-cell"><div class="emp-av" style="background:#E8E0C8;color:#888;">AM</div><div><div class="emp-name">Arjun Mehta</div><div class="emp-email">arjun@techcorp.com</div></div></div></td>
+              <td><div class="status-badge sb-work"><div class="status-dot" style="background:#1A1A1A;"></div>Work Mode</div></td>
+              <td style="color:#666;font-size:11px;">09:08 AM</td>
+              <td style="font-weight:600;color:#1A1A1A;font-size:11.5px;">6h 44m</td>
+              <td><div class="prod-mini"><div class="prod-mini-fill" style="width:84%;background:linear-gradient(90deg,#1A1A1A,#2D2D2D);"></div></div></td>
+              <td><span class="score-pill" style="background:#1A1A1A;color:#F5C518;">84%</span></td>
+              <td style="font-size:11px;color:#888;">Chrome</td>
+            </tr>
+            <tr style="cursor:pointer;">
+              <td><div class="emp-cell"><div class="emp-av" style="background:#D8D8D0;color:#888;">KR</div><div><div class="emp-name">Karthik Rajan</div><div class="emp-email">karthik@techcorp.com</div></div></div></td>
+              <td><div class="status-badge sb-privacy"><div class="status-dot" style="background:#D97706;"></div>Privacy</div></td>
+              <td style="color:#666;font-size:11px;">09:22 AM</td>
+              <td style="font-weight:600;color:#1A1A1A;font-size:11.5px;">5h 30m</td>
+              <td><div class="prod-mini"><div class="prod-mini-fill" style="width:72%;background:#C8C8C0;"></div></div></td>
+              <td><span class="score-pill" style="background:#F0F0EC;color:#888;">72%</span></td>
+              <td style="font-size:11px;color:#888;">Figma</td>
+            </tr>
+            <tr style="cursor:pointer;">
+              <td><div class="emp-cell"><div class="emp-av" style="background:#E8E0C8;color:#888;">SV</div><div><div class="emp-name">Swetha Varman</div><div class="emp-email">swetha@techcorp.com</div></div></div></td>
+              <td><div class="status-badge sb-work"><div class="status-dot" style="background:#1A1A1A;"></div>Work Mode</div></td>
+              <td style="color:#666;font-size:11px;">09:15 AM</td>
+              <td style="font-weight:600;color:#1A1A1A;font-size:11.5px;">6h 10m</td>
+              <td><div class="prod-mini"><div class="prod-mini-fill" style="width:80%;background:linear-gradient(90deg,#F5C518,#E0AD00);"></div></div></td>
+              <td><span class="score-pill" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">80%</span></td>
+              <td style="font-size:11px;color:#888;">VS Code</td>
+            </tr>
+            <tr style="cursor:pointer;">
+              <td><div class="emp-cell"><div class="emp-av" style="background:#F5F5F5;color:#BBB;">DV</div><div><div class="emp-name">Dev Varma</div><div class="emp-email">dev@techcorp.com</div></div></div></td>
+              <td><div class="status-badge sb-offline"><div class="status-dot" style="background:#CCC;"></div>Offline</div></td>
+              <td style="color:#BBB;font-size:11px;">—</td>
+              <td style="color:#BBB;font-size:11.5px;">—</td>
+              <td><div class="prod-mini"><div class="prod-mini-fill" style="width:0%;"></div></div></td>
+              <td><span class="score-pill" style="background:#FFF0F0;color:#CC4444;">Absent</span></td>
+              <td style="font-size:11px;color:#CCC;">—</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid rgba(0,0,0,0.05);margin-top:4px;">
+          <div style="font-size:11px;color:#AAA;">Showing 5 of 34 employees</div>
+          <div style="display:flex;gap:6px;">
+            <div style="padding:5px 12px;border-radius:20px;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.08);font-size:11px;color:#888;cursor:pointer;">← Prev</div>
+            <div style="padding:5px 12px;border-radius:20px;background:linear-gradient(135deg,#1A1A1A,#2D2D2D);font-size:11px;color:#fff;cursor:pointer;">Next →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <!-- Top Apps for this team -->
+      <div class="card panel-card">
+        <div style="font-size:13px;font-weight:600;color:#1A1A1A;margin-bottom:12px;">Top Apps Today</div>
+        <div class="app-mini-row">
+          <div class="app-mini-icon" style="background:linear-gradient(135deg,#2D2D2D,#1A1A1A);color:#F5C518;">VS</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:500;color:#1A1A1A;margin-bottom:2px;">VS Code</div><div class="app-mini-bar-track"><div class="app-mini-bar-fill" style="width:100%;background:#1A1A1A;"></div></div></div>
+          <div class="app-mini-time">3h 12m</div>
+        </div>
+        <div class="app-mini-row">
+          <div class="app-mini-icon" style="background:linear-gradient(135deg,#E8E0C8,#D8CEB0);color:#1A1A1A;">CH</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:500;color:#1A1A1A;margin-bottom:2px;">Chrome</div><div class="app-mini-bar-track"><div class="app-mini-bar-fill" style="width:70%;background:#C8C8C0;"></div></div></div>
+          <div class="app-mini-time">2h 15m</div>
+        </div>
+        <div class="app-mini-row">
+          <div class="app-mini-icon" style="background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;">SL</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:500;color:#1A1A1A;margin-bottom:2px;">Slack</div><div class="app-mini-bar-track"><div class="app-mini-bar-fill" style="width:45%;background:#C8C8C0;"></div></div></div>
+          <div class="app-mini-time">1h 27m</div>
+        </div>
+        <div class="app-mini-row">
+          <div class="app-mini-icon" style="background:linear-gradient(135deg,#D8D8D0,#C0C0B8);color:#1A1A1A;">YT</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:500;color:#1A1A1A;margin-bottom:2px;">YouTube</div><div class="app-mini-bar-track"><div class="app-mini-bar-fill" style="width:28%;background:#F5C518;"></div></div></div>
+          <div class="app-mini-time">0h 54m</div>
+        </div>
+      </div>
+
+      <!-- Weekly productivity mini chart -->
+      <div class="card panel-card">
+        <div style="font-size:13px;font-weight:600;color:#1A1A1A;margin-bottom:4px;">This Week's Performance</div>
+        <div style="font-size:10px;color:#AAA;margin-bottom:12px;">Avg productive hours / day</div>
+        <div class="mini-bars">
+          <div class="mini-bar-col"><div class="mini-bar" style="height:36px;background:#D8D8D0;"></div><div class="mini-bar-label">M</div></div>
+          <div class="mini-bar-col"><div class="mini-bar" style="height:46px;background:#1A1A1A;"></div><div class="mini-bar-label">T</div></div>
+          <div class="mini-bar-col"><div class="mini-bar" style="height:38px;background:#1A1A1A;"></div><div class="mini-bar-label">W</div></div>
+          <div class="mini-bar-col"><div class="mini-bar" style="height:48px;background:#1A1A1A;"></div><div class="mini-bar-label">T</div></div>
+          <div class="mini-bar-col"><div class="mini-bar" style="height:50px;background:linear-gradient(180deg,#F5C518,#E0AD00);"></div><div class="mini-bar-label">F</div></div>
+          <div class="mini-bar-col"><div class="mini-bar" style="height:10px;background:#E8E0C8;"></div><div class="mini-bar-label">S</div></div>
+          <div class="mini-bar-col"><div class="mini-bar" style="height:6px;background:#E8E0C8;"></div><div class="mini-bar-label">S</div></div>
+        </div>
+      </div>
+
+      <!-- Idle alerts -->
+      <div class="card panel-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:600;color:#1A1A1A;">Idle Alerts Today</div>
+          <div style="background:linear-gradient(135deg,#F5C518,#E0AD00);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;color:#1A1A1A;">4</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#FFF8E8;border-radius:10px;border:1px solid rgba(245,197,24,0.2);">
+            <div style="width:24px;height:24px;border-radius:50%;background:#E8E0C8;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#888;">KR</div>
+            <div style="flex:1;"><div style="font-size:11px;font-weight:500;color:#1A1A1A;">Karthik Rajan</div><div style="font-size:9.5px;color:#AAA;">Idle 12 min · 2:30 PM</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#FFF8E8;border-radius:10px;border:1px solid rgba(245,197,24,0.2);">
+            <div style="width:24px;height:24px;border-radius:50%;background:#E8E0C8;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#888;">DV</div>
+            <div style="flex:1;"><div style="font-size:11px;font-weight:500;color:#1A1A1A;">Dev Varma</div><div style="font-size:9.5px;color:#AAA;">Idle 8 min · 1:45 PM</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="card panel-card">
+        <div style="font-size:13px;font-weight:600;color:#1A1A1A;margin-bottom:12px;">Quick Actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8F8F5;border-radius:10px;cursor:pointer;border:1px solid rgba(0,0,0,0.05);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>
+            <span style="font-size:11.5px;font-weight:500;color:#1A1A1A;">View Screenshots</span>
+            <svg style="margin-left:auto;" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8F8F5;border-radius:10px;cursor:pointer;border:1px solid rgba(0,0,0,0.05);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span style="font-size:11.5px;font-weight:500;color:#1A1A1A;">Generate Report</span>
+            <svg style="margin-left:auto;" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8F8F5;border-radius:10px;cursor:pointer;border:1px solid rgba(0,0,0,0.05);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            <span style="font-size:11.5px;font-weight:500;color:#1A1A1A;">Add Member</span>
+            <svg style="margin-left:auto;" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

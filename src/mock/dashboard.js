@@ -1,0 +1,240 @@
+export const dashboardStats = {
+  activeNow: 89,
+  checkedIn: 112,
+  absent: 16,
+  avgProductivity: '6h 42m / day',
+  totalEmployees: 128,
+  totalTeams: 5,
+};
+
+export const productivityScore = {
+  score: 78,
+  maxScore: 100,
+  target: 80,
+  changePercent: 3,
+  changeDirection: 'up',
+  period: 'Today · All Teams · Apr 16',
+  breakdown: [
+    { label: 'Productive', value: 65, color: '#1D9E75' },
+    { label: 'Idle', value: 15, color: 'rgba(255,255,255,0.28)' },
+    { label: 'Unproductive', value: 20, color: 'rgba(255,255,255,0.12)' },
+  ],
+};
+
+export const orgHealth = {
+  status: 'Good',
+  tiles: [
+    {
+      value: '65%',
+      label: 'Productivity rate',
+      change: '↑ +3% today',
+      positive: true,
+      variant: 'primary',
+    },
+    {
+      value: '87.5%',
+      label: 'Attendance rate',
+      change: '→ stable',
+      positive: false,
+      variant: 'dark',
+    },
+    {
+      value: '6h 42m',
+      label: 'Avg work time',
+      change: 'target 8h',
+      positive: false,
+      variant: 'dark',
+    },
+    {
+      value: '72%',
+      label: 'App compliance',
+      change: '4 idle alerts',
+      positive: true,
+      variant: 'primary',
+    },
+  ],
+};
+
+export const workSummary = {
+  todayHours: 6.1,
+  todayLabel: 'Productive today',
+  weeklyData: [
+    { day: 'M', hours: 3.2, height: 36, variant: 'gray' },
+    { day: 'T', hours: 5.1, height: 58, variant: 'dark' },
+    { day: 'W', hours: 4.0, height: 45, variant: 'dark' },
+    { day: 'T', hours: 6.0, height: 68, variant: 'dark' },
+    { day: 'F', hours: 6.7, height: 80, variant: 'primary', tooltip: '6h 42m', active: true },
+    { day: 'S', hours: 2.1, height: 24, variant: 'gray' },
+    { day: 'S', hours: 1.2, height: 14, variant: 'gray' },
+  ],
+};
+
+export const appUsage = {
+  activeTab: 'apps',
+  apps: [
+    {
+      name: 'VS Code',
+      abbr: 'VS',
+      time: '3h 12m',
+      percentage: 100,
+      category: 'productive',
+      iconBg: 'linear-gradient(135deg, #162E24, #0F6E56)',
+      iconColor: '#1D9E75',
+      barColor: '#1A1A1A',
+    },
+    {
+      name: 'Chrome',
+      abbr: 'CH',
+      time: '2h 30m',
+      percentage: 78,
+      category: 'neutral',
+      iconBg: 'linear-gradient(135deg, #E8E0C8, #D8CEB0)',
+      iconColor: '#1A1A1A',
+      barColor: '#C8C8C0',
+    },
+    {
+      name: 'Figma',
+      abbr: 'FG',
+      time: '2h 00m',
+      percentage: 62,
+      category: 'productive',
+      iconBg: 'linear-gradient(135deg, #1D9E75, #0F6E56)',
+      iconColor: '#fff',
+      barColor: '#1A1A1A',
+    },
+    {
+      name: 'YouTube',
+      abbr: 'YT',
+      time: '1h 22m',
+      percentage: 42,
+      category: 'unproductive',
+      iconBg: 'linear-gradient(135deg, #D8D8D0, #C0C0B8)',
+      iconColor: '#1A1A1A',
+      barColor: '#1D9E75',
+    },
+  ],
+};
+
+export const screenshotFeed = [
+  {
+    id: 1,
+    name: 'Ravi Shankar',
+    app: 'VS Code · Engineering',
+    time: '2:41 PM',
+    status: 'productive',
+    thumbBg: 'linear-gradient(135deg, #162E24, #0F6E56)',
+    thumbStroke: 'rgba(29, 158, 117, 0.8)',
+  },
+  {
+    id: 2,
+    name: 'Priya Krishnan',
+    app: 'Figma · Design',
+    time: '2:39 PM',
+    status: 'productive',
+    thumbBg: 'linear-gradient(135deg, #1D9E75, #0A8060)',
+    thumbStroke: 'rgba(255, 255, 255, 0.7)',
+  },
+  {
+    id: 3,
+    name: 'Arjun Mehta',
+    app: 'Chrome · Engineering',
+    time: '2:37 PM',
+    status: 'idle',
+    thumbBg: 'linear-gradient(135deg, #C0C0B8, #A8A8A0)',
+    thumbStroke: 'rgba(255, 255, 255, 0.7)',
+  },
+  {
+    id: 4,
+    name: 'Karthik Rajan',
+    app: 'Slack · Support',
+    time: '2:35 PM',
+    status: 'productive',
+    thumbBg: 'linear-gradient(135deg, #3A3520, #2A2818)',
+    thumbStroke: 'rgba(245, 197, 24, 0.5)',
+  },
+];
+
+export const topProductive = [
+  {
+    rank: 1,
+    name: 'Ravi Shankar',
+    initials: 'RS',
+    hours: '7h 14m',
+    percentage: 100,
+    avatarBg: 'linear-gradient(135deg, #1D9E75, #0F6E56)',
+    avatarColor: '#fff',
+    barBg: 'linear-gradient(135deg, #162E24, #0F6E56)',
+    hoursColor: '#1A1A1A',
+  },
+  {
+    rank: 2,
+    name: 'Priya Krishnan',
+    initials: 'PK',
+    hours: '6h 08m',
+    percentage: 85,
+    avatarBg: 'linear-gradient(135deg, #E8E0C8, #D8CEB0)',
+    avatarColor: '#888',
+    barBg: '#C8C8C0',
+    hoursColor: '#888',
+  },
+  {
+    rank: 3,
+    name: 'Arjun Mehta',
+    initials: 'AM',
+    hours: '5h 11m',
+    percentage: 70,
+    avatarBg: 'linear-gradient(135deg, #D8D8D0, #C8C8C0)',
+    avatarColor: '#888',
+    barBg: '#C8C8C0',
+    hoursColor: '#888',
+  },
+];
+
+export const attendance = {
+  percentage: 87,
+  checkedIn: 112,
+  absent: 16,
+  privacy: 23,
+};
+
+export const liveActivity = {
+  active: 89,
+  total: 128,
+  items: [
+    {
+      id: 1,
+      name: 'Ravi Shankar',
+      status: 'Work Mode · 9:01 AM',
+      completed: true,
+      icon: 'monitor',
+    },
+    {
+      id: 2,
+      name: 'Meera Kapoor',
+      status: 'Privacy Mode · 9:15 AM',
+      completed: true,
+      icon: 'zap',
+    },
+    {
+      id: 3,
+      name: 'Arjun Mehta',
+      status: 'Work Mode · 9:08 AM',
+      completed: false,
+      icon: 'clock',
+    },
+    {
+      id: 4,
+      name: 'Sneha Nair',
+      status: 'Idle · Last seen 9:32 AM',
+      completed: false,
+      icon: 'user',
+    },
+    {
+      id: 5,
+      name: 'Dev Varma',
+      status: 'App Not Installed',
+      completed: false,
+      icon: 'heart',
+    },
+  ],
+};

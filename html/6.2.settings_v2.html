@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=1280"/>
+<title>Soniq — Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-width:1280px;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#9A9FAD,#B8BCC8,#A8AC98);}
+body{display:flex;justify-content:center;}
+.shell{width:1280px;background:linear-gradient(135deg,#EEECEA 0%,#ECEAE4 30%,#F5F0DA 65%,#F3EAA8 100%);min-height:100vh;position:relative;}
+.shell::before{content:'';position:absolute;inset:0;height:220px;background:linear-gradient(180deg,rgba(255,255,255,.52),rgba(255,255,255,0));pointer-events:none;z-index:0;}
+
+/* ─── NAV ─── */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 36px 0;position:relative;z-index:10;}
+.logo{border:1.5px solid rgba(255,255,255,.65);border-radius:50px;padding:7px 22px;font-size:15px;font-weight:700;color:#1A1A1A;background:rgba(255,255,255,.55);}
+.nc{display:flex;gap:2px;}
+.ni{padding:8px 14px;border-radius:50px;font-size:12px;font-weight:500;color:#555;cursor:pointer;transition:background .15s;}
+.ni:hover{background:rgba(255,255,255,.4);}
+.ni.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.nr{display:flex;align-items:center;gap:10px;}
+.np{display:flex;align-items:center;gap:6px;padding:7px 13px;border:1.5px solid rgba(255,255,255,.65);border-radius:50px;background:rgba(255,255,255,.48);font-size:11px;font-weight:500;color:#555;}
+.nc2{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.65);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.48);}
+
+/* ─── SCREENS ─── */
+.screen{display:none;padding:0 36px 52px;position:relative;z-index:2;}
+.screen.active{display:block;}
+
+/* ─── PAGE HEADER ─── */
+.ph{display:flex;align-items:flex-end;justify-content:space-between;padding:16px 0 24px;}
+.bc{font-size:10px;color:#BBBBAA;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.lnk{color:#B8860B;font-weight:600;cursor:pointer;}
+.lnk:hover{text-decoration:underline;}
+.pt{font-size:26px;font-weight:800;color:#1A1A1A;letter-spacing:-.8px;}
+.psub{font-size:10.5px;color:#AAA;margin-top:3px;}
+.phr{display:flex;gap:8px;align-items:center;}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:50px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;border:none;transition:opacity .15s;}
+.btn:hover{opacity:.85;}
+.bg{background:rgba(255,255,255,.72);border:1.5px solid rgba(255,255,255,.9);color:#555;}
+.bd{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;}
+.by{background:linear-gradient(135deg,#F5C518,#E0AD00);color:#1A1A1A;}
+.br{background:linear-gradient(135deg,#993535,#7A2020);color:#fff;}
+.sm{padding:5px 13px;font-size:10.5px;border-radius:20px;}
+
+/* ─── BANNERS ─── */
+.banner{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-radius:14px;margin-bottom:16px;border:1px solid;}
+.binfo{background:rgba(55,138,221,.07);border-color:rgba(55,138,221,.2);}
+.bwarn{background:rgba(245,197,24,.09);border-color:rgba(245,197,24,.28);}
+.bdanger{background:rgba(153,53,53,.07);border-color:rgba(153,53,53,.2);}
+.bsuccess{background:rgba(61,96,40,.07);border-color:rgba(61,96,40,.18);}
+.bico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btitle{font-size:11.5px;font-weight:700;margin-bottom:3px;}
+.bbody{font-size:10.5px;color:#888;line-height:1.6;}
+
+/* ─── BADGES ─── */
+.bdg{display:inline-flex;align-items:center;padding:2px 9px;border-radius:8px;font-size:9px;font-weight:600;}
+.dg{background:rgba(61,96,40,.1);color:#27500A;border:1px solid rgba(61,96,40,.2);}
+.dy{background:rgba(245,197,24,.12);color:#633806;border:1px solid rgba(245,197,24,.28);}
+.db{background:rgba(55,138,221,.1);color:#0C447C;border:1px solid rgba(55,138,221,.2);}
+.dp{background:rgba(83,74,183,.1);color:#3C3489;border:1px solid rgba(83,74,183,.2);}
+.drd{background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.2);}
+.dn{background:#F5F5F0;color:#888;border:1px solid rgba(0,0,0,.08);}
+.do{background:rgba(216,90,48,.1);color:#712B13;border:1px solid rgba(216,90,48,.2);}
+
+/* ─── TOGGLE ─── */
+.tog{width:40px;height:22px;border-radius:11px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.tog.on{background:linear-gradient(135deg,#1A1A1A,#333);}
+.tog.off{background:#D0D0C8;}
+.tt{position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:left .18s;}
+.tog.on .tt{left:21px;}
+.tog.off .tt{left:3px;}
+
+/* ─── STEPPER ─── */
+.stp{display:inline-flex;align-items:center;border-radius:10px;overflow:hidden;border:1.5px solid rgba(0,0,0,.12);background:rgba(255,255,255,.65);}
+.sb{width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:600;color:#555;transition:background .1s;}
+.sb:hover{background:rgba(0,0,0,.06);}
+.sv{min-width:38px;text-align:center;font-size:11px;font-weight:700;color:#1A1A1A;border-left:1.5px solid rgba(0,0,0,.08);border-right:1.5px solid rgba(0,0,0,.08);height:28px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+
+/* ═══════════════════════════════════════════
+   HUB — GROUPED LAYOUT
+═══════════════════════════════════════════ */
+.hub-wrap{display:flex;flex-direction:column;gap:28px;}
+
+/* group block */
+.grp{display:flex;flex-direction:column;gap:12px;}
+.grp-header{display:flex;align-items:center;gap:10px;}
+.grp-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.grp-text{display:flex;flex-direction:column;}
+.grp-name{font-size:13px;font-weight:700;color:#1A1A1A;letter-spacing:-.2px;}
+.grp-sub{font-size:10px;color:#AAA;margin-top:1px;}
+.grp-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(0,0,0,.08),rgba(0,0,0,0));}
+.grp-count{font-size:9px;font-weight:700;color:#AAA;padding:3px 10px;background:rgba(255,255,255,.6);border-radius:20px;border:1px solid rgba(0,0,0,.07);white-space:nowrap;}
+.grp-cards{display:grid;gap:12px;}
+.grp-cards.col2{grid-template-columns:1fr 1fr;}
+.grp-cards.col3{grid-template-columns:1fr 1fr 1fr;}
+
+/* individual setting card */
+.sc{background:rgba(255,255,255,.86);border-radius:20px;border:1px solid rgba(255,255,255,.98);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 18px rgba(0,0,0,.07);cursor:pointer;transition:transform .18s,box-shadow .18s;overflow:hidden;display:flex;flex-direction:column;}
+.sc:hover{transform:translateY(-4px);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 16px 36px rgba(0,0,0,.13);}
+.sc-accent{height:3px;width:100%;}
+.sc-body{padding:18px 20px 20px;flex:1;display:flex;flex-direction:column;}
+.sc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.sc-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sc-badge{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.sc-name{font-size:14px;font-weight:700;color:#1A1A1A;letter-spacing:-.2px;margin-bottom:5px;line-height:1.25;}
+.sc-desc{font-size:10.5px;color:#888;line-height:1.65;margin-bottom:14px;flex:1;}
+.sc-footer{display:flex;align-items:center;justify-content:space-between;}
+.sc-meta{font-size:9.5px;color:#AAA;}
+.sc-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;border-radius:50px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:'Poppins',sans-serif;flex-shrink:0;}
+
+/* merged chip inside card */
+.merged-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:8.5px;font-weight:700;background:rgba(61,96,40,.1);color:#27500A;border:1px solid rgba(61,96,40,.2);margin-top:4px;}
+
+/* ═══════════════════════════════════════════
+   INNER SECTION SCREENS
+═══════════════════════════════════════════ */
+
+/* teams grid */
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+.tc{background:rgba(255,255,255,.86);border-radius:20px;border:1px solid rgba(255,255,255,.98);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 16px rgba(0,0,0,.07);padding:22px;position:relative;}
+.tc-av{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;margin-bottom:14px;}
+.tc-name{font-size:16px;font-weight:700;color:#1A1A1A;margin-bottom:3px;letter-spacing:-.3px;}
+.tc-desc{font-size:10px;color:#AAA;margin-bottom:14px;}
+.tc-ring-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.tc-ring{position:relative;width:48px;height:48px;flex-shrink:0;}
+.tc-ring svg{transform:rotate(-90deg);}
+.tc-ring-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#1A1A1A;}
+.tc-stats{display:flex;gap:16px;}
+.tc-stat-l{font-size:8.5px;color:#AAA;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px;}
+.tc-stat-v{font-size:17px;font-weight:800;color:#1A1A1A;letter-spacing:-.5px;}
+.tc-foot{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(0,0,0,.05);}
+.tc-new{border:2px dashed rgba(0,0,0,.1);background:rgba(255,255,255,.5);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all .15s;min-height:210px;}
+.tc-new:hover{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.78);}
+
+/* people list */
+.pgrp-lbl{font-size:9.5px;font-weight:700;color:#B8860B;text-transform:uppercase;letter-spacing:.8px;padding:10px 20px 6px;display:flex;align-items:center;gap:8px;}
+.pgrp-lbl::after{content:'';flex:1;height:1px;background:rgba(184,134,11,.2);}
+.prow{display:flex;align-items:center;padding:11px 20px;background:rgba(255,255,255,.86);border-bottom:1px solid rgba(0,0,0,.04);transition:background .1s;gap:0;}
+.prow:hover{background:rgba(255,255,255,.97);}
+.pav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;flex-shrink:0;margin-right:12px;}
+.pid{flex:1;min-width:0;}
+.pname{font-size:11.5px;font-weight:600;color:#1A1A1A;}
+.pemail{font-size:9.5px;color:#AAA;}
+.ppills{display:flex;align-items:center;gap:6px;margin:0 18px;flex-shrink:0;}
+.ppill{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;background:#F5F5F0;border:1px solid rgba(0,0,0,.07);font-size:9.5px;color:#666;}
+.pdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.prole{flex-shrink:0;margin-right:14px;}
+.pacts{display:flex;gap:5px;flex-shrink:0;}
+.ico-btn{width:30px;height:30px;border-radius:8px;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+.ico-btn:hover{background:#fff;border-color:rgba(0,0,0,.2);}
+
+/* work policy — two-panel schedule + target drawers */
+.wp-layout{display:grid;grid-template-columns:260px 1fr;gap:0;background:rgba(255,255,255,.86);border-radius:20px;border:1px solid rgba(255,255,255,.98);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 16px rgba(0,0,0,.07);overflow:hidden;margin-bottom:12px;}
+.wp-tabs{display:flex;gap:2px;padding:4px;background:rgba(0,0,0,.05);border-radius:10px;margin-bottom:16px;}
+.wp-tab{flex:1;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:500;color:#666;cursor:pointer;text-align:center;transition:all .15s;}
+.wp-tab.on{background:#fff;color:#1A1A1A;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.wp-emp-list{border-right:1px solid rgba(0,0,0,.06);}
+.wp-emp-head{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.05);font-size:11px;font-weight:700;color:#1A1A1A;}
+.wp-emp{display:flex;align-items:center;gap:9px;padding:10px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);transition:background .1s;}
+.wp-emp:hover{background:rgba(245,197,24,.05);}
+.wp-emp.sel{background:rgba(245,197,24,.1);border-right:3px solid #F5C518;}
+.wp-emp-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.wp-emp-name{font-size:11px;font-weight:600;color:#1A1A1A;}
+.wp-emp-team{font-size:9px;color:#AAA;}
+.wp-panel{padding:22px;}
+.wp-panel-name{font-size:14px;font-weight:700;color:#1A1A1A;margin-bottom:3px;}
+.wp-panel-sub{font-size:10px;color:#AAA;margin-bottom:18px;}
+.wp-content{display:none;}
+.wp-content.show{display:block;}
+/* schedule day grid */
+.wk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-bottom:20px;}
+.wk-day{border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s;}
+.wk-day:hover .wk-sq{transform:scale(1.06);}
+.wk-lbl{text-align:center;font-size:9px;font-weight:700;color:#AAA;padding:5px 0 4px;text-transform:uppercase;letter-spacing:.4px;}
+.wk-sq{height:50px;display:flex;align-items:center;justify-content:center;border-radius:10px;margin:0 3px 3px;font-size:14px;font-weight:700;transition:all .2s;}
+.wk-day.on .wk-sq{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#F5C518;}
+.wk-day.on .wk-lbl{color:#1A1A1A;}
+.wk-day.wknd .wk-sq{background:rgba(0,0,0,.05);color:#CCC;}
+.wk-day.wknd .wk-lbl{color:#CCC;}
+.wk-day.off .wk-sq{background:rgba(0,0,0,.05);color:#CCC;border:2px dashed rgba(0,0,0,.1);}
+.quick-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;}
+.qchip{display:flex;align-items:center;gap:4px;padding:6px 12px;background:#F5F5F0;border-radius:20px;font-size:10px;color:#888;border:1px solid rgba(0,0,0,.07);cursor:pointer;transition:all .15s;}
+.qchip:hover{background:rgba(245,197,24,.1);color:#B8860B;border-color:rgba(245,197,24,.3);}
+.qchip.sel{background:rgba(245,197,24,.14);border-color:rgba(245,197,24,.3);color:#633806;font-weight:600;}
+/* target controls */
+.tgt-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.tgt-ctrl{background:#F8F8F5;border-radius:13px;padding:13px 14px;}
+.tgt-ctrl-lbl{font-size:9px;color:#AAA;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;font-weight:600;}
+.tgt-inp{width:100%;height:32px;border-radius:8px;border:1.5px solid rgba(0,0,0,.1);background:#fff;padding:0 10px;font-size:11.5px;font-family:'Poppins',sans-serif;color:#1A1A1A;outline:none;}
+.tgt-inp:focus{border-color:#1A1A1A;}
+
+/* monitoring controls */
+.mc-list{display:flex;flex-direction:column;}
+.mc-grp-lbl{font-size:9.5px;font-weight:700;color:#B8860B;text-transform:uppercase;letter-spacing:.8px;padding:10px 22px 7px;display:flex;align-items:center;gap:8px;}
+.mc-grp-lbl::after{content:'';flex:1;height:1px;background:rgba(184,134,11,.2);}
+.mc-row{display:flex;align-items:center;padding:13px 22px;background:rgba(255,255,255,.86);border-bottom:1px solid rgba(0,0,0,.04);gap:0;transition:background .1s;}
+.mc-row:hover{background:rgba(255,255,255,.97);}
+.mc-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;flex-shrink:0;margin-right:12px;}
+.mc-id{width:160px;flex-shrink:0;}
+.mc-name{font-size:11.5px;font-weight:600;color:#1A1A1A;}
+.mc-team{font-size:9.5px;color:#AAA;}
+.mc-divider{width:1px;height:36px;background:rgba(0,0,0,.06);margin:0 16px;flex-shrink:0;}
+/* screenshot pod */
+.mc-cap-section{display:flex;align-items:center;gap:10px;flex:1;}
+.mc-sec-lbl{font-size:9px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.5px;width:48px;flex-shrink:0;}
+.pod{display:flex;align-items:center;background:#F5F5F0;border-radius:50px;border:1px solid rgba(0,0,0,.08);overflow:hidden;}
+.pod-seg{display:flex;align-items:center;gap:5px;padding:6px 12px;font-size:10px;font-weight:500;cursor:pointer;transition:background .15s;border-right:1px solid rgba(0,0,0,.06);white-space:nowrap;}
+.pod-seg:last-child{border-right:none;}
+.pod-seg.cap-on{background:rgba(245,197,24,.2);color:#633806;}
+.pod-seg.cap-off{color:#AAA;}
+.pod-seg.blur-on{background:rgba(26,26,26,.1);color:#1A1A1A;}
+.pod-seg.blur-off{color:#AAA;}
+/* idle bar */
+.mc-idle-section{display:flex;align-items:center;gap:10px;width:220px;flex-shrink:0;}
+.idle-track{flex:1;height:8px;border-radius:4px;background:rgba(0,0,0,.08);position:relative;cursor:pointer;}
+.idle-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#F5C518,#E0AD00);transition:width .15s;}
+.idle-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #1A1A1A;position:absolute;top:50%;transform:translateY(-50%) translateX(-9px);box-shadow:0 2px 5px rgba(0,0,0,.2);cursor:grab;transition:left .15s;}
+.idle-val{font-size:14px;font-weight:800;color:#1A1A1A;width:22px;text-align:center;flex-shrink:0;}
+.idle-unit-lbl{font-size:9px;color:#AAA;flex-shrink:0;}
+.mc-save{margin-left:12px;flex-shrink:0;}
+.tog-row{display:flex;align-items:center;gap:7px;}
+.tog-lbl{font-size:10px;font-weight:600;}
+.int-pod{display:flex;align-items:center;}
+
+/* stealth */
+.legal-gate{background:linear-gradient(135deg,#1A1A1A,#2A1010);border-radius:22px;padding:32px;border:1px solid rgba(255,255,255,.07);margin-bottom:14px;}
+.legal-ico{width:52px;height:52px;border-radius:15px;background:rgba(153,53,53,.25);border:1px solid rgba(153,53,53,.35);display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+.legal-title{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:8px;}
+.legal-body{font-size:11px;color:rgba(255,255,255,.48);line-height:1.8;margin-bottom:20px;max-width:700px;}
+.legal-check{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:rgba(153,53,53,.15);border-radius:14px;border:1px solid rgba(153,53,53,.3);margin-bottom:16px;cursor:pointer;}
+.legal-cb{width:20px;height:20px;border-radius:6px;border:2px solid rgba(153,53,53,.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s;}
+.legal-cb.chk{background:#993535;border-color:#993535;}
+.legal-txt{font-size:10.5px;color:rgba(255,255,255,.55);line-height:1.65;}
+.stealth-rows{display:flex;flex-direction:column;gap:8px;transition:all .4s;}
+.st-row{display:flex;align-items:center;padding:16px 22px;background:rgba(255,255,255,.86);border-radius:16px;border:1px solid rgba(255,255,255,.98);box-shadow:0 2px 0 rgba(255,255,255,.95) inset;gap:14px;}
+.st-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.st-info{flex:1;}
+.st-name{font-size:12px;font-weight:600;color:#1A1A1A;}
+.st-meta{font-size:9.5px;color:#AAA;margin-top:1px;}
+.st-status{font-size:10px;font-weight:600;margin-right:8px;}
+
+/* org defaults */
+.defs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.def-card{background:rgba(255,255,255,.86);border-radius:20px;border:1px solid rgba(255,255,255,.98);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 16px rgba(0,0,0,.07);overflow:hidden;}
+.def-prev{height:88px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.def-body{padding:18px 20px 20px;}
+.def-title{font-size:13px;font-weight:700;color:#1A1A1A;margin-bottom:2px;}
+.def-sub{font-size:9.5px;color:#AAA;margin-bottom:15px;}
+.def-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,.05);}
+.def-row:last-child{border-bottom:none;padding-bottom:0;}
+.def-lbl{font-size:11px;font-weight:500;color:#1A1A1A;}
+.def-hint{font-size:9px;color:#AAA;margin-top:1px;}
+.dp-pills{display:flex;gap:3px;}
+.dpp{width:26px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.dpp.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;}
+.dpp.off{background:rgba(0,0,0,.07);color:#AAA;}
+
+/* permissions */
+.role-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.rc{background:rgba(255,255,255,.86);border-radius:18px;border:2px solid rgba(255,255,255,.98);box-shadow:0 2px 0 rgba(255,255,255,.95) inset;padding:18px;cursor:pointer;transition:all .18s;position:relative;}
+.rc:hover{transform:translateY(-2px);}
+.rc.sel{border-color:#1A1A1A;box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 14px rgba(0,0,0,.12);}
+.rc-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:16px;font-weight:800;}
+.rc-lock{position:absolute;top:12px;right:12px;opacity:.4;}
+.rc-name{font-size:13px;font-weight:700;color:#1A1A1A;margin-bottom:2px;}
+.rc-members{font-size:10px;color:#AAA;}
+.perm-panel{background:rgba(255,255,255,.86);border-radius:20px;border:1px solid rgba(255,255,255,.98);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 16px rgba(0,0,0,.07);overflow:hidden;}
+.pp-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(0,0,0,.05);}
+.pp-mod-row{display:flex;align-items:center;padding:12px 22px;border-bottom:1px solid rgba(0,0,0,.04);gap:16px;}
+.pp-mod-row:last-child{border-bottom:none;}
+.pp-mod-name{width:150px;flex-shrink:0;font-size:12px;font-weight:500;color:#1A1A1A;}
+.pp-bar-wrap{flex:1;}
+.pp-bar-track{height:10px;border-radius:5px;background:rgba(0,0,0,.07);position:relative;overflow:hidden;cursor:pointer;}
+.pp-fill{position:absolute;top:0;left:0;height:100%;border-radius:5px;transition:width .2s;}
+.pp-clicks{display:flex;position:absolute;inset:0;}
+.pp-click{flex:1;cursor:pointer;}
+.pp-lbl-row{display:flex;justify-content:space-between;margin-top:3px;}
+.pp-lbl{font-size:8.5px;color:#AAA;}
+.pp-pill{padding:3px 10px;border-radius:20px;font-size:9px;font-weight:700;width:82px;text-align:center;flex-shrink:0;}
+
+/* pagination */
+.pg{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid rgba(0,0,0,.05);}
+.pg-info{font-size:10px;color:#AAA;}
+.pg-nav{display:flex;gap:4px;}
+.pg-btn{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10.5px;cursor:pointer;background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.07);color:#555;}
+.pg-btn.on{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;border:none;}
+
+/* card wrapper */
+.card-wrap{background:rgba(255,255,255,.86);border-radius:20px;border:1px solid rgba(255,255,255,.98);box-shadow:0 2px 0 rgba(255,255,255,.95) inset,0 4px 16px rgba(0,0,0,.07);overflow:hidden;margin-bottom:12px;}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid rgba(0,0,0,.05);}
+.card-title{font-size:13px;font-weight:700;color:#1A1A1A;}
+.card-sub{font-size:9.5px;color:#AAA;margin-top:2px;}
+
+/* MODAL */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:300;display:none;align-items:center;justify-content:center;}
+.mov.open{display:flex;}
+.modal{background:linear-gradient(135deg,#EEECEA,#F3EAA8);border-radius:24px;padding:30px;width:480px;box-shadow:0 28px 70px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.95);}
+.modal.wide{width:520px;}
+.mt{font-size:18px;font-weight:800;color:#1A1A1A;letter-spacing:-.4px;margin-bottom:4px;}
+.ms{font-size:10.5px;color:#AAA;margin-bottom:22px;}
+.mf{margin-bottom:14px;}
+.ml{font-size:9.5px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
+.mi{width:100%;height:40px;border-radius:11px;border:1.5px solid rgba(0,0,0,.12);background:rgba(255,255,255,.8);padding:0 13px;font-size:12px;font-family:'Poppins',sans-serif;color:#1A1A1A;outline:none;}
+.mi:focus{border-color:#1A1A1A;background:#fff;}
+.msel{width:100%;height:40px;border-radius:11px;border:1.5px solid rgba(0,0,0,.12);background:rgba(255,255,255,.8);padding:0 13px;font-size:12px;font-family:'Poppins',sans-serif;color:#1A1A1A;outline:none;cursor:pointer;}
+.mbtns{display:flex;gap:8px;margin-top:22px;}
+.sinds{display:flex;gap:5px;margin-bottom:18px;}
+.sind{height:3px;flex:1;border-radius:2px;background:rgba(0,0,0,.1);transition:background .2s;}
+.sind.done{background:#1A1A1A;}
+.mstep{display:none;}
+.mstep.active{display:block;}
+.mrole-grid{border-radius:12px;overflow:hidden;border:1.5px solid rgba(0,0,0,.1);background:rgba(255,255,255,.6);}
+.mrole-head{display:grid;grid-template-columns:1fr repeat(3,68px);padding:8px 12px;background:rgba(0,0,0,.04);border-bottom:1px solid rgba(0,0,0,.06);}
+.mrole-head span{font-size:9px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.5px;text-align:center;}
+.mrole-head span:first-child{text-align:left;}
+.mrole-row{display:grid;grid-template-columns:1fr repeat(3,68px);padding:9px 12px;border-bottom:1px solid rgba(0,0,0,.05);align-items:center;}
+.mrole-row:last-child{border-bottom:none;}
+.mrole-row span{font-size:11px;font-weight:500;color:#1A1A1A;}
+.mradio{width:16px;height:16px;border-radius:50%;border:2px solid rgba(0,0,0,.15);cursor:pointer;margin:auto;transition:all .15s;}
+.mradio.sel{background:#1A1A1A;border-color:#1A1A1A;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Soniq</div>
+  <div class="nc">
+    <div class="ni">Dashboard</div><div class="ni">Teams</div>
+    <div class="ni">Screenshots</div><div class="ni">Attendance</div>
+    <div class="ni">Reports</div><div class="ni on">Settings</div>
+  </div>
+  <div class="nr">
+    <div class="np"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Settings</div>
+    <div class="nc2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+    <div class="nc2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════ -->
+<!--  SETTINGS HUB — GROUPED LAYOUT         -->
+<!-- ════════════════════════════════════════ -->
+<div class="screen active" id="s-hub">
+  <div class="ph">
+    <div>
+      <div class="bc">Dashboard › Settings</div>
+      <div class="pt">Settings</div>
+      <div class="psub">7 configuration sections · grouped by purpose</div>
+    </div>
+    <div class="phr">
+      <div style="display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;background:rgba(255,255,255,.72);border:1.5px solid rgba(255,255,255,.9);border-radius:50px;min-width:220px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#AAA" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input style="border:none;background:transparent;outline:none;font-size:10.5px;font-family:'Poppins',sans-serif;color:#333;width:100%;" placeholder="Search settings…"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="hub-wrap">
+
+    <!-- ── GROUP 1: Organisation & People ── -->
+    <div class="grp">
+      <div class="grp-header">
+        <div class="grp-icon" style="background:rgba(245,197,24,.14);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="grp-text">
+          <div class="grp-name">Organisation & People</div>
+          <div class="grp-sub">Team structure and employee management</div>
+        </div>
+        <div class="grp-line"></div>
+        <div class="grp-count">2 sections</div>
+      </div>
+      <div class="grp-cards col2">
+
+        <div class="sc" onclick="go('teams')">
+          <div class="sc-accent" style="background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>
+          <div class="sc-body">
+            <div class="sc-top">
+              <div class="sc-icon" style="background:rgba(245,197,24,.12);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              </div>
+              <span class="sc-badge" style="background:rgba(245,197,24,.12);color:#633806;">5 Teams</span>
+            </div>
+            <div class="sc-name">Teams & Structure</div>
+            <div class="sc-desc">Create, rename and organise your teams. Visual member ring, productivity at a glance, and inline team creation.</div>
+            <div class="sc-footer">
+              <div class="sc-meta">128 total employees</div>
+              <button class="sc-btn" style="background:linear-gradient(135deg,#1A1A1A,#2D2D2D);color:#fff;">Open <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sc" onclick="go('people')">
+          <div class="sc-accent" style="background:linear-gradient(90deg,#185FA5,#0C447C);"></div>
+          <div class="sc-body">
+            <div class="sc-top">
+              <div class="sc-icon" style="background:rgba(55,138,221,.1);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="sc-badge" style="background:rgba(55,138,221,.1);color:#0C447C;">128 People</span>
+            </div>
+            <div class="sc-name">People & Roles</div>
+            <div class="sc-desc">Invite employees via 2-step flow, assign teams and roles, manage work modes, OS and EXE installation status.</div>
+            <div class="sc-footer">
+              <div class="sc-meta" style="color:#B8860B;font-weight:600;">3 pending invites</div>
+              <button class="sc-btn" style="background:linear-gradient(135deg,#185FA5,#0C447C);color:#fff;">Open <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── GROUP 2: Work & Monitoring ── -->
+    <div class="grp">
+      <div class="grp-header">
+        <div class="grp-icon" style="background:rgba(61,96,40,.12);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="grp-text">
+          <div class="grp-name">Work & Monitoring</div>
+          <div class="grp-sub">Schedules, targets, capture controls and activity tracking</div>
+        </div>
+        <div class="grp-line"></div>
+        <div class="grp-count">3 sections</div>
+      </div>
+      <div class="grp-cards col3">
+
+        <div class="sc" onclick="go('workpolicy')">
+          <div class="sc-accent" style="background:linear-gradient(90deg,#3B6D11,#639922);"></div>
+          <div class="sc-body">
+            <div class="sc-top">
+              <div class="sc-icon" style="background:rgba(61,96,40,.1);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14" stroke-width="3" stroke-linecap="round"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="3" stroke-linecap="round"/></svg>
+              </div>
+              <span class="sc-badge" style="background:rgba(61,96,40,.1);color:#27500A;">Per Employee</span>
+            </div>
+            <div class="sc-name">Work Policy</div>
+            <div class="sc-desc">Working days schedule and productivity targets — check-in time, daily hours and score % — in one unified view.</div>
+            <div class="merged-chip"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#27500A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Schedule + Targets merged</div>
+            <div class="sc-footer" style="margin-top:10px;">
+              <div class="sc-meta">Affects reports + OT</div>
+              <button class="sc-btn" style="background:linear-gradient(135deg,#3B6D11,#27500A);color:#fff;">Open <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sc" onclick="go('monitoring')">
+          <div class="sc-accent" style="background:linear-gradient(90deg,#444441,#2C2C2A);"></div>
+          <div class="sc-body">
+            <div class="sc-top">
+              <div class="sc-icon" style="background:rgba(88,88,88,.08);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444441" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <span class="sc-badge dn">Privacy Critical</span>
+            </div>
+            <div class="sc-name">Monitoring Controls</div>
+            <div class="sc-desc">Screen capture toggle, Gaussian blur privacy, capture interval and idle detection threshold — all in one row per employee.</div>
+            <div class="merged-chip"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#27500A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Capture + Idle merged</div>
+            <div class="sc-footer" style="margin-top:10px;">
+              <div class="sc-meta">Syncs within 1 hour</div>
+              <button class="sc-btn" style="background:linear-gradient(135deg,#444441,#2C2C2A);color:#fff;">Open <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sc" onclick="go('stealth')" style="border-color:rgba(153,53,53,.18);">
+          <div class="sc-accent" style="background:linear-gradient(90deg,#993535,#7A2020);"></div>
+          <div class="sc-body">
+            <div class="sc-top">
+              <div class="sc-icon" style="background:rgba(153,53,53,.1);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#993535" stroke-width="1.8"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </div>
+              <span class="sc-badge drd">Legal Gate</span>
+            </div>
+            <div class="sc-name">Silent Tracking</div>
+            <div class="sc-desc">Invisible background monitoring per employee. Gated behind mandatory legal consent — kept separate by design, never merged.</div>
+            <div class="sc-footer">
+              <div class="sc-meta" style="color:#993535;font-weight:600;">Consent required first</div>
+              <button class="sc-btn" style="background:linear-gradient(135deg,#993535,#7A2020);color:#fff;">Open <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── GROUP 3: Access & Controls ── -->
+    <div class="grp">
+      <div class="grp-header">
+        <div class="grp-icon" style="background:rgba(29,158,117,.12);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="grp-text">
+          <div class="grp-name">Access & Controls</div>
+          <div class="grp-sub">Organisation-wide defaults and role-based access configuration</div>
+        </div>
+        <div class="grp-line"></div>
+        <div class="grp-count">2 sections</div>
+      </div>
+      <div class="grp-cards col2">
+
+        <div class="sc" onclick="go('defaults')">
+          <div class="sc-accent" style="background:linear-gradient(90deg,#534AB7,#3C3489);"></div>
+          <div class="sc-body">
+            <div class="sc-top">
+              <div class="sc-icon" style="background:rgba(83,74,183,.1);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              </div>
+              <span class="sc-badge dp">Org-wide</span>
+            </div>
+            <div class="sc-name">Org Defaults</div>
+            <div class="sc-desc">Global fallbacks applied to every new employee automatically. Per-employee settings always take priority and override these.</div>
+            <div class="sc-footer">
+              <div class="sc-meta">Auto-applied to new joiners</div>
+              <button class="sc-btn" style="background:linear-gradient(135deg,#534AB7,#3C3489);color:#fff;">Open <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sc" onclick="go('access')">
+          <div class="sc-accent" style="background:linear-gradient(90deg,#1D9E75,#085041);"></div>
+          <div class="sc-body">
+            <div class="sc-top">
+              <div class="sc-icon" style="background:rgba(29,158,117,.1);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="#0F6E56"/></svg>
+              </div>
+              <span class="sc-badge dg">4 Roles</span>
+            </div>
+            <div class="sc-name">Permissions & Access</div>
+            <div class="sc-desc">Role-based module access. Create custom roles, set No Access / Read Only / Full Access per module. System roles are locked.</div>
+            <div class="sc-footer">
+              <div class="sc-meta">2 custom roles active</div>
+              <button class="sc-btn" style="background:linear-gradient(135deg,#1D9E75,#085041);color:#fff;">Open <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  1. TEAMS & STRUCTURE                  -->
+<!-- ════════════════════════════════════════ -->
+<div class="screen" id="s-teams">
+  <div class="ph">
+    <div><div class="bc"><span class="lnk" onclick="hub()">Settings</span> › Teams & Structure</div><div class="pt">Teams & Structure</div><div class="psub">5 active teams · 128 employees total</div></div>
+    <div class="phr"><button class="btn bd" onclick="openM('m-team')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Team</button></div>
+  </div>
+  <div class="team-grid">
+    <div class="tc"><div class="tc-av" style="background:rgba(245,197,24,.15);color:#B8860B;">EN</div><div class="tc-name">Engineering</div><div class="tc-desc">Core product & backend</div><div class="tc-ring-row"><div class="tc-ring"><svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(0,0,0,.07)" stroke-width="6"/><circle cx="24" cy="24" r="20" fill="none" stroke="#F5C518" stroke-width="6" stroke-dasharray="94 33" stroke-linecap="round"/></svg><div class="tc-ring-lbl">34</div></div><div class="tc-stats"><div><div class="tc-stat-l">Members</div><div class="tc-stat-v">34</div></div><div><div class="tc-stat-l">Avg Score</div><div class="tc-stat-v" style="color:#3D6028;">88%</div></div></div></div><div class="tc-foot"><span class="bdg dg">Active</span><div style="display:flex;gap:6px;"><button class="btn bg sm">Rename</button><button class="btn sm" style="background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.18);">Delete</button></div></div></div>
+    <div class="tc"><div class="tc-av" style="background:rgba(55,138,221,.12);color:#185FA5;">DS</div><div class="tc-name">Design</div><div class="tc-desc">UX, UI and visual design</div><div class="tc-ring-row"><div class="tc-ring"><svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(0,0,0,.07)" stroke-width="6"/><circle cx="24" cy="24" r="20" fill="none" stroke="#378ADD" stroke-width="6" stroke-dasharray="50 77" stroke-linecap="round"/></svg><div class="tc-ring-lbl">18</div></div><div class="tc-stats"><div><div class="tc-stat-l">Members</div><div class="tc-stat-v">18</div></div><div><div class="tc-stat-l">Avg Score</div><div class="tc-stat-v" style="color:#B8860B;">76%</div></div></div></div><div class="tc-foot"><span class="bdg dg">Active</span><div style="display:flex;gap:6px;"><button class="btn bg sm">Rename</button><button class="btn sm" style="background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.18);">Delete</button></div></div></div>
+    <div class="tc"><div class="tc-av" style="background:rgba(61,96,40,.12);color:#3B6D11;">SL</div><div class="tc-name">Sales</div><div class="tc-desc">Revenue and BD</div><div class="tc-ring-row"><div class="tc-ring"><svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(0,0,0,.07)" stroke-width="6"/><circle cx="24" cy="24" r="20" fill="none" stroke="#639922" stroke-width="6" stroke-dasharray="66 61" stroke-linecap="round"/></svg><div class="tc-ring-lbl">24</div></div><div class="tc-stats"><div><div class="tc-stat-l">Members</div><div class="tc-stat-v">24</div></div><div><div class="tc-stat-l">Avg Score</div><div class="tc-stat-v" style="color:#993535;">64%</div></div></div></div><div class="tc-foot"><span class="bdg dg">Active</span><div style="display:flex;gap:6px;"><button class="btn bg sm">Rename</button><button class="btn sm" style="background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.18);">Delete</button></div></div></div>
+    <div class="tc"><div class="tc-av" style="background:rgba(83,74,183,.12);color:#534AB7;">PR</div><div class="tc-name">Product</div><div class="tc-desc">Product management</div><div class="tc-ring-row"><div class="tc-ring"><svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(0,0,0,.07)" stroke-width="6"/><circle cx="24" cy="24" r="20" fill="none" stroke="#7F77DD" stroke-width="6" stroke-dasharray="34 93" stroke-linecap="round"/></svg><div class="tc-ring-lbl">12</div></div><div class="tc-stats"><div><div class="tc-stat-l">Members</div><div class="tc-stat-v">12</div></div><div><div class="tc-stat-l">Avg Score</div><div class="tc-stat-v" style="color:#B8860B;">83%</div></div></div></div><div class="tc-foot"><span class="bdg dg">Active</span><div style="display:flex;gap:6px;"><button class="btn bg sm">Rename</button><button class="btn sm" style="background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.18);">Delete</button></div></div></div>
+    <div class="tc"><div class="tc-av" style="background:rgba(216,90,48,.12);color:#993C1D;">SP</div><div class="tc-name">Support</div><div class="tc-desc">Customer success</div><div class="tc-ring-row"><div class="tc-ring"><svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(0,0,0,.07)" stroke-width="6"/><circle cx="24" cy="24" r="20" fill="none" stroke="#D85A30" stroke-width="6" stroke-dasharray="56 71" stroke-linecap="round"/></svg><div class="tc-ring-lbl">20</div></div><div class="tc-stats"><div><div class="tc-stat-l">Members</div><div class="tc-stat-v">20</div></div><div><div class="tc-stat-l">Avg Score</div><div class="tc-stat-v" style="color:#B8860B;">71%</div></div></div></div><div class="tc-foot"><span class="bdg dg">Active</span><div style="display:flex;gap:6px;"><button class="btn bg sm">Rename</button><button class="btn sm" style="background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.18);">Delete</button></div></div></div>
+    <div class="tc-new" onclick="openM('m-team')"><div style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div style="font-size:11.5px;font-weight:600;color:#888;">Create New Team</div><div style="font-size:10px;color:#BBB;">Give it a name and purpose</div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  2. PEOPLE & ROLES                     -->
+<!-- ════════════════════════════════════════ -->
+<div class="screen" id="s-people">
+  <div class="ph">
+    <div><div class="bc"><span class="lnk" onclick="hub()">Settings</span> › People & Roles</div><div class="pt">People & Roles</div><div class="psub">128 employees · 3 pending invites</div></div>
+    <div class="phr">
+      <div style="display:flex;align-items:center;gap:6px;height:36px;padding:0 13px;background:rgba(255,255,255,.72);border:1.5px solid rgba(255,255,255,.9);border-radius:50px;min-width:200px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input style="border:none;background:transparent;outline:none;font-size:10.5px;font-family:'Poppins',sans-serif;color:#333;width:100%;" placeholder="Search name or email…"/></div>
+      <button class="btn bg">All Teams ▾</button>
+      <button class="btn bd" onclick="openM('m-invite')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Employee</button>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-head"><div><div class="card-title">All Employees</div><div class="card-sub">Grouped by team · sorted by last activity</div></div><div style="display:flex;gap:6px;"><span class="bdg dg" style="cursor:pointer;">Active (118)</span><span class="bdg dy" style="cursor:pointer;">Pending (7)</span><span class="bdg drd" style="cursor:pointer;">Inactive (3)</span></div></div>
+    <div id="people-list"></div>
+    <div class="pg"><div class="pg-info">Showing 5 of 128</div><div class="pg-nav"><div class="pg-btn">‹</div><div class="pg-btn on">1</div><div class="pg-btn">2</div><div class="pg-btn">3</div><div class="pg-btn">›</div></div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  3. WORK POLICY (Schedule + Targets)   -->
+<!-- ════════════════════════════════════════ -->
+<div class="screen" id="s-workpolicy">
+  <div class="ph">
+    <div><div class="bc"><span class="lnk" onclick="hub()">Settings</span> › Work Policy</div><div class="pt">Work Policy</div><div class="psub">Working schedule and productivity targets — combined per employee</div></div>
+    <div class="phr"><button class="btn bd" onclick="flashSave(this)">Save All Changes</button></div>
+  </div>
+  <div class="banner bwarn"><div class="bico" style="background:rgba(245,197,24,.14);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><div><div class="btitle" style="color:#633806;">Changes ripple across modules</div><div class="bbody">Working days affect attendance absent-flagging. Expected hours drive the dashboard progress bar, late check-in detection, overtime calculation and productivity score targets in all reports.</div></div></div>
+  <div class="wp-layout">
+    <div class="wp-emp-list"><div class="wp-emp-head">Employees</div><div id="wp-emp-list"></div></div>
+    <div class="wp-panel">
+      <div class="wp-panel-name" id="wp-name">Ravi Shankar</div>
+      <div class="wp-panel-sub" id="wp-sub">Engineering · Select a tab to configure</div>
+      <div class="wp-tabs"><div class="wp-tab on" onclick="wpTab(this,'sched')">Working Days</div><div class="wp-tab" onclick="wpTab(this,'targets')">Productivity Targets</div></div>
+      <!-- Schedule panel -->
+      <div class="wp-content show" id="wp-sched">
+        <div class="wk-grid" id="wk-grid"></div>
+        <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:8px;">Quick apply</div>
+        <div class="quick-chips">
+          <div class="qchip sel" onclick="applyWk([1,1,1,1,1,0,0],this)"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Mon – Fri</div>
+          <div class="qchip" onclick="applyWk([1,1,1,1,1,1,0],this)">Mon – Sat</div>
+          <div class="qchip" onclick="applyWk([1,1,1,1,1,1,1],this)">All 7 Days</div>
+          <div class="qchip" onclick="applyWk([0,0,0,0,0,1,1],this)">Weekends Only</div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;"><button class="btn bg sm">Reset</button><button class="btn by sm" onclick="flashSave(this)">Save Schedule</button></div>
+      </div>
+      <!-- Targets panel -->
+      <div class="wp-content" id="wp-targets">
+        <div class="tgt-controls">
+          <div class="tgt-ctrl"><div class="tgt-ctrl-lbl">Expected Check-In</div><input class="tgt-inp" value="09:00 AM"/></div>
+          <div class="tgt-ctrl"><div class="tgt-ctrl-lbl">Work Hours / Day</div><div class="stp"><div class="sb" onclick="stepIt(this,-1,1,24)">−</div><div class="sv">8</div><div class="sb" onclick="stepIt(this,1,1,24)">+</div></div></div>
+          <div class="tgt-ctrl"><div class="tgt-ctrl-lbl">Productive Hrs / Day</div><div class="stp"><div class="sb" onclick="stepIt(this,-1,1,24)">−</div><div class="sv">6</div><div class="sb" onclick="stepIt(this,1,1,24)">+</div></div></div>
+          <div class="tgt-ctrl"><div class="tgt-ctrl-lbl">Productivity Target %</div><div class="stp"><div class="sb" onclick="stepPct(this,-5)">−</div><div class="sv">82%</div><div class="sb" onclick="stepPct(this,5)">+</div></div></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;"><button class="btn bg sm">Reset</button><button class="btn by sm" onclick="flashSave(this)">Save Targets</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  4. MONITORING CONTROLS                -->
+<!-- ════════════════════════════════════════ -->
+<div class="screen" id="s-monitoring">
+  <div class="ph">
+    <div><div class="bc"><span class="lnk" onclick="hub()">Settings</span> › Monitoring Controls</div><div class="pt">Monitoring Controls</div><div class="psub">Screen capture, blur privacy and idle detection — one row per employee</div></div>
+  </div>
+  <div class="banner binfo"><div class="bico" style="background:rgba(55,138,221,.12);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div><div class="btitle" style="color:#0C447C;">Sync delay · up to 1 hour</div><div class="bbody">Changes sync to the Trackpilots EXE agent. When Blur is ON, Soniq applies server-side Gaussian blur — the original unblurred image is <strong>never stored</strong>.</div></div></div>
+  <div class="card-wrap">
+    <div class="card-head">
+      <div><div class="card-title">Capture, Blur & Idle — per Employee</div><div class="card-sub">Use the pod to toggle capture and blur · drag the bar to set idle threshold</div></div>
+      <div style="display:flex;align-items:center;gap:14px;font-size:9.5px;color:#AAA;">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#F5C518;margin-right:4px;"></span>Capture On</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1A1A1A;margin-right:4px;"></span>Blur On</span>
+        <span style="display:flex;align-items:center;gap:4px;"><div style="width:30px;height:6px;border-radius:3px;background:linear-gradient(90deg,#F5C518,#E0AD00);"></div>Idle bar</span>
+      </div>
+    </div>
+    <div class="mc-list" id="mc-list"></div>
+    <div class="pg"><div class="pg-info">Showing 5 of 128</div><div class="pg-nav"><div class="pg-btn">‹</div><div class="pg-btn on">1</div><div class="pg-btn">2</div><div class="pg-btn">›</div></div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  5. SILENT TRACKING                    -->
+<!-- ════════════════════════════════════════ -->
+<div class="screen" id="s-stealth">
+  <div class="ph">
+    <div><div class="bc"><span class="lnk" onclick="hub()">Settings</span> › Silent Tracking</div><div class="pt">Silent Tracking</div><div class="psub">Invisible monitoring · mandatory legal consent required</div></div>
+  </div>
+  <div class="legal-gate">
+    <div class="legal-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F09595" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="legal-title">Legal Consent Required</div>
+    <div class="legal-body">Silent Tracking enables invisible background monitoring — no visible indicator appears on the employee's machine. This may be subject to local labour laws and employee privacy rights.<br/><br/><strong style="color:rgba(255,255,255,.75);">Soniq is not responsible for legal misuse.</strong> Ensure full compliance with applicable laws before enabling this for any employee.</div>
+    <div class="legal-check" onclick="toggleConsent()"><div class="legal-cb" id="lcb"></div><div class="legal-txt">I have obtained all required consents, notified employees as required by local law, and accept full legal responsibility for enabling Silent Tracking in my organisation.</div></div>
+    <button class="btn br" id="unlock-btn" style="opacity:.35;pointer-events:none;" onclick="unlockStealth()">Unlock Silent Tracking</button>
+  </div>
+  <div id="stealth-wrap" style="opacity:.2;filter:blur(3px);pointer-events:none;transition:all .4s;"><div class="stealth-rows" id="stealth-rows"></div></div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  6. ORG DEFAULTS                       -->
+<!-- ════════════════════════════════════════ -->
+<div class="screen" id="s-defaults">
+  <div class="ph">
+    <div><div class="bc"><span class="lnk" onclick="hub()">Settings</span> › Org Defaults</div><div class="pt">Org Defaults</div><div class="psub">Global fallbacks for every new employee — per-person settings always override</div></div>
+    <div class="phr"><button class="btn bd" onclick="flashSave(this)">Save All Defaults</button></div>
+  </div>
+  <div class="banner bsuccess"><div class="bico" style="background:rgba(61,96,40,.12);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="btitle" style="color:#27500A;">Override hierarchy</div><div class="bbody">These are the fallbacks. Settings configured in Work Policy, Monitoring Controls, or Permissions sections always take priority for that specific employee over these org-wide defaults.</div></div></div>
+  <div class="defs-grid">
+    <div class="def-card"><div class="def-prev" style="background:linear-gradient(135deg,#1A1A1A,#2D2D2D);"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:80px;height:48px;background:rgba(255,255,255,.08);border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(245,197,24,.4)" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/></svg></div><div style="font-size:8px;color:rgba(255,255,255,.25);">1 min · blur off</div></div></div><div class="def-body"><div class="def-title">Screen Capture</div><div class="def-sub">Default for all new employees</div><div class="def-row"><div><div class="def-lbl">Capture enabled</div><div class="def-hint">On by default</div></div><div class="tog on" onclick="togClick(this)"><div class="tt"></div></div></div><div class="def-row"><div><div class="def-lbl">Privacy blur</div><div class="def-hint">Blur screenshots by default</div></div><div class="tog off" onclick="togClick(this)"><div class="tt"></div></div></div><div class="def-row"><div><div class="def-lbl">Capture interval</div></div><div class="stp"><div class="sb" onclick="stepIt(this,-1,1,60)">−</div><div class="sv">1</div><div class="sb" onclick="stepIt(this,1,1,60)">+</div></div></div></div></div>
+    <div class="def-card"><div class="def-prev" style="background:linear-gradient(135deg,#1A2E1A,#243824);"><div style="display:flex;flex-direction:column;gap:5px;width:80%;"><div style="font-size:8px;color:rgba(255,255,255,.35);">09:00 → 17:00 · 8 hrs</div><div style="height:8px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden;"><div style="width:75%;height:100%;background:rgba(245,197,24,.5);border-radius:4px;"></div></div><div style="display:flex;justify-content:space-between;font-size:7px;color:rgba(255,255,255,.25);"><span>Target</span><span>75%</span></div></div></div><div class="def-body"><div class="def-title">Work Hours</div><div class="def-sub">Drives dashboard bar + OT detection</div><div class="def-row"><div><div class="def-lbl">Expected check-in</div></div><input style="height:30px;border-radius:8px;border:1.5px solid rgba(0,0,0,.1);background:rgba(255,255,255,.7);padding:0 9px;font-size:11px;font-family:'Poppins',sans-serif;color:#1A1A1A;outline:none;width:88px;" value="09:00 AM"/></div><div class="def-row"><div><div class="def-lbl">Work hours / day</div></div><div class="stp"><div class="sb" onclick="stepIt(this,-1,1,24)">−</div><div class="sv">8</div><div class="sb" onclick="stepIt(this,1,1,24)">+</div></div></div><div class="def-row"><div><div class="def-lbl">Productive hrs / day</div></div><div class="stp"><div class="sb" onclick="stepIt(this,-1,1,24)">−</div><div class="sv">6</div><div class="sb" onclick="stepIt(this,1,1,24)">+</div></div></div><div class="def-row"><div><div class="def-lbl">Target score %</div></div><div class="stp"><div class="sb" onclick="stepPct(this,-5)">−</div><div class="sv">75%</div><div class="sb" onclick="stepPct(this,5)">+</div></div></div></div></div>
+    <div class="def-card"><div class="def-prev" style="background:linear-gradient(135deg,#2A1A0A,#3D2810);"><div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:32px;font-weight:800;color:rgba(245,197,24,.65);">5</div><div style="font-size:8px;color:rgba(255,255,255,.28);">min idle threshold</div><div style="width:64px;height:5px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;"><div style="width:100%;height:100%;background:rgba(245,197,24,.45);border-radius:3px;"></div></div><div style="font-size:7px;color:rgba(255,255,255,.2);margin-top:2px;">Phase 1 cap · max 5 min</div></div></div><div class="def-body"><div class="def-title">Idle Detection</div><div class="def-sub">Default idle alerts for new employees</div><div class="def-row"><div><div class="def-lbl">Idle alerts enabled</div><div class="def-hint">On by default for new hires</div></div><div class="tog on" onclick="togClick(this)"><div class="tt"></div></div></div><div class="def-row"><div><div class="def-lbl">Min idle threshold</div><div class="def-hint">Max 5 min — Phase 1 cap</div></div><div class="stp"><div class="sb" onclick="stepIt(this,-1,1,5)">−</div><div class="sv">5</div><div class="sb" onclick="stepIt(this,1,1,5)">+</div></div></div><div class="def-row"><div><div class="def-lbl">Default working days</div></div><div class="dp-pills"><div class="dpp on">M</div><div class="dpp on">T</div><div class="dpp on">W</div><div class="dpp on">T</div><div class="dpp on">F</div><div class="dpp off">S</div><div class="dpp off">S</div></div></div></div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  7. PERMISSIONS & ACCESS               -->
+<!-- ════════════════════════════════════════ -->
+<div class="screen" id="s-access">
+  <div class="ph">
+    <div><div class="bc"><span class="lnk" onclick="hub()">Settings</span> › Permissions & Access</div><div class="pt">Permissions & Access</div><div class="psub">Click a role card to view and edit its module permissions</div></div>
+    <div class="phr"><button class="btn bd" onclick="openM('m-role')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Role</button></div>
+  </div>
+  <div class="role-strip">
+    <div class="rc sel" onclick="pickRole(this,'admin')"><div style="position:relative;"><div class="rc-ico" style="background:rgba(245,197,24,.15);"><span style="font-size:18px;font-weight:800;color:#B8860B;">A</span></div><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2" class="rc-lock"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="rc-name">Admin</div><div class="rc-members">Full access · 3 members</div><div style="margin-top:8px;"><span class="bdg dn" style="font-size:8px;">System · locked</span></div></div>
+    <div class="rc" onclick="pickRole(this,'manager')"><div class="rc-ico" style="background:rgba(55,138,221,.12);"><span style="font-size:18px;font-weight:800;color:#185FA5;">M</span></div><div class="rc-name">Manager</div><div class="rc-members">Restricted · 12 members</div><div style="margin-top:8px;"><span class="bdg db" style="font-size:8px;">Editable</span></div></div>
+    <div class="rc" onclick="pickRole(this,'viewer')"><div class="rc-ico" style="background:rgba(83,74,183,.1);"><span style="font-size:18px;font-weight:800;color:#534AB7;">V</span></div><div class="rc-name">Viewer</div><div class="rc-members">Read-only · 8 members</div><div style="margin-top:8px;"><span class="bdg dp" style="font-size:8px;">Custom · editable</span></div></div>
+    <div class="rc" onclick="pickRole(this,'noaccess')"><div style="position:relative;"><div class="rc-ico" style="background:#F5F5F0;"><span style="font-size:18px;font-weight:800;color:#AAA;">N</span></div><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2" class="rc-lock"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="rc-name">No Access</div><div class="rc-members">Blocked · 2 members</div><div style="margin-top:8px;"><span class="bdg dn" style="font-size:8px;">System · locked</span></div></div>
+  </div>
+  <div class="perm-panel">
+    <div class="pp-head"><div><div style="font-size:13px;font-weight:700;color:#1A1A1A;" id="perm-title">Admin — Module Permissions</div><div style="font-size:9.5px;color:#AAA;margin-top:2px;" id="perm-sub">System role · read only</div></div><div id="perm-acts" style="display:flex;gap:8px;"></div></div>
+    <div style="display:flex;align-items:center;gap:16px;padding:10px 22px;background:rgba(0,0,0,.02);border-bottom:1px solid rgba(0,0,0,.05);"><div style="width:150px;font-size:9px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.7px;">Module</div><div style="flex:1;display:flex;justify-content:space-between;font-size:9px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.4px;padding:0 2px;"><span>No Access</span><span>Read Only</span><span>Full Access</span></div><div style="width:88px;font-size:9px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.4px;text-align:center;">Level</div></div>
+    <div id="perm-rows"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-top:1px solid rgba(0,0,0,.05);"><div style="font-size:10px;color:#AAA;">7 modules configured</div><div style="display:flex;gap:8px;"><button class="btn bg sm">Reset</button><button class="btn by sm" id="perm-save" onclick="flashSave(this)">Save Permissions</button></div></div>
+  </div>
+</div>
+
+<!-- ════ MODALS ════ -->
+<div class="mov" id="m-team" onclick="if(event.target===this)closeM('m-team')"><div class="modal"><div class="mt">Create New Team</div><div class="ms">Team names must be unique within your organisation</div><div class="mf"><div class="ml">Team Name</div><input class="mi" placeholder="e.g. Marketing, QA, Data Science…"/></div><div class="mf"><div class="ml">Description <span style="color:#CCC;font-weight:400;">(optional)</span></div><input class="mi" placeholder="Brief description of this team's function"/></div><div class="mbtns"><button class="btn bg" style="flex:1;" onclick="closeM('m-team')">Cancel</button><button class="btn bd" style="flex:1;">Create Team</button></div></div></div>
+
+<div class="mov" id="m-invite" onclick="if(event.target===this)closeM('m-invite')"><div class="modal"><div class="mt">Add New Employee</div><div class="ms">Invite email sent via Trackpilots after submit</div><div class="sinds"><div class="sind done" id="si1"></div><div class="sind" id="si2"></div></div><div class="mstep active" id="ms1"><div class="mf"><div class="ml">Full Name</div><input class="mi" placeholder="Employee full name"/></div><div class="mf"><div class="ml">Work Email</div><input class="mi" type="email" placeholder="employee@company.com"/></div><div class="mf"><div class="ml">Designation</div><input class="mi" placeholder="e.g. Senior Engineer, UI Designer…"/></div><div class="mbtns"><button class="btn bg" style="flex:1;" onclick="closeM('m-invite')">Cancel</button><button class="btn bd" style="flex:1;" onclick="invStep2()">Next →</button></div></div><div class="mstep" id="ms2"><div class="mf"><div class="ml">Assign to Team</div><select class="msel"><option>Engineering</option><option>Design</option><option>Sales</option><option>Product</option><option>Support</option></select></div><div class="mf"><div class="ml">Role</div><select class="msel"><option>Employee</option><option>Manager</option><option>Admin</option><option>No Access</option></select></div><div class="mf"><div class="ml">Work Mode</div><select class="msel"><option>Office</option><option>Remote</option><option>Hybrid</option></select></div><div class="mbtns"><button class="btn bg" style="flex:1;" onclick="invStep1()">← Back</button><button class="btn by" style="flex:1;">Send Invite</button></div></div></div></div>
+
+<div class="mov" id="m-role" onclick="if(event.target===this)closeM('m-role')"><div class="modal wide"><div class="mt">Create New Role</div><div class="ms">Define module-level access for this custom role</div><div class="mf"><div class="ml">Role Name</div><input class="mi" placeholder="e.g. HR Analyst, Finance Viewer, Auditor…"/></div><div class="mf"><div class="ml">Module Permissions</div><div class="mrole-grid"><div class="mrole-head"><span>Module</span><span>None</span><span>Read</span><span>Full</span></div><div id="mrole-body"></div></div></div><div class="mbtns"><button class="btn bg" style="flex:1;" onclick="closeM('m-role')">Cancel</button><button class="btn bd" style="flex:1;">Create Role</button></div></div></div>
+
+</div><!-- /shell -->
+<script>
+// ─── DATA ───
+const emps=[
+  {init:'RS',name:'Ravi Shankar',email:'ravi@acme.com',team:'Engineering',role:'Admin',mode:'Hybrid',os:'Windows',exe:'v2.4.1',last:'2 min',status:'active',color:'linear-gradient(135deg,#F5C518,#E0AD00)',fc:'#1A1A1A',cap:true,blur:false,interval:1,idle:true,idleMin:5,hrs:8,pHrs:6,tgt:82,days:[1,1,1,1,1,0,0]},
+  {init:'AM',name:'Arjun Mehta',email:'arjun@acme.com',team:'Engineering',role:'Manager',mode:'Remote',os:'macOS',exe:'v2.4.1',last:'18 min',status:'active',color:'#E8E0C8',fc:'#888',cap:true,blur:true,interval:5,idle:true,idleMin:3,hrs:8,pHrs:6,tgt:82,days:[1,1,1,1,1,0,0]},
+  {init:'PK',name:'Priya Krishnan',email:'priya@acme.com',team:'Design',role:'Manager',mode:'Hybrid',os:'macOS',exe:'v2.4.1',last:'5 min',status:'active',color:'linear-gradient(135deg,#F5C518,#E0AD00)',fc:'#1A1A1A',cap:true,blur:false,interval:10,idle:false,idleMin:5,hrs:8,pHrs:5,tgt:75,days:[1,1,1,1,1,0,0]},
+  {init:'SN',name:'Sneha Nair',email:'sneha@acme.com',team:'Sales',role:'Employee',mode:'Office',os:'Windows',exe:'v2.3.8',last:'1 hr',status:'active',color:'#E8E0C8',fc:'#888',cap:true,blur:false,interval:1,idle:true,idleMin:5,hrs:9,pHrs:6,tgt:70,days:[1,1,1,1,1,1,0]},
+  {init:'MK',name:'Meera Kapoor',email:'meera@acme.com',team:'Design',role:'Employee',mode:'Remote',os:'Windows',exe:'v2.3.8',last:'3 hr',status:'pending',color:'#D8D8D0',fc:'#888',cap:false,blur:false,interval:10,idle:false,idleMin:5,hrs:8,pHrs:5,tgt:75,days:[1,1,1,1,0,0,0]},
+];
+const mods=['Dashboard','Teams','Screenshots','Attendance','Reports','Settings','Access Control'];
+const rolePerms={admin:[2,2,2,2,2,2,2],manager:[2,2,1,1,1,0,0],viewer:[1,1,1,1,1,0,0],noaccess:[0,0,0,0,0,0,0]};
+const roleMeta={admin:{title:'Admin — Module Permissions',sub:'System role · read only',edit:false,del:false},manager:{title:'Manager — Module Permissions',sub:'12 members · editable role',edit:true,del:false},viewer:{title:'Viewer — Module Permissions',sub:'Custom role · 8 members',edit:true,del:true},noaccess:{title:'No Access — Module Permissions',sub:'System role · locked',edit:false,del:false}};
+const permColors=['#D0D0C8','#F5C518','#3D6028'];
+const permLabels=['No Access','Read Only','Full Access'];
+const permPillStyle=['background:#F5F5F0;color:#888;','background:rgba(245,197,24,.15);color:#633806;','background:rgba(61,96,40,.1);color:#27500A;'];
+const dayLabels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let schedDays=[1,1,1,1,1,0,0];
+let currentWpEmp=0;
+let legalConsented=false;
+
+// ─── NAV ───
+function go(sec){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('s-'+sec).classList.add('active');window.scrollTo(0,0);}
+function hub(){go('hub');}
+
+// ─── MODALS ───
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');if(id==='m-invite')invStep1();}
+function invStep2(){document.getElementById('ms1').classList.remove('active');document.getElementById('ms2').classList.add('active');document.getElementById('si2').classList.add('done');}
+function invStep1(){document.getElementById('ms1').classList.add('active');document.getElementById('ms2').classList.remove('active');document.getElementById('si2').classList.remove('done');}
+
+// ─── TOGGLES ───
+function togClick(el){const on=el.classList.contains('on');el.classList.toggle('on',!on);el.classList.toggle('off',on);}
+
+// ─── STEPPERS ───
+function stepIt(btn,dir,mn,mx){const v=btn.parentElement.querySelector('.sv');let n=parseInt(v.textContent)||mn;n=Math.max(mn,Math.min(mx,n+dir));v.textContent=n;}
+function stepPct(btn,dir){const v=btn.parentElement.querySelector('.sv');let n=parseInt(v.textContent)||75;n=Math.max(0,Math.min(100,n+dir));v.textContent=n+'%';}
+
+// ─── FLASH SAVE ───
+function flashSave(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Saved';btn.style.background='linear-gradient(135deg,#3B6D11,#27500A)';btn.style.color='#fff';setTimeout(()=>{btn.innerHTML=orig;btn.style.background='';btn.style.color='';},1800);}
+
+// ─── PEOPLE LIST ───
+(function buildPeople(){
+  const c=document.getElementById('people-list');
+  const groups={Engineering:[],Design:[],Sales:[]};
+  emps.forEach(e=>{(groups[e.team]||(groups[e.team]=[])).push(e);});
+  const roleBadge={Admin:'dy',Manager:'db',Employee:'dn','No Access':'drd'};
+  Object.entries(groups).forEach(([team,list])=>{
+    const gl=document.createElement('div');gl.className='pgrp-lbl';gl.textContent=team;c.appendChild(gl);
+    list.forEach(e=>{
+      const r=document.createElement('div');r.className='prow';
+      r.innerHTML=`<div class="pav" style="background:${e.color};color:${e.fc};">${e.init}</div>
+      <div class="pid"><div class="pname">${e.name}</div><div class="pemail">${e.email}</div></div>
+      <div class="ppills">
+        <div class="ppill"><div class="pdot" style="background:${e.mode==='Hybrid'?'#3D6028':e.mode==='Remote'?'#185FA5':'#888'};"></div>${e.mode}</div>
+        <div class="ppill"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>${e.os} · ${e.exe}</div>
+        <div class="ppill"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${e.last} ago</div>
+      </div>
+      <div class="prole"><span class="bdg ${roleBadge[e.role]||'dn'}">${e.role}</span></div>
+      <div class="pacts">
+        <div class="ico-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <div class="ico-btn" style="border-color:rgba(153,53,53,.2);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#993535" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div>
+        <span class="bdg ${e.status==='active'?'dg':e.status==='pending'?'dy':'drd'}">${e.status==='active'?'Active':e.status==='pending'?'Pending EXE':'Inactive'}</span>
+      </div>`;
+      c.appendChild(r);
+    });
+  });
+})();
+
+// ─── WORK POLICY ───
+(function buildWpList(){
+  const c=document.getElementById('wp-emp-list');
+  emps.forEach((e,i)=>{
+    const d=document.createElement('div');d.className='wp-emp'+(i===0?' sel':'');
+    d.innerHTML=`<div class="wp-emp-av" style="background:${e.color};color:${e.fc};">${e.init}</div><div><div class="wp-emp-name">${e.name}</div><div class="wp-emp-team">${e.team}</div></div>`;
+    d.onclick=()=>{document.querySelectorAll('.wp-emp').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');currentWpEmp=i;schedDays=[...e.days];document.getElementById('wp-name').textContent=e.name;document.getElementById('wp-sub').textContent=`${e.team} · Select a tab to configure`;renderWk();updateTgtControls(e);};
+    c.appendChild(d);
+  });
+})();
+function renderWk(){
+  const c=document.getElementById('wk-grid');c.innerHTML='';
+  dayLabels.forEach((lbl,i)=>{
+    const isWknd=i>=5;const on=schedDays[i];
+    const d=document.createElement('div');d.className='wk-day'+(on?' on':(isWknd?' wknd':' off'));
+    d.innerHTML=`<div class="wk-lbl">${lbl}</div><div class="wk-sq">${on?'✓':isWknd?'—':'+'}</div>`;
+    d.onclick=()=>{schedDays[i]=schedDays[i]?0:1;renderWk();};
+    c.appendChild(d);
+  });
+}
+renderWk();
+function applyWk(arr,chip){schedDays=[...arr];renderWk();document.querySelectorAll('.qchip').forEach(c=>c.classList.remove('sel'));chip.classList.add('sel');}
+function wpTab(tab,panel){document.querySelectorAll('.wp-tab').forEach(t=>t.classList.remove('on'));tab.classList.add('on');document.querySelectorAll('.wp-content').forEach(p=>p.classList.remove('show'));document.getElementById('wp-'+panel).classList.add('show');}
+function updateTgtControls(e){
+  const tgt=document.getElementById('wp-targets');
+  const svs=tgt.querySelectorAll('.sv');
+  if(svs[0])svs[0].textContent=e.hrs;
+  if(svs[1])svs[1].textContent=e.pHrs;
+  if(svs[2])svs[2].textContent=e.tgt+'%';
+}
+
+// ─── MONITORING CONTROLS ───
+(function buildMC(){
+  const c=document.getElementById('mc-list');
+  const groups={Engineering:[],Design:[],Sales:[]};
+  emps.forEach(e=>{(groups[e.team]||(groups[e.team]=[])).push(e);});
+  Object.entries(groups).forEach(([team,list])=>{
+    const gl=document.createElement('div');gl.className='mc-grp-lbl';gl.textContent=team;c.appendChild(gl);
+    list.forEach(e=>{
+      const pct=((e.idleMin-1)/4)*100;
+      const r=document.createElement('div');r.className='mc-row';
+      r.innerHTML=`
+      <div class="mc-av" style="background:${e.color};color:${e.fc};">${e.init}</div>
+      <div class="mc-id"><div class="mc-name">${e.name}</div><div class="mc-team">${e.team}</div></div>
+      <div class="mc-divider"></div>
+      <div class="mc-cap-section">
+        <div class="mc-sec-lbl">Capture</div>
+        <div class="pod">
+          <div class="pod-seg ${e.cap?'cap-on':'cap-off'}" onclick="togCapture(this)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>${e.cap?'On':'Off'}</span>
+          </div>
+          <div class="pod-seg ${e.blur?'blur-on':'blur-off'}" onclick="togBlur(this)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke-width="2"/></svg>
+            <span>${e.blur?'Blur':'No Blur'}</span>
+          </div>
+          <div class="pod-seg" style="cursor:default;gap:3px;">
+            <div class="stp" style="border:none;background:transparent;"><div class="sb" onclick="stepIt(this,-1,1,60)" style="width:22px;height:22px;font-size:13px;">−</div><div class="sv" style="min-width:28px;font-size:10px;">${e.interval}m</div><div class="sb" onclick="stepIt(this,1,1,60)" style="width:22px;height:22px;font-size:13px;">+</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="mc-divider"></div>
+      <div class="mc-idle-section">
+        <div class="mc-sec-lbl" style="width:36px;">Idle</div>
+        <div class="tog-row" style="margin-right:8px;">
+          <div class="tog ${e.idle?'on':'off'}" onclick="togIdleRow(this)"><div class="tt"></div></div>
+        </div>
+        <div class="idle-track" onclick="setIdleBar(this,event)" style="flex:1;">
+          <div class="idle-fill" style="width:${pct}%;"></div>
+          <div class="idle-thumb" style="left:${pct}%;"></div>
+        </div>
+        <div class="idle-val">${e.idleMin}</div>
+        <div class="idle-unit-lbl">min</div>
+      </div>
+      <div class="mc-save"><button class="btn by sm" onclick="flashSave(this)">Save</button></div>`;
+      if(!e.idle){const it=r.querySelector('.idle-track');const ith=r.querySelector('.idle-thumb');const iv=r.querySelector('.idle-val');[it,ith,iv].forEach(el=>{if(el){el.style.opacity='.3';el.style.pointerEvents='none';}});}
+      c.appendChild(r);
+    });
+  });
+})();
+function togCapture(el){el.classList.toggle('cap-on');el.classList.toggle('cap-off');el.querySelector('span').textContent=el.classList.contains('cap-on')?'On':'Off';}
+function togBlur(el){el.classList.toggle('blur-on');el.classList.toggle('blur-off');el.querySelector('span').textContent=el.classList.contains('blur-on')?'Blur':'No Blur';}
+function togIdleRow(tog){togClick(tog);const row=tog.closest('.mc-row');const on=tog.classList.contains('on');const it=row.querySelector('.idle-track');const ith=row.querySelector('.idle-thumb');const iv=row.querySelector('.idle-val');[it,ith,iv].forEach(el=>{if(el){el.style.opacity=on?'1':'.3';el.style.pointerEvents=on?'auto':'none';}});}
+function setIdleBar(track,ev){const rect=track.getBoundingClientRect();const pct=Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width));const mins=Math.max(1,Math.min(5,Math.round(pct*4)+1));const p=((mins-1)/4)*100;track.querySelector('.idle-fill').style.width=p+'%';track.querySelector('.idle-thumb').style.left=p+'%';track.closest('.mc-row').querySelector('.idle-val').textContent=mins;}
+
+// ─── STEALTH ───
+(function buildStealth(){
+  const c=document.getElementById('stealth-rows');
+  emps.forEach(e=>{
+    const r=document.createElement('div');r.className='st-row';
+    r.innerHTML=`<div class="st-av" style="background:${e.color};color:${e.fc};">${e.init}</div>
+    <div class="st-info"><div class="st-name">${e.name}</div><div class="st-meta">${e.team} · ${e.role}</div></div>
+    <div class="st-status" style="color:#CCC;">○ Inactive</div>
+    <div class="tog off" onclick="togClick(this)"><div class="tt"></div></div>
+    <div style="margin-left:10px;"><button class="btn sm" style="background:rgba(153,53,53,.1);color:#791F1F;border:1px solid rgba(153,53,53,.2);" onclick="flashSave(this)">Save</button></div>`;
+    c.appendChild(r);
+  });
+})();
+function toggleConsent(){legalConsented=!legalConsented;document.getElementById('lcb').classList.toggle('chk',legalConsented);const b=document.getElementById('unlock-btn');b.style.opacity=legalConsented?'1':'0.35';b.style.pointerEvents=legalConsented?'all':'none';}
+function unlockStealth(){const w=document.getElementById('stealth-wrap');w.style.opacity='1';w.style.filter='none';w.style.pointerEvents='all';const b=document.getElementById('unlock-btn');b.innerHTML='✓ Consent Acknowledged';b.style.background='linear-gradient(135deg,#3B6D11,#27500A)';document.querySelector('.legal-check').style.pointerEvents='none';}
+
+// ─── PERMISSIONS ───
+function buildPerms(role){
+  const meta=roleMeta[role];const perms=rolePerms[role];
+  document.getElementById('perm-title').textContent=meta.title;
+  document.getElementById('perm-sub').textContent=meta.sub;
+  const acts=document.getElementById('perm-acts');acts.innerHTML='';
+  if(meta.edit)acts.innerHTML+='<button class="btn bg sm">Edit Role</button>';
+  if(meta.del)acts.innerHTML+='<button class="btn br sm">Delete Role</button>';
+  document.getElementById('perm-save').style.display=meta.edit?'flex':'none';
+  const c=document.getElementById('perm-rows');c.innerHTML='';
+  mods.forEach((mod,i)=>{
+    const lv=perms[i];const fw=[0,50,100][lv];
+    const row=document.createElement('div');row.className='pp-mod-row';
+    row.innerHTML=`<div class="pp-mod-name">${mod}</div>
+    <div class="pp-bar-wrap">
+      <div class="pp-bar-track">
+        <div class="pp-fill" style="width:${fw}%;background:${permColors[lv]};"></div>
+        <div class="pp-clicks">${[0,1,2].map(v=>`<div class="pp-click" onclick="${meta.edit?`setPerm(${i},${v},'${role}')`:''}"></div>`).join('')}</div>
+      </div>
+      <div class="pp-lbl-row"><span class="pp-lbl">None</span><span class="pp-lbl">Read</span><span class="pp-lbl">Full</span></div>
+    </div>
+    <div class="pp-pill" style="${permPillStyle[lv]}">${permLabels[lv]}</div>`;
+    c.appendChild(row);
+  });
+}
+function setPerm(mi,val,role){if(!roleMeta[role].edit)return;rolePerms[role][mi]=val;buildPerms(role);}
+function pickRole(card,role){document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));card.classList.add('sel');buildPerms(role);}
+buildPerms('admin');
+
+// ─── MODAL ROLE PERMS ───
+(function buildMrole(){
+  const c=document.getElementById('mrole-body');
+  mods.forEach(mod=>{
+    const r=document.createElement('div');r.className='mrole-row';
+    r.innerHTML=`<span>${mod}</span>${[0,1,2].map(v=>`<div class="mradio ${v===0?'sel':''}" onclick="mrClick(this)"></div>`).join('')}`;
+    c.appendChild(r);
+  });
+})();
+function mrClick(el){const row=el.closest('.mrole-row');row.querySelectorAll('.mradio').forEach(r=>{r.classList.remove('sel');r.style.background='';r.style.borderColor='rgba(0,0,0,.15)';});el.classList.add('sel');el.style.background='#1A1A1A';el.style.borderColor='#1A1A1A';}
+document.querySelectorAll('.mradio.sel').forEach(el=>{el.style.background='#1A1A1A';el.style.borderColor='#1A1A1A';});
+
+// ─── DAY PILLS ───
+document.querySelectorAll('.dpp').forEach(p=>p.addEventListener('click',()=>{p.classList.toggle('on');p.classList.toggle('off');}));
+</script>
+</body>
+</html>
