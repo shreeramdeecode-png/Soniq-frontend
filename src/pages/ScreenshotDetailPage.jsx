@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Download } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 import ScreenshotViewer from '@/components/cards/screenshots/ScreenshotViewer';
 import FilmStrip from '@/components/cards/screenshots/FilmStrip';
 import ScreenshotDetailPanel from '@/components/cards/screenshots/ScreenshotDetailPanel';
 
 export default function ScreenshotDetailPage() {
   const navigate = useNavigate();
+  const toast = useToast();
 
   return (
     <div className="relative z-[2] pb-6">
@@ -21,7 +23,7 @@ export default function ScreenshotDetailPage() {
         <div className="text-[11px] text-text-light whitespace-nowrap overflow-hidden text-ellipsis">
           Screenshots → <span className="text-text-primary font-medium">Ravi Shankar</span> → <span className="text-text-primary font-medium">2:41 PM · Apr 16, 2026</span>
         </div>
-        <button className="ml-auto shrink-0 glass-pill flex items-center gap-[5px] py-[7px] px-4 rounded-pill text-sm text-text-secondary cursor-pointer whitespace-nowrap">
+        <button onClick={() => toast.success('Screenshot download started', 'Download')} className="ml-auto shrink-0 glass-pill flex items-center gap-[5px] py-[7px] px-4 rounded-pill text-sm text-text-secondary cursor-pointer whitespace-nowrap">
           <Download size={11} stroke="#666" strokeWidth={2} />
           Download
         </button>

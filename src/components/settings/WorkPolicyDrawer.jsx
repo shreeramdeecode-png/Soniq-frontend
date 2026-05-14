@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AlertTriangle, RotateCcw, Save, ChevronUp, ChevronDown } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { employees, dayLabels } from '@/mock/settings';
+import { useToast } from '@/components/ui/Toast';
 
 const QUICK_PRESETS = [
   { label: 'Mon – Fri', days: [1, 1, 1, 1, 1, 0, 0] },
@@ -39,6 +40,7 @@ export default function WorkPolicyDrawer() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [tab, setTab] = useState('days');
   const [activePreset, setActivePreset] = useState(0);
+  const toast = useToast();
 
   const selected = employees[selectedIdx];
   const [days, setDays] = useState(selected.days);
@@ -192,10 +194,21 @@ export default function WorkPolicyDrawer() {
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3">
-                <button className="flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text-secondary cursor-pointer px-4 py-2">
+                <button
+                  onClick={() => {
+                    const emp = employees[selectedIdx];
+                    setDays(emp.days);
+                    setActivePreset(0);
+                    toast.info('Schedule reset to defaults');
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text-secondary cursor-pointer px-4 py-2"
+                >
                   Reset
                 </button>
-                <button className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity">
+                <button
+                  onClick={() => toast.success(`Schedule saved for ${selected.name}`, 'Work Policy Updated')}
+                  className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity"
+                >
                   Save Schedule
                 </button>
               </div>
@@ -220,10 +233,23 @@ export default function WorkPolicyDrawer() {
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3">
-                <button className="flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text-secondary cursor-pointer px-4 py-2">
+                <button
+                  onClick={() => {
+                    const emp = employees[selectedIdx];
+                    setCheckIn('09:00 AM');
+                    setWorkHrs(emp.hrs);
+                    setProdHrs(emp.pHrs);
+                    setTarget(emp.tgt);
+                    toast.info('Targets reset to defaults');
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text-secondary cursor-pointer px-4 py-2"
+                >
                   Reset
                 </button>
-                <button className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity">
+                <button
+                  onClick={() => toast.success(`Targets saved for ${selected.name}`, 'Targets Updated')}
+                  className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity"
+                >
                   Save Targets
                 </button>
               </div>

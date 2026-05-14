@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Shield, Users, Eye, Ban, Save, RotateCcw, Plus } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { modules, rolePermsData, roleMeta, permColors, permLabels } from '@/mock/settings';
+import { useToast } from '@/components/ui/Toast';
 
 const ROLE_ICONS = {
   admin: Shield,
@@ -79,6 +80,7 @@ function PermissionBar({ level, onChange, editable }) {
 export default function PermissionsDrawer() {
   const [selectedRole, setSelectedRole] = useState('admin');
   const [perms, setPerms] = useState({ ...rolePermsData });
+  const toast = useToast();
 
   const meta = roleMeta[selectedRole];
   const currentPerms = perms[selectedRole];
@@ -98,6 +100,7 @@ export default function PermissionsDrawer() {
       ...prev,
       [selectedRole]: [...rolePermsData[selectedRole]],
     }));
+    toast.info('Permissions reset to defaults');
   }
 
   return (
@@ -150,7 +153,10 @@ export default function PermissionsDrawer() {
           <div className="flex items-center gap-3">
             {editable && (
               <>
-                <button className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity">
+                <button
+                  onClick={() => toast.success('Permission changes saved', 'Permissions Updated')}
+                  className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity"
+                >
                   <Save size={12} /> Save Changes
                 </button>
                 <button

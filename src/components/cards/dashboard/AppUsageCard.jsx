@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import GlossyCard from '@/components/ui/GlossyCard';
 import Badge from '@/components/ui/Badge';
 import TabSwitcher from '@/components/ui/TabSwitcher';
@@ -53,6 +54,7 @@ function AppRow({ name, abbr, time, percentage, category, iconBg, iconColor, bar
 
 export default function AppUsageCard() {
   const [activeTab, setActiveTab] = useState('apps');
+  const navigate = useNavigate();
 
   return (
     <GlossyCard className="p-4">
@@ -67,11 +69,14 @@ export default function AppUsageCard() {
         />
       </div>
 
-      {appUsage.apps.map((app) => (
+      {(activeTab === 'apps' ? appUsage.apps : appUsage.websites).map((app) => (
         <AppRow key={app.name} {...app} />
       ))}
 
-      <div className="text-xs-plus text-text-light cursor-pointer text-right mt-2.5 pt-2 border-t border-black/5">
+      <div
+        onClick={() => navigate('/reports')}
+        className="text-xs-plus text-text-light cursor-pointer text-right mt-2.5 pt-2 border-t border-black/5 hover:text-primary transition-colors"
+      >
         View Full Report →
       </div>
     </GlossyCard>

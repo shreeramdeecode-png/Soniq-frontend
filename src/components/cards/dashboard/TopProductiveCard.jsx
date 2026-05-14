@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import GlossyCard from '@/components/ui/GlossyCard';
 import TabSwitcher from '@/components/ui/TabSwitcher';
 import { topProductive } from '@/mock/dashboard';
@@ -43,6 +44,7 @@ function ProductiveRow({ rank, name, initials, hours, percentage, avatarBg, avat
 
 export default function TopProductiveCard() {
   const [activeTab, setActiveTab] = useState('employee');
+  const navigate = useNavigate();
 
   return (
     <GlossyCard className="p-4">
@@ -55,11 +57,14 @@ export default function TopProductiveCard() {
         />
       </div>
 
-      {topProductive.map((emp) => (
+      {(topProductive[activeTab] || topProductive.employee).map((emp) => (
         <ProductiveRow key={emp.rank} {...emp} />
       ))}
 
-      <div className="text-xs-plus text-text-light cursor-pointer text-right mt-2.5 pt-2 border-t border-black/5">
+      <div
+        onClick={() => navigate('/reports')}
+        className="text-xs-plus text-text-light cursor-pointer text-right mt-2.5 pt-2 border-t border-black/5 hover:text-primary transition-colors"
+      >
         View All →
       </div>
     </GlossyCard>

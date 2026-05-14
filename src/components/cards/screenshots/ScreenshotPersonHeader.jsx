@@ -1,8 +1,8 @@
 import { Users, EyeOff } from 'lucide-react';
-import { selectedPerson } from '@/mock/screenshots';
+import { employeeProfiles, selectedPerson } from '@/mock/screenshots';
 
-export default function ScreenshotPersonHeader() {
-  const p = selectedPerson;
+export default function ScreenshotPersonHeader({ employeeId }) {
+  const p = employeeProfiles[employeeId] || selectedPerson;
 
   return (
     <div className="glossy-card p-[16px_20px] flex items-center gap-4">

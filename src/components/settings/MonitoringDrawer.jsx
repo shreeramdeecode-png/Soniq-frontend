@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Info, Save, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { employees } from '@/mock/settings';
+import { useToast } from '@/components/ui/Toast';
 
 function groupByTeam(list) {
   return list.reduce((acc, emp) => {
@@ -26,7 +27,7 @@ function Toggle({ on, onChange }) {
   );
 }
 
-function MonitoringRow({ emp }) {
+function MonitoringRow({ emp, onSave }) {
   const [capOn, setCapOn] = useState(emp.cap);
   const [blur, setBlur] = useState(emp.blur);
   const [interval, setInterval_] = useState(emp.interval);
@@ -103,7 +104,10 @@ function MonitoringRow({ emp }) {
       </div>
 
       {/* Save */}
-      <button className="primary-pill text-white text-xs font-semibold rounded-pill px-4 py-2 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity ml-3 shrink-0">
+      <button
+        onClick={() => onSave?.(emp.name)}
+        className="primary-pill text-white text-xs font-semibold rounded-pill px-4 py-2 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity ml-3 shrink-0"
+      >
         <Save size={11} /> Save
       </button>
     </div>
@@ -112,7 +116,15 @@ function MonitoringRow({ emp }) {
 
 export default function MonitoringDrawer() {
   const [page, setPage] = useState(1);
-  const grouped = groupByTeam(employees);
+  const toast = useToast();
+  const PAGE_SIZE = 5;
+  const totalPages = Math.ceil(employees.length / PAGE_SIZE);
+  const paginatedEmployees = employees.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const grouped = groupByTeam(paginatedEmployees);
+
+  function handleSave(name) {
+    toast.success(`Monitoring settings saved for ${name}`, 'Settings Saved');
+  }
 
   return (
     <div>
@@ -147,19 +159,25 @@ export default function MonitoringDrawer() {
               <div className="flex-1 h-px bg-primary/10" />
             </div>
             {members.map((emp) => (
-              <MonitoringRow key={emp.email} emp={emp} />
+              <MonitoringRow key={emp.email} emp={emp} onSave={handleSave} />
             ))}
           </div>
         ))}
 
         {/* Pagination */}
         <div className="flex items-center justify-between px-5 py-3.5 border-t border-black/5">
-          <span className="text-xs text-text-light">Showing {employees.length} of 128</span>
+          <span className="text-xs text-text-light">
+            Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, employees.length)} of {employees.length}
+          </span>
           <div className="flex items-center gap-1">
-            <button className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/5 cursor-pointer">
+            <button
+              onClick={() => setPage(Math.max(1, page - 1))}
+              disabled={page === 1}
+              className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/5 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            >
               <ChevronLeft size={13} className="text-text-muted" />
             </button>
-            {[1, 2, 3].map((p) => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <button
                 key={p}
                 onClick={() => setPage(p)}
@@ -171,7 +189,11 @@ export default function MonitoringDrawer() {
                 {p}
               </button>
             ))}
-            <button className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/5 cursor-pointer">
+            <button
+              onClick={() => setPage(Math.min(totalPages, page + 1))}
+              disabled={page === totalPages}
+              className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/5 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            >
               <ChevronRight size={13} className="text-text-muted" />
             </button>
           </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Lock, Save, ShieldAlert } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { employees } from '@/mock/settings';
+import { useToast } from '@/components/ui/Toast';
 
 function Toggle({ on, onChange }) {
   return (
@@ -19,7 +20,7 @@ function Toggle({ on, onChange }) {
   );
 }
 
-function StealthEmployeeRow({ emp }) {
+function StealthEmployeeRow({ emp, onSave }) {
   const [on, setOn] = useState(false);
 
   return (
@@ -34,11 +35,14 @@ function StealthEmployeeRow({ emp }) {
         <p className="text-sm font-semibold text-text-primary truncate">{emp.name}</p>
         <p className="text-xs-plus text-text-light truncate">{emp.team} · {emp.role}</p>
       </div>
-      <span className="text-xs font-semibold text-text-light mr-2">
-        ○ Inactive
+      <span className={cn('text-xs font-semibold mr-2', on ? 'text-status-danger' : 'text-text-light')}>
+        {on ? '● Active' : '○ Inactive'}
       </span>
       <Toggle on={on} onChange={() => setOn(!on)} />
-      <button className="primary-pill text-white text-xs font-semibold rounded-pill px-4 py-2 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity ml-2">
+      <button
+        onClick={() => onSave(emp.name, on)}
+        className="primary-pill text-white text-xs font-semibold rounded-pill px-4 py-2 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity ml-2"
+      >
         <Save size={12} /> Save
       </button>
     </div>
@@ -48,6 +52,15 @@ function StealthEmployeeRow({ emp }) {
 export default function StealthDrawer() {
   const [consented, setConsented] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const toast = useToast();
+
+  function handleSave(name, isOn) {
+    if (isOn) {
+      toast.warning(`Silent tracking enabled for ${name}`, 'Stealth Mode');
+    } else {
+      toast.success(`Silent tracking disabled for ${name}`, 'Stealth Mode');
+    }
+  }
 
   return (
     <div>
@@ -88,7 +101,10 @@ export default function StealthDrawer() {
 
         <button
           disabled={!consented}
-          onClick={() => setUnlocked(true)}
+          onClick={() => {
+            setUnlocked(true);
+            toast.info('Silent tracking panel unlocked', 'Access Granted');
+          }}
           className={cn(
             'text-sm font-semibold rounded-pill px-7 py-3 transition-all',
             consented
@@ -104,7 +120,7 @@ export default function StealthDrawer() {
       <div className={cn('transition-all duration-400', !unlocked && 'opacity-20 blur-[3px] pointer-events-none select-none')}>
         <div className="flex flex-col gap-2">
           {employees.map((emp) => (
-            <StealthEmployeeRow key={emp.email} emp={emp} />
+            <StealthEmployeeRow key={emp.email} emp={emp} onSave={handleSave} />
           ))}
         </div>
       </div>

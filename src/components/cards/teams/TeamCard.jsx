@@ -125,9 +125,12 @@ export default function TeamCard({ team }) {
   );
 }
 
-export function CreateTeamCard() {
+export function CreateTeamCard({ onClick }) {
   return (
-    <div className="border-2 border-dashed border-black/10 bg-white/40 rounded-card flex items-center justify-center min-h-[280px] cursor-pointer transition-all hover:bg-white/60">
+    <div
+      onClick={onClick}
+      className="border-2 border-dashed border-black/10 bg-white/40 rounded-card flex items-center justify-center min-h-[280px] cursor-pointer transition-all hover:bg-white/60 hover:border-primary/30"
+    >
       <div className="text-center">
         <div className="w-12 h-12 rounded-[16px] bg-black/[0.06] flex items-center justify-center mx-auto mb-2.5">
           <Plus size={20} stroke="#AAA" strokeWidth={2} />

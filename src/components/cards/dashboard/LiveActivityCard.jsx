@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Monitor, Zap, Clock, User, Heart, Check } from 'lucide-react';
 import DarkCard from '@/components/ui/DarkCard';
 import { liveActivity } from '@/mock/dashboard';
@@ -11,7 +13,7 @@ const ICON_MAP = {
   heart: Heart,
 };
 
-function ActivityItem({ name, status, completed, icon }) {
+function ActivityItem({ name, status, completed, icon, onToggle }) {
   const Icon = ICON_MAP[icon] || Monitor;
 
   return (
@@ -33,11 +35,12 @@ function ActivityItem({ name, status, completed, icon }) {
         <div className="text-2xs-plus text-white/30 mt-px">{status}</div>
       </div>
       <div
+        onClick={onToggle}
         className={cn(
-          'w-[17px] h-[17px] rounded-full flex items-center justify-center shrink-0',
+          'w-[17px] h-[17px] rounded-full flex items-center justify-center shrink-0 cursor-pointer transition-colors',
           completed
             ? 'check-done'
-            : 'bg-white/[0.07] border border-white/10'
+            : 'bg-white/[0.07] border border-white/10 hover:border-white/30'
         )}
       >
         {completed && (
@@ -50,6 +53,16 @@ function ActivityItem({ name, status, completed, icon }) {
 
 export default function LiveActivityCard() {
   const { active, total, items } = liveActivity;
+  const [activityItems, setActivityItems] = useState(items);
+  const navigate = useNavigate();
+
+  const toggleItem = (id) => {
+    setActivityItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    );
+  };
 
   return (
     <DarkCard variant="task" className="p-4 flex flex-col">
@@ -59,9 +72,17 @@ export default function LiveActivityCard() {
           {active}/{total}
         </span>
       </div>
-      {items.map((item) => (
-        <ActivityItem key={item.id} {...item} />
+      {activityItems.map((item) => (
+        <ActivityItem key={item.id} {...item} onToggle={() => toggleItem(item.id)} />
       ))}
+      <div className="mt-2.5 pt-2 border-t border-white/5 text-right">
+        <span
+          onClick={() => navigate('/attendance')}
+          className="text-xs text-white/40 cursor-pointer hover:text-white/70 transition-colors"
+        >
+          View All →
+        </span>
+      </div>
     </DarkCard>
   );
 }

@@ -1,5 +1,7 @@
 import { useState, lazy, Suspense } from 'react';
-import { Download, Calendar, ChevronRight } from 'lucide-react';
+import { Download } from 'lucide-react';
+import DateRangePicker from '@/components/ui/DateRangePicker';
+import { useToast } from '@/components/ui/Toast';
 import { reports } from '@/mock/reports';
 import { cn } from '@/utils/cn';
 
@@ -28,8 +30,10 @@ const STAT_COLORS = {
 const SCOPE_TABS = ['Org-wide', 'By Team', 'By Employee'];
 
 export default function ReportsPage() {
+  const toast = useToast();
   const [activeIdx, setActiveIdx] = useState(0);
   const [scope, setScope] = useState('Org-wide');
+  const [activeAction, setActiveAction] = useState(null);
 
   const active = reports[activeIdx];
   const VizComponent = VIZ_MAP[active.id];
@@ -62,22 +66,12 @@ export default function ReportsPage() {
             ))}
           </div>
           {/* Date picker */}
-          <div className="flex items-center h-9 bg-white/80 border border-black/10 rounded-[50px] px-3 gap-2">
-            <Calendar size={12} className="text-text-lighter shrink-0" />
-            <div className="flex flex-col px-1">
-              <span className="text-[7.5px] text-text-lighter leading-none">From</span>
-              <span className="text-xs font-semibold text-text-primary leading-tight">Apr 01</span>
-            </div>
-            <div className="w-px h-[14px] bg-black/[0.08]" />
-            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-              <ChevronRight size={9} className="text-white" />
-            </div>
-            <div className="w-px h-[14px] bg-black/[0.08]" />
-            <div className="flex flex-col px-1">
-              <span className="text-[7.5px] text-text-lighter leading-none">To</span>
-              <span className="text-xs font-semibold text-text-primary leading-tight">Apr 21</span>
-            </div>
-          </div>
+          <DateRangePicker
+            from={new Date(2026, 3, 1)}
+            to={new Date(2026, 3, 21)}
+            variant="solid"
+            onChange={() => toast.info('Date range updated — report data refreshed')}
+          />
         </div>
       </div>
 
@@ -90,10 +84,10 @@ export default function ReportsPage() {
             <div className="text-xs text-text-light mt-1">{active.desc}</div>
           </div>
           <div className="flex items-center gap-2.5">
-            <button className="glass-pill flex items-center gap-1.5 text-xs font-semibold text-text-muted px-4 py-2 rounded-pill cursor-pointer hover:bg-white/90 transition-colors">
+            <button onClick={() => toast.success('Report exported as CSV', 'Export Complete')} className="glass-pill flex items-center gap-1.5 text-xs font-semibold text-text-muted px-4 py-2 rounded-pill cursor-pointer hover:bg-white/90 transition-colors">
               <Download size={12} /> Export CSV
             </button>
-            <button className="primary-pill text-white flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-pill cursor-pointer hover:opacity-90 transition-opacity">
+            <button onClick={() => toast.success('Report downloaded as Excel', 'Download Complete')} className="primary-pill text-white flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-pill cursor-pointer hover:opacity-90 transition-opacity">
               <Download size={12} /> Download Excel
             </button>
           </div>
@@ -162,7 +156,16 @@ export default function ReportsPage() {
               </div>
               <div className="flex items-center gap-2">
                 {active.actions.map((a) => (
-                  <button key={a} className="glass-pill text-xs font-semibold text-text-muted px-3.5 py-1.5 rounded-pill cursor-pointer hover:bg-white/90 transition-colors">
+                  <button
+                    key={a}
+                    onClick={() => setActiveAction(activeAction === a ? null : a)}
+                    className={cn(
+                      'text-xs font-semibold px-3.5 py-1.5 rounded-pill cursor-pointer transition-colors',
+                      activeAction === a
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'glass-pill text-text-muted hover:bg-white/90',
+                    )}
+                  >
                     {a}
                   </button>
                 ))}
@@ -183,10 +186,10 @@ export default function ReportsPage() {
             <span>{active.exportInfo}</span>
           </div>
           <div className="flex items-center gap-2">
-            <button className="glass-pill text-xs font-semibold text-text-muted px-3.5 py-1.5 rounded-pill cursor-pointer hover:bg-white/90 transition-colors">
+            <button onClick={() => toast.success('Report exported as CSV', 'Export Complete')} className="glass-pill text-xs font-semibold text-text-muted px-3.5 py-1.5 rounded-pill cursor-pointer hover:bg-white/90 transition-colors">
               Export CSV
             </button>
-            <button className="primary-pill text-white text-xs font-semibold px-3.5 py-1.5 rounded-pill cursor-pointer hover:opacity-90 transition-opacity">
+            <button onClick={() => toast.success('Report downloaded as Excel', 'Download Complete')} className="primary-pill text-white text-xs font-semibold px-3.5 py-1.5 rounded-pill cursor-pointer hover:opacity-90 transition-opacity">
               Download Excel
             </button>
           </div>

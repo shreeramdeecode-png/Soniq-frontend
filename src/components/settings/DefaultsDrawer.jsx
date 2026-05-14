@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Monitor, Clock, Zap, Target, Calendar, Shield } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { dayLabels } from '@/mock/settings';
+import { useToast } from '@/components/ui/Toast';
 
 function Toggle({ on, onChange, label }) {
   return (
@@ -61,6 +62,7 @@ function DefaultCard({ icon: Icon, iconColor, previewBg, title, description, chi
 }
 
 export default function DefaultsDrawer() {
+  const toast = useToast();
   const [capOn, setCapOn] = useState(true);
   const [blurOn, setBlurOn] = useState(false);
   const [interval, setInterval_] = useState(5);
@@ -156,7 +158,10 @@ export default function DefaultsDrawer() {
 
       {/* Save */}
       <div className="flex items-center justify-end mt-5 pt-5 border-t border-black/5">
-        <button className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity">
+        <button
+          onClick={() => toast.success('Organisation defaults saved successfully', 'Defaults Updated')}
+          className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity"
+        >
           Save All Defaults
         </button>
       </div>

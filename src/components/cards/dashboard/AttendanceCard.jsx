@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import GlossyCard from '@/components/ui/GlossyCard';
 import { attendance } from '@/mock/dashboard';
 
@@ -10,9 +11,10 @@ const BLOCKS = [
 export default function AttendanceCard() {
   const { percentage, checkedIn, absent, privacy } = attendance;
   const counts = { checkedIn, absent, privacy };
+  const navigate = useNavigate();
 
   return (
-    <GlossyCard className="p-4.5">
+    <GlossyCard className="p-4.5 cursor-pointer" onClick={() => navigate('/attendance')}>
       <div className="flex items-start justify-between mb-2.5">
         <h3 className="text-lg font-semibold text-text-primary">Attendance</h3>
         <span className="text-4xl font-bold text-text-primary tracking-tight">

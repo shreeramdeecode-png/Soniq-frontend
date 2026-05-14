@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { ChevronRight, Search } from 'lucide-react';
 import { settingsSections, settingsGroups } from '@/mock/settings';
 import { cn } from '@/utils/cn';
@@ -31,6 +31,20 @@ const CHIP_STYLES = {
 
 export default function SettingsPage() {
   const [openSection, setOpenSection] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredSections = useMemo(() => {
+    if (!searchQuery.trim()) return settingsSections;
+    const q = searchQuery.toLowerCase();
+    return settingsSections.filter(
+      (s) => s.name.toLowerCase().includes(q) || s.hint.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
+
+  const filteredGroups = useMemo(() => {
+    const sectionGroupIds = new Set(filteredSections.map((s) => s.group));
+    return settingsGroups.filter((g) => sectionGroupIds.has(g.id));
+  }, [filteredSections]);
 
   function toggleSection(id) {
     setOpenSection((prev) => (prev === id ? null : id));
@@ -49,6 +63,8 @@ export default function SettingsPage() {
           <div className="glass-pill flex items-center gap-[7px] h-[34px] px-[13px] rounded-pill min-w-[220px]">
             <Search size={12} stroke="#BBBBAA" strokeWidth={2} />
             <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="border-none bg-transparent outline-none text-xs-plus font-poppins text-text-primary w-full placeholder:text-text-lighter"
               placeholder="Search settings…"
             />
@@ -72,7 +88,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Sections */}
-        {settingsGroups.map((group) => (
+        {filteredGroups.map((group) => (
           <div key={group.id}>
             {/* Group bar */}
             <div className="flex items-center gap-0 py-2 px-6 bg-black/[0.025] border-b border-black/[0.06] border-t border-black/[0.04]">
@@ -82,7 +98,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Section rows for this group */}
-            {settingsSections
+            {filteredSections
               .filter((s) => s.group === group.id)
               .map((section) => {
                 const isOpen = openSection === section.id;

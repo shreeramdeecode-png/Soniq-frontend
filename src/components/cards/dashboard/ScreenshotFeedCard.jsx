@@ -1,4 +1,5 @@
 import { Monitor } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import GlossyCard from '@/components/ui/GlossyCard';
 import { screenshotFeed } from '@/mock/dashboard';
 
@@ -8,12 +9,15 @@ const STATUS_COLOR = {
   unproductive: '#1A1A1A',
 };
 
-function FeedItem({ name, app, time, status, thumbBg, thumbStroke }) {
+function FeedItem({ name, app, time, status, thumbBg, thumbStroke, onClick }) {
   const dotColor = STATUS_COLOR[status];
   const showGlow = status === 'productive';
 
   return (
-    <div className="flex items-center gap-[9px] py-2 border-b border-black/[0.04] last:border-b-0 last:pb-0">
+    <div
+      onClick={onClick}
+      className="flex items-center gap-[9px] py-2 border-b border-black/[0.04] last:border-b-0 last:pb-0 cursor-pointer rounded-lg hover:bg-black/[0.02] transition-colors"
+    >
       <div
         className="thumb-sheen w-12 h-[34px] rounded-lg shrink-0 flex items-center justify-center relative overflow-hidden"
         style={{ background: thumbBg }}
@@ -39,6 +43,8 @@ function FeedItem({ name, app, time, status, thumbBg, thumbStroke }) {
 }
 
 export default function ScreenshotFeedCard() {
+  const navigate = useNavigate();
+
   return (
     <GlossyCard className="p-4">
       <div className="flex items-start justify-between mb-3">
@@ -50,7 +56,7 @@ export default function ScreenshotFeedCard() {
       </div>
 
       {screenshotFeed.map((item) => (
-        <FeedItem key={item.id} {...item} />
+        <FeedItem key={item.id} {...item} onClick={() => navigate(`/screenshots/${item.id}`)} />
       ))}
 
       <div className="flex justify-between items-center mt-2.5 pt-2 border-t border-black/5">
@@ -66,7 +72,7 @@ export default function ScreenshotFeedCard() {
             </div>
           ))}
         </div>
-        <span className="text-xs text-text-light cursor-pointer">View All →</span>
+        <span onClick={() => navigate('/screenshots')} className="text-xs text-text-light cursor-pointer hover:text-primary transition-colors">View All →</span>
       </div>
     </GlossyCard>
   );

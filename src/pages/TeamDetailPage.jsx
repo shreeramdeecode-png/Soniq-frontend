@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Download, Plus, Users } from 'lucide-react';
 import StatCard from '@/components/ui/StatCard';
@@ -8,9 +9,21 @@ import WeeklyPerformancePanel from '@/components/cards/teams/WeeklyPerformancePa
 import IdleAlertsPanel from '@/components/cards/teams/IdleAlertsPanel';
 import QuickActionsPanel from '@/components/cards/teams/QuickActionsPanel';
 import { teamInfo, teamDetailStats } from '@/mock/teamDetail';
+import { useToast } from '@/components/ui/Toast';
+import Modal from '@/components/ui/Modal';
 
 export default function TeamDetailPage() {
   const navigate = useNavigate();
+  const toast = useToast();
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newEmployeeName, setNewEmployeeName] = useState('');
+
+  function handleAddEmployee() {
+    if (!newEmployeeName.trim()) return;
+    toast.success(`${newEmployeeName} added to the team`, 'Employee Added');
+    setNewEmployeeName('');
+    setShowAddModal(false);
+  }
 
   return (
     <div className="relative z-[2] pb-7">
@@ -52,11 +65,17 @@ export default function TeamDetailPage() {
           </div>
         </div>
         <div className="flex gap-2.5">
-          <button className="glass-pill flex items-center gap-[7px] py-[9px] px-4 rounded-pill text-sm-plus font-medium text-text-secondary cursor-pointer">
+          <button
+            onClick={() => toast.success('Team data exported successfully', 'Export Complete')}
+            className="glass-pill flex items-center gap-[7px] py-[9px] px-4 rounded-pill text-sm-plus font-medium text-text-secondary cursor-pointer"
+          >
             <Download size={12} stroke="#666" strokeWidth={2} />
             Export CSV
           </button>
-          <button className="dark-pill flex items-center gap-[7px] py-[9px] px-[18px] rounded-pill text-sm-plus font-semibold text-white cursor-pointer">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="dark-pill flex items-center gap-[7px] py-[9px] px-[18px] rounded-pill text-sm-plus font-semibold text-white cursor-pointer"
+          >
             <Plus size={12} stroke="#fff" strokeWidth={2} />
             Add Employee
           </button>
@@ -83,6 +102,37 @@ export default function TeamDetailPage() {
           <QuickActionsPanel />
         </div>
       </div>
+
+      <Modal
+        open={showAddModal}
+        onClose={() => { setShowAddModal(false); setNewEmployeeName(''); }}
+        title="Add Employee"
+        subtitle="Add a new member to the team"
+        size="sm"
+      >
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="text-sm font-medium text-text-primary mb-1.5 block">
+              Employee Name
+            </label>
+            <input
+              type="text"
+              value={newEmployeeName}
+              onChange={(e) => setNewEmployeeName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddEmployee()}
+              placeholder="Enter employee name..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-black/10 bg-white/60 text-sm text-text-primary placeholder:text-text-lighter outline-none focus:border-primary/40 transition-colors"
+            />
+          </div>
+          <button
+            onClick={handleAddEmployee}
+            disabled={!newEmployeeName.trim()}
+            className="dark-pill w-full py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Add to Team
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

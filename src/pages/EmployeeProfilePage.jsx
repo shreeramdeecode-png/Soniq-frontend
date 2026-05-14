@@ -68,17 +68,35 @@ export default function EmployeeProfilePage() {
             ))}
           </div>
 
-          {/* Activity Timeline */}
-          <ActivityTimeline />
+          {activeTab === 'overview' && (
+            <>
+              <ActivityTimeline />
+              <div className="grid grid-cols-2 gap-3.5">
+                <AppUsageTable />
+                <AttendanceSummary />
+              </div>
+              <DailyRecordsTable />
+            </>
+          )}
 
-          {/* App Usage + Attendance side by side */}
-          <div className="grid grid-cols-2 gap-3.5">
-            <AppUsageTable />
-            <AttendanceSummary />
-          </div>
+          {activeTab === 'screenshots' && (
+            <div className="rounded-tile bg-white/60 backdrop-blur-sm border border-black/[0.04] p-8 text-center text-text-muted">
+              Employee screenshots will appear here
+            </div>
+          )}
 
-          {/* Recent Daily Records */}
-          <DailyRecordsTable />
+          {activeTab === 'reports' && (
+            <div className="rounded-tile bg-white/60 backdrop-blur-sm border border-black/[0.04] p-8 text-center text-text-muted">
+              Employee reports and analytics will appear here
+            </div>
+          )}
+
+          {activeTab === 'attendance' && (
+            <>
+              <AttendanceSummary />
+              <DailyRecordsTable />
+            </>
+          )}
         </div>
       </div>
     </div>

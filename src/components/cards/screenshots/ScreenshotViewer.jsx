@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import GlossyCard from '@/components/ui/GlossyCard';
 import { mockCodeLines, mockEditorFiles, mockTabs } from '@/mock/screenshotDetail';
+import { useToast } from '@/components/ui/Toast';
 import { cn } from '@/utils/cn';
 
 const TOKEN_COLORS = {
@@ -77,6 +79,22 @@ function MockCodeEditor() {
 }
 
 export default function ScreenshotViewer() {
+  const [currentIndex, setCurrentIndex] = useState(41);
+  const total = 148;
+  const toast = useToast();
+
+  function handlePrev() {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  }
+
+  function handleNext() {
+    setCurrentIndex((prev) => Math.min(total - 1, prev + 1));
+  }
+
+  function handleDownload() {
+    toast.success('Screenshot download started', 'Download');
+  }
+
   return (
     <div className="flex flex-col gap-2.5">
       {/* Main image card */}
@@ -85,31 +103,50 @@ export default function ScreenshotViewer() {
           <MockCodeEditor />
 
           {/* Nav arrows */}
-          <button className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-[72px] flex items-center justify-center bg-white/[0.09] rounded-[10px] cursor-pointer backdrop-blur-[4px] hover:bg-white/[0.18] transition-colors z-10">
+          <button
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-[72px] flex items-center justify-center bg-white/[0.09] rounded-[10px] cursor-pointer backdrop-blur-[4px] hover:bg-white/[0.18] transition-colors z-10 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
             <ChevronLeft size={18} stroke="rgba(255,255,255,0.8)" strokeWidth={2.5} />
           </button>
-          <button className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-[72px] flex items-center justify-center bg-white/[0.09] rounded-[10px] cursor-pointer backdrop-blur-[4px] hover:bg-white/[0.18] transition-colors z-10">
+          <button
+            onClick={handleNext}
+            disabled={currentIndex === total - 1}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-[72px] flex items-center justify-center bg-white/[0.09] rounded-[10px] cursor-pointer backdrop-blur-[4px] hover:bg-white/[0.18] transition-colors z-10 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
             <ChevronRight size={18} stroke="rgba(255,255,255,0.8)" strokeWidth={2.5} />
           </button>
 
           {/* Counter */}
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/55 backdrop-blur-md rounded-[20px] py-1 px-3.5 text-[11px] font-medium text-white">
-            42 of 148
+            {currentIndex + 1} of {total}
           </div>
         </div>
       </GlossyCard>
 
       {/* Action row */}
       <div className="flex gap-2">
-        <button className="flex-1 h-[34px] rounded-[10px] flex items-center justify-center gap-[5px] text-sm font-medium cursor-pointer bg-white/60 border-[1.5px] border-white/90 text-text-secondary">
+        <button
+          onClick={handlePrev}
+          disabled={currentIndex === 0}
+          className="flex-1 h-[34px] rounded-[10px] flex items-center justify-center gap-[5px] text-sm font-medium cursor-pointer bg-white/60 border-[1.5px] border-white/90 text-text-secondary disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/80 transition-colors"
+        >
           <ChevronLeft size={12} stroke="#666" strokeWidth={2} />
           Previous
         </button>
-        <button className="flex-1 h-[34px] rounded-[10px] flex items-center justify-center gap-[5px] text-sm font-medium cursor-pointer dark-pill text-white">
+        <button
+          onClick={handleNext}
+          disabled={currentIndex === total - 1}
+          className="flex-1 h-[34px] rounded-[10px] flex items-center justify-center gap-[5px] text-sm font-medium cursor-pointer dark-pill text-white disabled:opacity-40 disabled:cursor-not-allowed"
+        >
           Next
           <ChevronRight size={12} stroke="#fff" strokeWidth={2} />
         </button>
-        <button className="flex-1 h-[34px] rounded-[10px] flex items-center justify-center gap-[5px] text-sm font-medium cursor-pointer primary-pill text-white">
+        <button
+          onClick={handleDownload}
+          className="flex-1 h-[34px] rounded-[10px] flex items-center justify-center gap-[5px] text-sm font-medium cursor-pointer primary-pill text-white hover:opacity-90 transition-opacity"
+        >
           <Download size={12} stroke="#fff" strokeWidth={2} />
           Download
         </button>

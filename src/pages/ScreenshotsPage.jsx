@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Search, Calendar, ArrowRight, ChevronLeft } from 'lucide-react';
+import { Search } from 'lucide-react';
 import ScreenshotSidebar from '@/components/cards/screenshots/ScreenshotSidebar';
 import ScreenshotPersonHeader from '@/components/cards/screenshots/ScreenshotPersonHeader';
 import ScreenshotGrid from '@/components/cards/screenshots/ScreenshotGrid';
+import DateRangePicker from '@/components/ui/DateRangePicker';
 import { filterChips, screenshotPageStats } from '@/mock/screenshots';
 import { cn } from '@/utils/cn';
 
 export default function ScreenshotsPage() {
   const [selectedEmployee, setSelectedEmployee] = useState('ravi');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <div className="relative z-[2] pb-6">
@@ -26,23 +28,12 @@ export default function ScreenshotsPage() {
 
       {/* Filter Bar */}
       <div className="flex items-center gap-2.5 px-8 pb-3.5">
-        {/* Date range pill */}
-        <div className="glass-pill flex items-center gap-2 h-9 px-3.5 rounded-pill cursor-pointer">
-          <Calendar size={11} stroke="#BBB" strokeWidth={2} />
-          <div className="flex flex-col px-1">
-            <span className="text-[8px] text-text-lighter leading-none">From</span>
-            <span className="text-[11px] font-semibold text-text-primary">Apr 16</span>
-          </div>
-          <div className="w-px h-4 bg-black/[0.09]" />
-          <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shrink-0">
-            <ArrowRight size={9} stroke="#fff" strokeWidth={2.5} />
-          </div>
-          <div className="w-px h-4 bg-black/[0.09]" />
-          <div className="flex flex-col px-1">
-            <span className="text-[8px] text-text-lighter leading-none">To</span>
-            <span className="text-[11px] font-semibold text-text-primary">Apr 16</span>
-          </div>
-        </div>
+        {/* Date range picker */}
+        <DateRangePicker
+          from={new Date(2026, 3, 16)}
+          to={new Date(2026, 3, 16)}
+          variant="glass"
+        />
 
         {/* Filter chips */}
         {filterChips.map((chip) => (
@@ -63,9 +54,15 @@ export default function ScreenshotsPage() {
         ))}
 
         {/* Search */}
-        <div className="glass-pill flex items-center gap-[7px] h-9 px-3.5 rounded-pill ml-auto text-sm text-text-lighter">
+        <div className="glass-pill flex items-center gap-[7px] h-9 px-3.5 rounded-pill ml-auto">
           <Search size={12} stroke="#CCC" strokeWidth={2} />
-          Search by app or time...
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by app or time..."
+            className="border-none bg-transparent outline-none text-sm font-poppins text-text-primary w-[160px] placeholder:text-text-lighter"
+          />
         </div>
       </div>
 
@@ -73,8 +70,8 @@ export default function ScreenshotsPage() {
       <div className="grid grid-cols-[240px_1fr] gap-3.5 px-8">
         <ScreenshotSidebar selectedId={selectedEmployee} onSelect={setSelectedEmployee} />
         <div className="flex flex-col gap-3">
-          <ScreenshotPersonHeader />
-          <ScreenshotGrid />
+          <ScreenshotPersonHeader employeeId={selectedEmployee} />
+          <ScreenshotGrid categoryFilter={activeFilter} searchQuery={searchQuery} employeeId={selectedEmployee} />
         </div>
       </div>
     </div>

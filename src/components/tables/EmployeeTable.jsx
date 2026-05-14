@@ -1,15 +1,24 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Search, Filter, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GlossyCard from '@/components/ui/GlossyCard';
 import { employees, teamTabs } from '@/mock/teamDetail';
 import { cn } from '@/utils/cn';
 
+const PAGE_SIZE = 5;
+
 const STATUS_STYLES = {
   work: { bg: 'bg-surface-muted', text: 'text-text-primary', dot: '#1A1A1A' },
   privacy: { bg: 'bg-[#FFF8E8]', text: 'text-[#B8860B]', dot: '#D97706' },
   offline: { bg: 'bg-[#F5F5F5]', text: 'text-[#999]', dot: '#CCC' },
   absent: { bg: 'bg-[#FFF0F0]', text: 'text-[#CC4444]', dot: '#CC4444' },
+};
+
+const TAB_STATUS_MAP = {
+  all: null,
+  working: 'work',
+  privacy: 'privacy',
+  offline: 'offline',
 };
 
 function StatusBadge({ status, label }) {
@@ -24,7 +33,40 @@ function StatusBadge({ status, label }) {
 
 export default function EmployeeTable() {
   const [activeTab, setActiveTab] = useState('all');
+  const [searchValue, setSearchValue] = useState('');
+  const [page, setPage] = useState(0);
   const navigate = useNavigate();
+
+  const filtered = useMemo(() => {
+    let result = employees;
+
+    const statusFilter = TAB_STATUS_MAP[activeTab];
+    if (statusFilter) {
+      result = result.filter((emp) => emp.status === statusFilter);
+    }
+
+    const query = searchValue.trim().toLowerCase();
+    if (query) {
+      result = result.filter(
+        (emp) =>
+          emp.name.toLowerCase().includes(query) ||
+          emp.email.toLowerCase().includes(query)
+      );
+    }
+
+    return result;
+  }, [activeTab, searchValue]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+  const paginatedEmployees = filtered.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
+  const showingCount = paginatedEmployees.length;
+  const totalCount = filtered.length;
+
+  function handleTabChange(tabId) {
+    setActiveTab(tabId);
+    setPage(0);
+  }
 
   return (
     <GlossyCard className="p-4">
@@ -33,7 +75,13 @@ export default function EmployeeTable() {
         <div className="flex items-center gap-2">
           <div className="glass-pill flex items-center gap-1.5 px-3 h-8 rounded-pill text-[11px] text-text-lighter">
             <Search size={11} stroke="#BBB" strokeWidth={2} />
-            Search member...
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(e) => { setSearchValue(e.target.value); setPage(0); }}
+              placeholder="Search member..."
+              className="bg-transparent border-none outline-none text-[11px] text-text-primary placeholder:text-text-lighter w-[120px]"
+            />
           </div>
           <button className="glass-pill flex items-center gap-[5px] px-3 h-8 rounded-pill text-[11px] text-text-secondary cursor-pointer">
             <Filter size={11} stroke="#888" strokeWidth={2} />
@@ -46,7 +94,7 @@ export default function EmployeeTable() {
         {teamTabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
             className={cn(
               'py-1.5 px-3.5 rounded-lg text-sm font-medium cursor-pointer transition-all',
               activeTab === tab.id
@@ -71,7 +119,7 @@ export default function EmployeeTable() {
             </tr>
           </thead>
           <tbody>
-            {employees.map((emp) => (
+            {paginatedEmployees.map((emp) => (
               <tr
                 key={emp.id}
                 className="cursor-pointer hover:bg-primary/[0.04] transition-colors"
@@ -123,12 +171,28 @@ export default function EmployeeTable() {
       </div>
 
       <div className="flex justify-between items-center pt-3 border-t border-black/5 mt-1">
-        <span className="text-[11px] text-text-light">Showing 5 of 34 employees</span>
+        <span className="text-[11px] text-text-light">
+          Showing {showingCount} of {totalCount} employees
+        </span>
         <div className="flex gap-1.5">
-          <button className="py-[5px] px-3 rounded-[20px] bg-white/60 border border-black/[0.08] text-[11px] text-text-muted cursor-pointer">
+          <button
+            disabled={safePage === 0}
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            className={cn(
+              'py-[5px] px-3 rounded-[20px] bg-white/60 border border-black/[0.08] text-[11px] text-text-muted',
+              safePage === 0 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+            )}
+          >
             ← Prev
           </button>
-          <button className="py-[5px] px-3 rounded-[20px] dark-pill text-[11px] text-white cursor-pointer">
+          <button
+            disabled={safePage >= totalPages - 1}
+            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            className={cn(
+              'py-[5px] px-3 rounded-[20px] dark-pill text-[11px] text-white',
+              safePage >= totalPages - 1 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+            )}
+          >
             Next →
           </button>
         </div>

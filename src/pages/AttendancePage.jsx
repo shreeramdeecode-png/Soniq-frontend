@@ -1,14 +1,31 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Search, Download, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Download } from 'lucide-react';
 import StatCard from '@/components/ui/StatCard';
 import AttendanceListTable from '@/components/cards/attendance/AttendanceListTable';
 import AttendanceGantt from '@/components/cards/attendance/AttendanceGantt';
+import { SingleDatePicker } from '@/components/ui/DateRangePicker';
+import { useToast } from '@/components/ui/Toast';
 import { attendanceStats, attendanceTabs, legend } from '@/mock/attendance';
 import { cn } from '@/utils/cn';
 
 export default function AttendancePage() {
   const [viewMode, setViewMode] = useState('list');
   const [activeTab, setActiveTab] = useState('all');
+  const [currentDate, setCurrentDate] = useState(new Date(2026, 3, 16));
+  const [searchQuery, setSearchQuery] = useState('');
+  const toast = useToast();
+
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dateLabel = `${dayNames[currentDate.getDay()]}, ${monthNames[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getFullYear()}`;
+
+  function goDay(dir) {
+    setCurrentDate((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() + dir);
+      return d;
+    });
+  }
 
   return (
     <div className="relative z-[2]">
@@ -21,14 +38,18 @@ export default function AttendancePage() {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <button className="glass-pill flex items-center gap-1.5 py-2 px-4 rounded-pill text-sm font-medium text-text-secondary cursor-pointer">
+          <button
+            onClick={() => toast.success('Attendance data exported', 'Export Complete')}
+            className="glass-pill flex items-center gap-1.5 py-2 px-4 rounded-pill text-sm font-medium text-text-secondary cursor-pointer"
+          >
             <Download size={12} stroke="#666" strokeWidth={2} />
             Export CSV
           </button>
-          <button className="primary-pill flex items-center gap-1.5 py-2 px-4 rounded-pill text-sm font-semibold text-white cursor-pointer">
-            <Calendar size={12} stroke="#fff" strokeWidth={2} />
-            Apr 16, 2026
-          </button>
+          <SingleDatePicker
+            date={currentDate}
+            onChange={setCurrentDate}
+            variant="primary"
+          />
         </div>
       </div>
 
@@ -43,11 +64,17 @@ export default function AttendancePage() {
       <div className="flex items-center gap-2.5 px-8 pb-3.5 flex-wrap">
         {/* Date nav */}
         <div className="glass-pill flex items-center gap-2 h-9 px-1.5 rounded-pill">
-          <button className="w-6 h-6 rounded-full border border-black/[0.08] flex items-center justify-center cursor-pointer bg-white/60">
+          <button
+            onClick={() => goDay(-1)}
+            className="w-6 h-6 rounded-full border border-black/[0.08] flex items-center justify-center cursor-pointer bg-white/60 hover:bg-white/90 transition-colors"
+          >
             <ChevronLeft size={10} stroke="#888" strokeWidth={2} />
           </button>
-          <span className="text-sm-plus font-semibold text-text-primary px-2 whitespace-nowrap">Wednesday, Apr 16, 2026</span>
-          <button className="w-6 h-6 rounded-full border border-black/[0.08] flex items-center justify-center cursor-pointer bg-white/60">
+          <span className="text-sm-plus font-semibold text-text-primary px-2 whitespace-nowrap">{dateLabel}</span>
+          <button
+            onClick={() => goDay(1)}
+            className="w-6 h-6 rounded-full border border-black/[0.08] flex items-center justify-center cursor-pointer bg-white/60 hover:bg-white/90 transition-colors"
+          >
             <ChevronRight size={10} stroke="#888" strokeWidth={2} />
           </button>
         </div>
@@ -71,9 +98,14 @@ export default function AttendancePage() {
         </div>
 
         {/* Search */}
-        <div className="glass-pill flex items-center gap-[7px] h-9 px-3.5 rounded-pill text-sm text-text-lighter min-w-[180px]">
-          <Search size={12} stroke="#CCC" strokeWidth={2} />
-          Search employee...
+        <div className="glass-pill flex items-center gap-[7px] h-9 px-3.5 rounded-pill min-w-[180px]">
+          <Search size={12} stroke="#CCC" strokeWidth={2} className="shrink-0" />
+          <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border-none bg-transparent outline-none text-sm font-poppins text-text-primary w-full placeholder:text-text-lighter"
+            placeholder="Search employee..."
+          />
         </div>
 
         {/* View toggle */}
