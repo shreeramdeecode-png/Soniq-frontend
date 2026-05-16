@@ -51,7 +51,7 @@ function TeamCard({ team, onEdit, onDelete }) {
           <button onClick={() => onEdit(team)} className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/5 transition-colors cursor-pointer">
             <Edit3 size={12} className="text-text-muted" />
           </button>
-          <button onClick={() => onDelete(team)} className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer">
+          <button onClick={() => onDelete(team)} className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-primary/5 transition-colors cursor-pointer">
             <Trash2 size={12} className="text-text-muted" />
           </button>
         </div>
@@ -135,7 +135,7 @@ export default function TeamsDrawer() {
           <button onClick={() => setDeleteModal(null)} className="px-5 py-2.5 rounded-pill text-sm font-medium text-text-muted cursor-pointer">
             Cancel
           </button>
-          <button onClick={confirmDelete} className="bg-status-danger text-white text-sm font-semibold rounded-pill px-6 py-2.5 cursor-pointer hover:opacity-90 transition-opacity">
+          <button onClick={confirmDelete} className="bg-[#085041] text-white text-sm font-semibold rounded-pill px-6 py-2.5 cursor-pointer hover:bg-[#0A5040] transition-colors">
             Delete Team
           </button>
         </div>

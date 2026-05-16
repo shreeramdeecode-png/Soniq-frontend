@@ -2,23 +2,11 @@ import { useState } from 'react';
 import { Plus, Edit3, Trash2, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { employees } from '@/mock/settings';
+import { ROLE_BADGE, STATUS_BADGE } from '@/components/settings/settingsTheme';
 import { useToast } from '@/components/ui/Toast';
 import Modal from '@/components/ui/Modal';
 
 const PAGE_SIZE = 5;
-
-const ROLE_COLORS = {
-  Admin: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
-  Manager: { bg: 'bg-blue-500/10', text: 'text-blue-600', border: 'border-blue-500/20' },
-  Employee: { bg: 'bg-neutral-warm/40', text: 'text-text-secondary', border: 'border-black/5' },
-  'No Access': { bg: 'bg-red-500/10', text: 'text-red-500', border: 'border-red-500/20' },
-};
-
-const STATUS_STYLE = {
-  active: { dot: 'bg-primary', label: 'Active', badge: 'bg-primary/10 text-primary' },
-  pending: { dot: 'bg-amber-500', label: 'Pending EXE', badge: 'bg-amber-500/10 text-amber-600' },
-  inactive: { dot: 'bg-red-400', label: 'Inactive', badge: 'bg-red-400/10 text-red-500' },
-};
 
 function groupByTeam(list) {
   return list.reduce((acc, emp) => {
@@ -28,8 +16,8 @@ function groupByTeam(list) {
 }
 
 function EmployeeRow({ emp, onEdit, onDelete }) {
-  const role = ROLE_COLORS[emp.role] || ROLE_COLORS.Employee;
-  const status = STATUS_STYLE[emp.status] || STATUS_STYLE.active;
+  const role = ROLE_BADGE[emp.role] || ROLE_BADGE.Employee;
+  const status = STATUS_BADGE[emp.status] || STATUS_BADGE.active;
 
   return (
     <div className="flex items-center py-3 px-5 hover:bg-white/90 transition-colors border-b border-black/[0.04] last:border-b-0 group">
@@ -47,7 +35,7 @@ function EmployeeRow({ emp, onEdit, onDelete }) {
 
       <div className="flex items-center gap-2 mx-5 shrink-0">
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary bg-surface-subtle rounded-pill px-3 py-1 border border-black/[0.07]">
-          <span className={cn('w-1.5 h-1.5 rounded-full', emp.mode === 'Remote' ? 'bg-blue-500' : emp.mode === 'Hybrid' ? 'bg-[#3D6028]' : 'bg-text-muted')} />
+          <span className={cn('w-1.5 h-1.5 rounded-full', emp.mode === 'Remote' ? 'bg-[#1D9E75]' : emp.mode === 'Hybrid' ? 'bg-primary' : 'bg-text-muted')} />
           {emp.mode}
         </span>
         <span className="text-xs text-text-secondary bg-surface-subtle rounded-pill px-3 py-1 border border-black/[0.07]">{emp.os} · {emp.exe}</span>
@@ -67,9 +55,9 @@ function EmployeeRow({ emp, onEdit, onDelete }) {
         </button>
         <button
           onClick={() => onDelete(emp)}
-          className="w-8 h-8 rounded-lg border border-[rgba(153,53,53,0.2)] flex items-center justify-center hover:bg-red-50 cursor-pointer transition-all"
+          className="w-8 h-8 rounded-lg border border-primary/20 flex items-center justify-center hover:bg-primary/5 cursor-pointer transition-all"
         >
-          <Trash2 size={12} className="text-[#993535]" />
+          <Trash2 size={12} className="text-[#085041]" />
         </button>
         <span className={cn('inline-flex items-center gap-1.5 text-xs font-semibold rounded-pill px-3 py-1 ml-1', status.badge)}>
           <span className={cn('w-1.5 h-1.5 rounded-full', status.dot)} />
@@ -159,7 +147,7 @@ export default function PeopleDrawer() {
             onClick={() => handleStatusFilter('pending')}
             className={cn(
               'inline-flex items-center gap-1.5 text-xs font-semibold rounded-pill px-3 py-1.5 cursor-pointer transition-all',
-              statusFilter === 'pending' ? 'bg-amber-500/20 text-amber-600 ring-1 ring-amber-500/30' : 'bg-amber-500/10 text-amber-600',
+              statusFilter === 'pending' ? 'bg-[rgba(29,158,117,.2)] text-[#0F6E56] ring-1 ring-primary/30' : 'bg-[rgba(29,158,117,.12)] text-[#0F6E56]',
             )}
           >
             Pending ({counts.pending || 0})
@@ -168,7 +156,7 @@ export default function PeopleDrawer() {
             onClick={() => handleStatusFilter('inactive')}
             className={cn(
               'inline-flex items-center gap-1.5 text-xs font-semibold rounded-pill px-3 py-1.5 cursor-pointer transition-all',
-              statusFilter === 'inactive' ? 'bg-red-400/20 text-red-500 ring-1 ring-red-400/30' : 'bg-red-400/10 text-red-500',
+              statusFilter === 'inactive' ? 'bg-[rgba(15,110,86,.15)] text-[#085041] ring-1 ring-primary/25' : 'bg-[rgba(15,110,86,.08)] text-[#085041]',
             )}
           >
             Inactive ({counts.inactive || 0})
@@ -321,7 +309,7 @@ export default function PeopleDrawer() {
             <button onClick={() => setDeleteModal(null)} className="px-4 py-2 rounded-xl text-xs font-semibold text-text-muted hover:bg-black/5 cursor-pointer transition-colors">
               Cancel
             </button>
-            <button onClick={handleDeleteConfirm} className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-red-500 hover:bg-red-600 cursor-pointer transition-colors">
+            <button onClick={handleDeleteConfirm} className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-[#085041] hover:bg-[#0A5040] cursor-pointer transition-colors">
               Delete
             </button>
           </div>

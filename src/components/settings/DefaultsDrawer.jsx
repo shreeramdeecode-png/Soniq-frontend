@@ -128,7 +128,7 @@ export default function DefaultsDrawer() {
         <DefaultCard
           icon={Zap}
           iconColor="rgba(255,255,255,0.6)"
-          previewBg="bg-gradient-to-br from-amber-800 to-amber-600"
+          previewBg="bg-gradient-to-br from-[#0F6E56] to-[#1D9E75]"
           title="Idle Detection"
           description="Default alerts and threshold settings"
         >

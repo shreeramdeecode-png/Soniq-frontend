@@ -129,12 +129,12 @@ export default function MonitoringDrawer() {
   return (
     <div>
       {/* Info banner */}
-      <div className="flex items-start gap-3 bg-[rgba(55,138,221,0.07)] border border-[rgba(55,138,221,0.2)] rounded-[14px] px-5 py-4 mb-5">
-        <div className="w-8 h-8 rounded-[9px] bg-[rgba(55,138,221,0.12)] flex items-center justify-center shrink-0">
-          <Info size={15} className="text-[#185FA5]" />
+      <div className="flex items-start gap-3 bg-[rgba(15,110,86,0.07)] border border-[rgba(15,110,86,0.2)] rounded-[14px] px-5 py-4 mb-5">
+        <div className="w-8 h-8 rounded-[9px] bg-[rgba(15,110,86,0.12)] flex items-center justify-center shrink-0">
+          <Info size={15} className="text-[#0F6E56]" />
         </div>
         <div>
-          <div className="text-sm font-bold text-[#0C447C] mb-0.5">Sync delay · up to 1 hour</div>
+          <div className="text-sm font-bold text-[#085041] mb-0.5">Sync delay · up to 1 hour</div>
           <div className="text-xs-plus text-text-muted leading-relaxed">
             Changes sync to the Trackpilots EXE agent. When Blur is ON, Soniq applies server-side Gaussian blur — the original unblurred image is <strong>never stored</strong>.
           </div>

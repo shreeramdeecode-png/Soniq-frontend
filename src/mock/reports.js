@@ -1,3 +1,15 @@
+/** Repeat seed rows for paginated tables (demo) */
+function expandTable(baseRows, total = 30) {
+  return Array.from({ length: total }, (_, i) => {
+    const src = baseRows[i % baseRows.length];
+    if (i < baseRows.length) return { ...src };
+    const row = { ...src };
+    if (row.init) row.init = `${row.init}${i}`;
+    if (row.name) row.name = `${row.name} · #${i + 1}`;
+    return row;
+  });
+}
+
 export const reports = [
   {
     id: 'workpulse',
@@ -25,6 +37,18 @@ export const reports = [
     mainSub: 'Each cell = avg productivity · Mon–Fri · hover for detail',
     exportInfo: 'Work Pulse Report · 128 employees · Apr 1–21 · Updated 5 min ago',
     actions: ['By Team', 'By Person'],
+    filters: {
+      scopeTabs: ['Org-wide', 'By Team', 'By Person'],
+      chips: [{ label: 'Weekdays' }, { label: 'All Days' }, { label: 'Work Hrs Only' }],
+      searchPlaceholder: 'Search employee or team...',
+    },
+    kpis: [
+      { label: 'Peak Window', value: '10–11 AM', sub: 'Highest org-wide productivity' },
+      { label: 'Dead Zone', value: '2–3 PM', valueColor: '#085041', sub: 'Avg drop of 42% from peak' },
+      { label: 'Avg Work Start', value: '9:06 AM', sub: 'Target 9:00 AM · 6min late' },
+      { label: 'Peak Day', value: 'Tuesday', valueColor: '#0F6E56', sub: '89% avg productivity' },
+      { label: 'Worst Day', value: 'Friday', valueColor: '#085041', sub: '62% avg · drops after 3 PM' },
+    ],
   },
   {
     id: 'burnout',
@@ -32,10 +56,10 @@ export const reports = [
     name: 'Burnout & Wellbeing',
     fullName: 'Burnout & Wellbeing',
     desc: 'Flags overworked employees before they burn out · overtime trends · after-hours activity',
-    accent: '#993535',
+    accent: '#085041',
     tag: 'Wellbeing',
-    tagBg: 'rgba(153,53,53,.1)',
-    tagColor: '#791F1F',
+    tagBg: 'rgba(15,110,86,.1)',
+    tagColor: '#085041',
     meta: '14 at risk',
     sidebarTitle: 'Burnout — Wellbeing Index',
     stats: [
@@ -51,6 +75,24 @@ export const reports = [
     mainSub: 'Bar chart: daily overtime mins · Tiles: risk distribution',
     exportInfo: 'Burnout & Wellbeing Report · 128 employees · Apr 1–21',
     actions: ['Last 3 Weeks', 'By Team'],
+    kpiColumns: 6,
+    filters: {
+      scopeTabs: ['All Employees', 'By Team', 'By Risk Level'],
+      chips: [
+        { label: 'Overworked (8)', variant: 'red' },
+        { label: 'At Risk (14)', variant: 'amb' },
+        { label: 'Healthy (106)', variant: 'grn' },
+      ],
+      searchPlaceholder: 'Search employee...',
+    },
+    kpis: [
+      { label: 'Overworked', value: '8', valueColor: '#085041', labelColor: '#085041', cardBg: 'bg-[rgba(15,110,86,.08)] border-[rgba(15,110,86,.18)]', sub: 'Avg daily OT: 2.4h' },
+      { label: 'At Risk', value: '14', valueColor: '#1D9E75', labelColor: '#1D9E75', cardBg: 'bg-[rgba(29,158,117,.1)] border-[rgba(29,158,117,.25)]', sub: '1–2 burnout signals' },
+      { label: 'Healthy', value: '106', valueColor: '#085041', labelColor: '#085041', cardBg: 'bg-[rgba(15,110,86,.08)] border-[rgba(15,110,86,.18)]', sub: 'Within normal ranges' },
+      { label: 'Avg Daily Hours', value: '6h 48m', sub: 'Target: 8h — within range' },
+      { label: 'After-Hours Sessions', value: '22%', valueColor: '#085041', sub: 'Work after 7 PM logged' },
+      { label: 'Weekend Activity', value: '31', sub: 'employees active weekends' },
+    ],
   },
   {
     id: 'focus',
@@ -58,10 +100,10 @@ export const reports = [
     name: 'Focus Score',
     fullName: 'Focus Score Report',
     desc: 'Deep work quality · focus streaks · context-switching · session depth · score 0–100',
-    accent: '#185FA5',
+    accent: '#0F6E56',
     tag: 'Concentration',
-    tagBg: 'rgba(55,138,221,.1)',
-    tagColor: '#0C447C',
+    tagBg: 'rgba(15,110,86,.1)',
+    tagColor: '#085041',
     meta: 'Org avg: 62/100',
     sidebarTitle: 'Focus Score — Summary',
     stats: [
@@ -77,6 +119,18 @@ export const reports = [
     mainSub: 'Distribution by band · 7-day trend line · employee table',
     exportInfo: 'Focus Score Report · 128 employees · Apr 1–21',
     actions: ['Day Wise', 'Summary'],
+    filters: {
+      scopeTabs: ['Employee', 'Team', 'Department'],
+      chips: [],
+      searchPlaceholder: 'Search employee...',
+    },
+    kpis: [
+      { label: 'Org Avg Focus Score', value: '62', valueColor: '#0F6E56', sub: '↑ 6 pts from last period' },
+      { label: 'Avg Focus Streak', value: '22 min', sub: 'Before app/site switch' },
+      { label: 'Avg Switches/Hour', value: '8.4', valueColor: '#085041', sub: 'High = fragmented work' },
+      { label: 'Deep Work Sessions', value: '3.2', sub: '30+ min blocks per day avg' },
+      { label: 'Top Focus Score', value: '91', valueColor: '#085041', sub: 'Ravi Shankar · Engineering' },
+    ],
   },
   {
     id: 'tools',
@@ -103,6 +157,18 @@ export const reports = [
     mainSub: 'Horizontal bars · productive vs unproductive split · underused alert',
     exportInfo: 'Tool Intelligence Report · 128 employees · Apr 1–21',
     actions: ['Apps', 'Websites', 'Underused'],
+    filters: {
+      scopeTabs: ['All Tools', 'Apps', 'Websites', 'Underused'],
+      chips: [{ label: 'Productive' }, { label: 'Neutral' }, { label: 'Unproductive' }],
+      searchPlaceholder: 'Search tool or app...',
+    },
+    kpis: [
+      { label: 'Tools Tracked', value: '184', sub: 'Across all employees' },
+      { label: 'Top Productive App', value: 'VS Code', valueColor: '#085041', sub: '4h 18m avg/user/day' },
+      { label: 'Top Time Waster', value: 'YouTube', valueColor: '#085041', sub: '48m avg/user/day' },
+      { label: 'Underused Seats', value: '12', valueColor: '#1D9E75', sub: 'Licensed tools barely used' },
+      { label: 'Est. Wasted Seat Cost', value: '₹18k', valueColor: '#085041', sub: 'Per month · underused licenses' },
+    ],
   },
   {
     id: 'attendance',
@@ -110,10 +176,10 @@ export const reports = [
     name: 'Attendance',
     fullName: 'Attendance & Punctuality',
     desc: 'Beyond present/absent · late arrivals · early exits · habitual patterns · streak records',
-    accent: '#444441',
+    accent: '#0F6E56',
     tag: 'Punctuality',
     tagBg: 'rgba(88,88,88,.08)',
-    tagColor: '#444441',
+    tagColor: '#0F6E56',
     meta: 'Rate: 94.5%',
     sidebarTitle: 'Attendance — Punctuality',
     stats: [
@@ -129,6 +195,26 @@ export const reports = [
     mainSub: 'April 2026 · colour coded by status · late arrival bar distribution',
     exportInfo: 'Attendance Report · 128 employees · Apr 1–21',
     actions: ['Present/Absent', 'Late Patterns'],
+    kpiColumns: 6,
+    filters: {
+      scopeTabs: ['Individual', 'By Team', 'By Dept'],
+      chips: [
+        { label: 'All' },
+        { label: 'Late Arrivals', variant: 'red' },
+        { label: 'Early Exits', variant: 'amb' },
+        { label: 'Perfect Attendance', variant: 'grn' },
+        { label: 'Absent Patterns', variant: 'grey' },
+      ],
+      searchPlaceholder: 'Search employee...',
+    },
+    kpis: [
+      { label: 'Attendance Rate', value: '94.5%', valueColor: '#085041', sub: '↑ 1.8% vs last period', subColor: '#085041' },
+      { label: 'Late Arrivals Today', value: '7', valueColor: '#085041', sub: 'Avg delay 18 min' },
+      { label: 'Early Exits (This Week)', value: '12', valueColor: '#1D9E75', sub: 'Left >30 min before shift end' },
+      { label: 'Avg Check-In Time', value: '9:06 AM', sub: 'Target: 9:00 AM' },
+      { label: 'Avg Check-Out Time', value: '6:22 PM', sub: 'Shift ends 6:00 PM' },
+      { label: 'Perfect Attendance', value: '38', valueColor: '#085041', sub: 'Employees · Zero late/absent' },
+    ],
   },
   {
     id: 'leaderboard',
@@ -136,10 +222,10 @@ export const reports = [
     name: 'Team Leaderboard',
     fullName: 'Team Leaderboard',
     desc: 'Live productivity rankings · top performer patterns · coaching opportunities · rank movement',
-    accent: '#534AB7',
+    accent: '#0F6E56',
     tag: 'Rankings',
-    tagBg: 'rgba(83,74,183,.1)',
-    tagColor: '#3C3489',
+    tagBg: 'rgba(15,110,86,.1)',
+    tagColor: '#085041',
     meta: 'Eng leads at 88%',
     sidebarTitle: 'Leaderboard — Rankings',
     stats: [
@@ -155,11 +241,24 @@ export const reports = [
     mainSub: 'All 128 employees ranked · team grouping · rank delta vs last period',
     exportInfo: 'Team Leaderboard · 128 employees · Apr 1–21',
     actions: ['Individual', 'By Team'],
+    filters: {
+      scopeTabs: ['Individual', 'By Team', 'By Department'],
+      chips: [{ label: 'All Teams' }, { label: 'Top 10' }, { label: 'Bottom 10' }, { label: 'Most Improved' }, { label: 'Biggest Drop' }],
+      searchPlaceholder: 'Search employee...',
+    },
+    kpis: [
+      { label: 'Org Rank Leader', value: 'Ravi Shankar', valueColor: '#1D9E75', sub: '91% · Engineering' },
+      { label: 'Top Team', value: 'Engineering', valueColor: '#085041', sub: '88% avg · 34 employees' },
+      { label: 'Biggest Mover (↑)', value: 'Arjun Mehta', valueColor: '#085041', sub: '+14 rank pts this period' },
+      { label: 'Needs Coaching', value: 'Sales Team', valueColor: '#085041', sub: '64% avg · 6 below 50%' },
+      { label: 'Org Avg Score', value: '78%', sub: '↑ 4.2% vs last period' },
+    ],
   },
 ];
 
 export const heatmapData = {
-  hours: ['9AM', '10', '11', '12', '1PM', '2', '3', '4', '5', '6PM'],
+  hours: ['9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM'],
+  hourChartLabels: ['9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM'],
   days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
   values: {
     Mon: [72, 91, 88, 65, 78, 52, 61, 74, 58, 38],
@@ -168,55 +267,125 @@ export const heatmapData = {
     Thu: [68, 84, 82, 60, 74, 50, 58, 72, 50, 30],
     Fri: [65, 78, 75, 55, 68, 42, 38, 52, 35, 22],
   },
+  teamValues: {
+    Mon: [76, 88, 86, 68, 80, 55, 64, 78, 60, 40],
+    Tue: [80, 92, 90, 72, 84, 60, 68, 82, 64, 42],
+    Wed: [75, 86, 84, 65, 78, 56, 62, 74, 58, 38],
+    Thu: [70, 82, 80, 63, 76, 52, 60, 70, 52, 32],
+    Fri: [66, 76, 74, 58, 70, 45, 42, 55, 38, 25],
+  },
+  personValues: {
+    Mon: [68, 85, 82, 60, 72, 48, 55, 68, 52, 32],
+    Tue: [72, 90, 88, 65, 78, 52, 58, 72, 58, 35],
+    Wed: [70, 84, 80, 58, 72, 50, 56, 70, 50, 30],
+    Thu: [64, 78, 76, 55, 70, 46, 52, 66, 46, 28],
+    Fri: [60, 72, 70, 50, 64, 38, 34, 48, 30, 18],
+  },
   distractions: [
-    { name: 'YouTube', time: '48m/day', color: '#FF0000', pct: 54 },
-    { name: 'Facebook', time: '31m/day', color: '#1877F2', pct: 36 },
-    { name: 'Twitter / X', time: '24m/day', color: '#1DA1F2', pct: 27 },
-    { name: 'Instagram', time: '18m/day', color: '#E91E63', pct: 21 },
+    { name: 'YouTube', time: '48m/day', color: '#0F6E56', pct: 84, share: '18%' },
+    { name: 'Facebook', time: '31m/day', color: '#1877F2', pct: 54, share: '12%' },
+    { name: 'Twitter / X', time: '24m/day', color: '#1DA1F2', pct: 42, share: '9%' },
+    { name: 'Instagram', time: '18m/day', color: '#E91E63', pct: 32, share: '7%' },
+    { name: 'WhatsApp Web', time: '14m/day', color: '#1D9E75', pct: 26, share: '5%', barColor: '#1D9E75' },
+  ],
+  hourlyTrend: [72, 92, 88, 64, 78, 50, 60, 74, 55, 32],
+  dayBreakdown: [
+    { day: 'Mon', pct: 82, color: '#0F6E56' },
+    { day: 'Tue', pct: 89, color: '#085041' },
+    { day: 'Wed', pct: 84, color: '#1D9E75' },
+    { day: 'Thu', pct: 76, color: '#0F6E56' },
+    { day: 'Fri', pct: 62, color: '#085041', unprod: 18 },
+  ],
+  teamRhythm: [
+    { name: 'Engineering', pct: 88, color: '#0F6E56' },
+    { name: 'Product', pct: 83, color: '#1D9E75' },
+    { name: 'Design', pct: 76, color: '#0F6E56' },
+    { name: 'Support', pct: 71, color: '#1D9E75' },
+    { name: 'Sales', pct: 64, color: '#085041', barMuted: true },
+  ],
+  insights: [
+    { title: 'Friday Productivity Drop', body: 'Fridays average 62% productivity vs 84% Mon–Thu. Distraction spikes at 2 PM. Consider lighter meeting loads on Fridays.', bg: '#EAF2EE', border: 'rgba(29,158,117,.2)', titleColor: '#1D9E75' },
+    { title: 'Morning Sprint Window', body: '10–11 AM is the consistently highest productivity window across all 5 teams. Schedule deep work and critical tasks here.', bg: '#F0F9F4', border: 'rgba(15,110,86,.14)', titleColor: '#0F6E56' },
+    { title: 'Post-Lunch Dead Zone', body: '2:00–3:30 PM sees a 42% productivity drop. Sales team most affected. Consider optional flex break policy for this window.', bg: '#F0F9F4', border: 'rgba(15,110,86,.12)', titleColor: '#085041' },
   ],
 };
 
 export const burnoutData = {
   tiles: [
-    { label: 'Overworked', value: '8', bg: 'rgba(153,53,53,.12)', color: '#993535' },
-    { label: 'At Risk', value: '14', bg: 'rgba(245,197,24,.14)', color: '#B8860B' },
+    { label: 'Overworked', value: '8', bg: 'rgba(15,110,86,.12)', color: '#085041' },
+    { label: 'At Risk', value: '14', bg: 'rgba(29,158,117,.14)', color: '#1D9E75' },
     { label: 'Healthy', value: '106', bg: 'rgba(15,110,86,.1)', color: '#0F6E56' },
-    { label: 'Avg OT', value: '1.4h', bg: 'rgba(55,138,221,.1)', color: '#185FA5' },
-    { label: 'After Hrs', value: '22%', bg: 'rgba(83,74,183,.1)', color: '#534AB7' },
+    { label: 'Avg OT', value: '1.4h', bg: 'rgba(15,110,86,.1)', color: '#0F6E56' },
+    { label: 'After Hrs', value: '22%', bg: 'rgba(83,74,183,.1)', color: '#0F6E56' },
     { label: 'Late Alerts', value: '31', bg: 'rgba(240,153,123,.12)', color: '#C75B39' },
   ],
   overtimeBars: [38, 24, 52, 18, 44, 62, 30, 48, 26, 58, 42, 28, 44, 20, 38],
-  barLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  barLabels: ['Wk1', 'Wk2', 'Wk3'],
+  weekOvertime: [42, 58, 48],
+  afterHoursByTeam: [
+    { team: 'Engineering', pct: 38, color: 'rgba(15,110,86,0.55)' },
+    { team: 'Support', pct: 28, color: 'rgba(15,110,86,0.45)' },
+    { team: 'Design', pct: 22, color: 'rgba(29,158,117,0.55)' },
+    { team: 'Product', pct: 16, color: 'rgba(29,158,117,0.35)' },
+    { team: 'Sales', pct: 4, color: 'rgba(15,110,86,0.45)' },
+  ],
+  overtimeDaily: [38, 24, 52, 18, 44, 62, 30, 48, 26, 58, 42, 28, 44, 20, 38],
+  overtimeLabels: ['M', 'T', 'W', 'T', 'F', 'M', 'T', 'W', 'T', 'F', 'M', 'T', 'W', 'T', 'F'],
+  riskTable: expandTable([
+    { init: 'PD', name: 'Prakash Das', role: 'Backend Eng.', team: 'Engineering', risk: 'Overworked', hours: '11h 20m', ot: '3h 20m', afterHrs: '4 of 5 days', weekend: 'Both Sat & Sun', consec: '14 days', riskPct: 94, action: 'Immediate check-in recommended', avatar: { background: 'rgba(15,110,86,.12)', color: '#085041' } },
+    { init: 'VB', name: 'Vikram Bose', role: 'Support Eng.', team: 'Support', risk: 'Overworked', hours: '10h 44m', ot: '2h 44m', afterHrs: '3 of 5 days', weekend: 'Sat only', consec: '11 days', riskPct: 86, action: 'Workload review suggested', avatar: { background: 'rgba(15,110,86,.12)', color: '#085041' } },
+    { init: 'RS', name: 'Ravi Shankar', role: 'Sr. SWE', team: 'Engineering', risk: 'At Risk', hours: '9h 44m', ot: '1h 44m', afterHrs: '2 of 5 days', weekend: 'None', consec: '7 days', riskPct: 58, action: 'Monitor — approaching threshold', avatar: { background: 'rgba(29,158,117,.15)', color: '#1D9E75' } },
+    { init: 'AM', name: 'Arjun Mehta', role: 'SWE', team: 'Engineering', risk: 'Healthy', hours: '8h 12m', ot: '0h 12m', afterHrs: '0 of 5 days', weekend: 'None', consec: '2 days', riskPct: 18, action: 'No action needed', avatar: { background: 'rgba(15,110,86,.1)', color: '#0F6E56' } },
+    { init: 'PK', name: 'Priya Krishnan', role: 'Sr. Designer', team: 'Design', risk: 'Healthy', hours: '7h 58m', ot: '0h', afterHrs: '0 of 5 days', weekend: 'None', consec: '0 days', riskPct: 8, action: 'Exemplary balance', avatar: { background: 'rgba(15,110,86,.1)', color: '#0F6E56' } },
+  ], 30),
+  wellbeingInsights: [
+    { title: 'Critical: 2 employees overworked 2+ weeks', body: 'Prakash Das and Vikram Bose have logged 10h+ daily for 14 and 11 consecutive days. Recommend a workload audit and mandatory rest day this week.', bg: '#F0F9F4', border: 'rgba(15,110,86,.12)', titleColor: '#085041' },
+    { title: 'Engineering team: rising after-hours trend', body: '38% of Engineering employees are logging evening sessions (7–10 PM). This has risen 12% over 3 weeks. Review project deadlines and resource allocation.', bg: '#EAF2EE', border: 'rgba(29,158,117,.2)', titleColor: '#1D9E75' },
+    { title: 'Sales team: best work-life balance this period', body: 'Sales had 0 after-hours sessions and 0 weekend logins this week. Their avg daily hours (7h 52m) signal a healthier pattern.', bg: '#F0F9F4', border: 'rgba(15,110,86,.14)', titleColor: '#0F6E56' },
+  ],
 };
 
 export const focusData = {
   distribution: [
-    { band: 'Deep (75+)', count: 28, pct: 22, color: '#0C447C' },
-    { band: 'Moderate (50–74)', count: 62, pct: 48, color: '#378ADD' },
-    { band: 'Fragmented (25–49)', count: 30, pct: 23, color: '#85B7EB' },
+    { band: 'Deep (75+)', count: 28, pct: 22, color: '#0F6E56' },
+    { band: 'Moderate (50–74)', count: 62, pct: 48, color: '#1D9E75' },
+    { band: 'Fragmented (25–49)', count: 30, pct: 23, color: '#85C4B0' },
     { band: 'Scattered (<25)', count: 8, pct: 6, color: '#D0D0C8' },
   ],
   trendData: [55, 58, 54, 62, 60, 65, 63, 68, 66, 70, 68],
   trendLabels: ['Apr1', '3', '5', '7', '9', '11', '13', '15', '17', '19', '21'],
-  table: [
-    { init: 'RS', name: 'Ravi Shankar', team: 'Engineering', score: 91, streak: '42 min', switches: '4.2', band: 'Deep', bandColor: '#0C447C', bg: 'linear-gradient(135deg,#0F6E56,#1D9E75)', fc: '#fff' },
-    { init: 'AM', name: 'Arjun Mehta', team: 'Engineering', score: 78, streak: '34 min', switches: '5.8', band: 'Deep', bandColor: '#185FA5', bg: '#E0EEDA', fc: '#3D6028' },
-    { init: 'PK', name: 'Priya Krishnan', team: 'Design', score: 64, streak: '24 min', switches: '9.2', band: 'Moderate', bandColor: '#378ADD', bg: '#FBD3E8', fc: '#993535' },
-    { init: 'SN', name: 'Sneha Nair', team: 'Sales', score: 28, streak: '8 min', switches: '18.6', band: 'Scattered', bandColor: '#993535', bg: '#E8E0D8', fc: '#555' },
+  table: expandTable([
+    { init: 'RS', name: 'Ravi Shankar', role: 'Sr. SWE · Eng', team: 'Engineering', score: 91, streak: '42 min', switches: '4.2/hr', deep: '5.8/day', longest: '2h 14m', band: 'Deep Focus', bandColor: '#0F6E56', spark: [55, 65, 70, 75, 80, 88, 91], bg: 'linear-gradient(135deg,#0F6E56,#1D9E75)', fc: '#fff' },
+    { init: 'AM', name: 'Arjun Mehta', role: 'SWE · Eng', team: 'Engineering', score: 78, streak: '34 min', switches: '5.8/hr', deep: '4.2/day', longest: '1h 48m', band: 'Deep Focus', bandColor: '#1D9E75', spark: [50, 58, 62, 68, 72, 76, 78], bg: '#E0EEDA', fc: '#0F6E56' },
+    { init: 'PK', name: 'Priya Krishnan', role: 'Sr. Designer', team: 'Design', score: 65, streak: '24 min', switches: '7.2/hr', deep: '3.1/day', longest: '1h 12m', band: 'Moderate', bandColor: '#1D9E75', spark: [48, 52, 55, 58, 62, 64, 65], bg: 'linear-gradient(135deg,#0F6E56,#1D9E75)', fc: '#fff' },
+    { init: 'KR', name: 'Karthik Rajan', role: 'SWE · Eng', team: 'Engineering', score: 44, streak: '14 min', switches: '12.4/hr', deep: '1.4/day', longest: '0h 38m', band: 'Fragmented', bandColor: '#85C4B0', spark: [42, 40, 44, 43, 45, 44, 44], bg: '#E8E0D8', fc: '#555' },
+    { init: 'SN', name: 'Sneha Nair', role: 'Sales Exec.', team: 'Sales', score: 28, streak: '8 min', switches: '18.6/hr', deep: '0.4/day', longest: '0h 18m', band: 'Scattered', bandColor: '#085041', spark: [32, 30, 28, 29, 27, 28, 28], bg: '#E8E0D8', fc: '#555' },
+  ], 30),
+  coaching: [
+    { title: 'Karthik Rajan — Fragmented (44)', body: 'Switches apps 12.4 times/hour — one of the highest in the org. Recommend: block 90-min Pomodoro sessions and use app blockers during deep work hours (10–12 AM).', style: 'info' },
+    { title: 'Sneha Nair — Scattered (28)', body: 'Avg focus streak of only 8 minutes. Likely interrupted by messaging apps. Recommend: set status as DND during morning hours and batch communication to 11 AM and 3 PM.', style: 'info' },
+    { title: 'Ravi Shankar — Deep Focus (91)', body: 'Exemplary focus patterns — 42-minute average streaks and 5.8 deep sessions per day. Model his workflow for team best practices.', style: 'success' },
   ],
 };
 
 export const toolsData = {
-  tools: [
+  tools: expandTable([
     { name: 'VS Code', hrs: 4.3, category: 'Dev Tools', type: 'Productive', users: 74, roi: 'High ROI', roiColor: '#0F6E56', barColor: '#085041' },
     { name: 'Figma', hrs: 3.1, category: 'Design', type: 'Productive', users: 32, roi: 'High ROI', roiColor: '#0F6E56', barColor: '#0F6E56' },
-    { name: 'GitHub', hrs: 2.2, category: 'Dev Tools', type: 'Productive', users: 68, roi: 'Moderate', roiColor: '#185FA5', barColor: '#1D9E75' },
-    { name: 'Jira', hrs: 1.8, category: 'PM', type: 'Neutral', users: 94, roi: 'Moderate', roiColor: '#185FA5', barColor: '#378ADD' },
-    { name: 'Slack', hrs: 1.4, category: 'Communication', type: 'Neutral', users: 128, roi: 'Monitor', roiColor: '#B8860B', barColor: '#B8860B' },
-    { name: 'YouTube', hrs: 0.8, category: 'Entertainment', type: 'Unproductive', users: 88, roi: 'Block suggested', roiColor: '#993535', barColor: '#993535' },
-    { name: 'Facebook', hrs: 0.5, category: 'Social', type: 'Unproductive', users: 44, roi: 'Block suggested', roiColor: '#993535', barColor: '#791F1F' },
-  ],
+    { name: 'GitHub', hrs: 2.2, category: 'Dev Tools', type: 'Productive', users: 68, roi: 'Moderate', roiColor: '#0F6E56', barColor: '#1D9E75' },
+    { name: 'Jira', hrs: 1.8, category: 'PM', type: 'Neutral', users: 94, roi: 'Moderate', roiColor: '#0F6E56', barColor: '#1D9E75' },
+    { name: 'Slack', hrs: 1.4, category: 'Communication', type: 'Neutral', users: 128, roi: 'Monitor', roiColor: '#1D9E75', barColor: '#1D9E75' },
+    { name: 'YouTube', hrs: 0.8, category: 'Entertainment', type: 'Unproductive', users: 88, roi: 'Block suggested', roiColor: '#085041', barColor: '#085041' },
+    { name: 'Facebook', hrs: 0.5, category: 'Social', type: 'Unproductive', users: 44, roi: 'Block suggested', roiColor: '#085041', barColor: '#085041' },
+  ], 21),
   maxHrs: 4.3,
+  split: { productive: 61, neutral: 24, unproductive: 15 },
+  underused: [
+    { name: 'Notion', adoption: '6/128 users · 5% adoption', cost: '₹4,800/mo', note: 'Potentially wasted' },
+    { name: 'Zoom (Pro)', adoption: '14/128 users · 11% adoption', cost: '₹6,200/mo', note: 'Most use Google Meet instead' },
+    { name: 'Adobe CC', adoption: '8/18 Design users · 44%', cost: '₹4,400/mo', note: 'Half the team uses Figma only' },
+    { name: 'Miro', adoption: '4/128 users · 3% adoption', cost: '₹2,800/mo', note: 'Rarely opened after Q1' },
+  ],
 };
 
 export const attendanceCalData = {
@@ -239,10 +408,29 @@ export const attendanceCalData = {
     { range: '1–5m', count: 12, color: 'rgba(15,110,86,.3)' },
     { range: '6–10m', count: 28, color: 'rgba(15,110,86,.5)' },
     { range: '11–15m', count: 22, color: 'rgba(15,110,86,.7)' },
-    { range: '16–20m', count: 14, color: 'rgba(184,134,11,.6)' },
-    { range: '21–30m', count: 8, color: 'rgba(153,53,53,.45)' },
-    { range: '30–45m', count: 4, color: 'rgba(153,53,53,.6)' },
-    { range: '>45m', count: 2, color: 'rgba(153,53,53,.8)' },
+    { range: '16–20m', count: 14, color: 'rgba(29,158,117,.6)' },
+    { range: '21–30m', count: 8, color: 'rgba(15,110,86,.45)' },
+    { range: '30–45m', count: 4, color: 'rgba(15,110,86,.6)' },
+    { range: '>45m', count: 2, color: 'rgba(15,110,86,.8)' },
+  ],
+  dailyRate: [96, 98, 95, 100, 94, 97, 96, 88, 95, 93, 94],
+  dailyRateLabels: ['Apr1', '3', '5', '7', '9', '11', '13', '15', '17', '19', '21'],
+  absenceByDay: [
+    { day: 'Mon', count: 14 },
+    { day: 'Tue', count: 8 },
+    { day: 'Wed', count: 6 },
+    { day: 'Thu', count: 7 },
+    { day: 'Fri', count: 11 },
+  ],
+  offenders: [
+    { init: 'PP', name: 'Pradeep Pillai', role: 'Sales · Exec', team: 'Sales', lates: 11, delay: '34 min', pattern: 'Monday (8/11 lates)', earlyExits: 4, absences: 4, streak: '2 days consecutive', risk: 'High Risk', pips: ['#0F6E56', '#085041', '#1D9E75', '#0F6E56', '#0F6E56', '#E0E0D8', '#E0E0D8', '#085041', '#1D9E75', '#0F6E56', '#085041', '#085041', '#0F6E56', '#E0E0D8', '#E0E0D8', '#1D9E75', '#0F6E56', '#085041', '#0F6E56', '#085041', '#1D9E75'] },
+    { init: 'MK', name: 'Meera Kapoor', role: 'Design · UI', team: 'Design', lates: 6, delay: '22 min', pattern: 'Friday (5/6 lates)', earlyExits: 2, absences: 1, streak: 'None', risk: 'Watch', pips: ['#0F6E56', '#0F6E56', '#1D9E75', '#0F6E56', '#0F6E56', '#E0E0D8', '#E0E0D8', '#0F6E56', '#0F6E56', '#0F6E56', '#1D9E75', '#0F6E56', '#085041', '#E0E0D8', '#E0E0D8', '#0F6E56', '#1D9E75', '#0F6E56', '#0F6E56', '#0F6E56', '#1D9E75', '#0F6E56'] },
+    { init: 'KR', name: 'Karthik Rajan', role: 'Eng · SWE', team: 'Engineering', lates: 4, delay: '12 min', pattern: 'Monday (3/4 lates)', earlyExits: 1, absences: 0, streak: 'None', risk: 'Watch', pips: ['#1D9E75', '#0F6E56', '#0F6E56', '#0F6E56', '#0F6E56', '#E0E0D8', '#E0E0D8', '#1D9E75', '#0F6E56', '#0F6E56', '#0F6E56', '#0F6E56', '#0F6E56', '#E0E0D8', '#E0E0D8', '#1D9E75', '#0F6E56', '#0F6E56', '#0F6E56', '#0F6E56', '#0F6E56'] },
+  ],
+  attendanceInsights: [
+    { title: 'Monday is the highest-risk day', body: '14 absences and 38% of all late arrivals occur on Mondays. Consider flexible start times or async-first Monday mornings.', bg: '#F0F9F4', border: 'rgba(15,110,86,.14)', titleColor: '#0F6E56' },
+    { title: 'Pradeep Pillai needs HR follow-up', body: '11 late arrivals with 34 min avg delay and 4 absences in 21 days. Pattern strongly suggests habitual Monday issues.', bg: '#F0F9F4', border: 'rgba(15,110,86,.12)', titleColor: '#085041' },
+    { title: '38 employees with perfect attendance', body: '29.7% of the org had zero late arrivals and zero absences this period — up 4 employees from last month.', bg: '#EAF2EE', border: 'rgba(15,110,86,.18)', titleColor: '#085041' },
   ],
 };
 
@@ -250,15 +438,48 @@ export const leaderboardData = {
   teams: [
     { name: 'Engineering', score: '88%', color: '#0F6E56', members: 34 },
     { name: 'Product', score: '83%', color: '#1D9E75', members: 12 },
-    { name: 'Design', score: '76%', color: '#378ADD', members: 18 },
+    { name: 'Design', score: '76%', color: '#1D9E75', members: 18 },
     { name: 'Support', score: '71%', color: '#888', members: 20 },
-    { name: 'Sales', score: '64%', color: '#993535', members: 24 },
+    { name: 'Sales', score: '64%', color: '#085041', members: 24 },
   ],
   employees: [
     { init: 'RS', name: 'Ravi Shankar', team: 'Engineering', pct: 91, delta: '+0', barColor: '#0F6E56', bg: 'linear-gradient(135deg,#0F6E56,#1D9E75)', fc: '#fff' },
-    { init: 'SV', name: 'Swetha Varman', team: 'Engineering', pct: 87, delta: '+2', barColor: '#1D9E75', bg: '#E0EEDA', fc: '#3D6028' },
-    { init: 'AM', name: 'Arjun Mehta', team: 'Engineering', pct: 84, delta: '+14 🔥', barColor: '#378ADD', bg: '#DCE8F5', fc: '#185FA5' },
-    { init: 'PK', name: 'Priya Krishnan', team: 'Design', pct: 76, delta: '0', barColor: '#B8860B', bg: '#FBD3E8', fc: '#993535' },
-    { init: 'SN', name: 'Sneha Nair', team: 'Sales', pct: 48, delta: '-8', barColor: '#993535', bg: '#E8E0D8', fc: '#555' },
+    { init: 'SV', name: 'Swetha Varman', team: 'Engineering', pct: 87, delta: '+2', barColor: '#1D9E75', bg: '#E0EEDA', fc: '#085041' },
+    { init: 'AM', name: 'Arjun Mehta', team: 'Engineering', pct: 84, delta: '+14 🔥', barColor: '#1D9E75', bg: '#EAF2EE', fc: '#0F6E56' },
+    { init: 'PK', name: 'Priya Krishnan', team: 'Design', pct: 76, delta: '0', barColor: '#1D9E75', bg: '#EAF2EE', fc: '#085041' },
+    { init: 'SN', name: 'Sneha Nair', team: 'Sales', pct: 48, delta: '-8', barColor: '#085041', bg: '#E8E0D8', fc: '#555' },
+  ],
+  teamDeltas: ['+3.1%', '+1.4%', '-0.8%', '+2.2%', '-5.3%'],
+  medals: ['🥇', '🥈', '🥉', '4th', '5th'],
+  rankMovement: [
+    { name: 'Arjun Mehta', delta: 14, positive: true },
+    { name: 'Vikram Bose', delta: 8, positive: true },
+    { name: 'Nisha Iyer', delta: 6, positive: true },
+    { name: 'Karthik R.', delta: -5, positive: false },
+    { name: 'Meera K.', delta: -9, positive: false },
+    { name: 'Pradeep P.', delta: -18, positive: false },
+  ],
+  teamTrend: {
+    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+    series: [
+      { label: 'Engineering', data: [85, 86, 87, 88], color: '#0F6E56' },
+      { label: 'Product', data: [81, 82, 80, 83], color: '#1D9E75' },
+      { label: 'Design', data: [78, 77, 76, 76], color: '#85C4B0' },
+      { label: 'Sales', data: [69, 67, 65, 64], color: '#085041' },
+    ],
+  },
+  leaderboard: expandTable([
+    { rank: 1, init: 'RS', name: 'Ravi Shankar', role: 'Sr. SWE · Engineering', team: 'Engineering', pct: 91, prodTime: '6h 14m', focus: 91, attendance: '100%', delta: '= Same', percentile: 'Top 1%', spark: [72, 80, 85, 88, 90, 92, 91], top: true, bg: 'linear-gradient(135deg,#0F6E56,#1D9E75)', fc: '#fff' },
+    { rank: 2, init: 'SV', name: 'Swetha Varman', role: 'SWE · Engineering', team: 'Engineering', pct: 87, prodTime: '5h 58m', focus: 82, attendance: '97%', delta: '↑ +2', percentile: 'Top 3%', spark: [78, 82, 84, 85, 86, 87, 87], top: true, bg: '#E0EEDA', fc: '#0F6E56' },
+    { rank: 3, init: 'AM', name: 'Arjun Mehta', role: 'SWE · Engineering', team: 'Engineering', pct: 84, prodTime: '5h 52m', focus: 78, attendance: '90%', delta: '↑ +14 🔥', percentile: 'Top 5%', spark: [62, 68, 72, 76, 80, 83, 84], top: true, bg: '#E0EEDA', fc: '#0F6E56' },
+    { rank: 4, init: 'PK', name: 'Priya Krishnan', role: 'Sr. Designer', team: 'Design', pct: 76, prodTime: '5h 22m', focus: 65, attendance: '97%', delta: '= Same', percentile: 'Top 8%', spark: [70, 72, 74, 75, 76, 76, 76], bg: 'linear-gradient(135deg,#0F6E56,#1D9E75)', fc: '#fff' },
+    { rank: 123, init: 'SN', name: 'Sneha Nair', role: 'Sales Exec.', team: 'Sales', pct: 48, prodTime: '3h 02m', focus: 28, attendance: '88%', delta: '↓ -8', percentile: 'Bottom 5%', spark: [58, 54, 52, 50, 49, 48, 48], bottom: true, bg: 'rgba(15,110,86,.12)', fc: '#085041' },
+    { rank: 126, init: 'PP', name: 'Pradeep Pillai', role: 'Sales Exec.', team: 'Sales', pct: 41, prodTime: '2h 48m', focus: 22, attendance: '82%', delta: '↓ -18', percentile: 'Bottom 2%', spark: [55, 50, 48, 45, 43, 42, 41], bottom: true, bg: 'rgba(15,110,86,.12)', fc: '#085041' },
+  ], 30).map((row, i) => ({ ...row, rank: i + 1, top: i < 3, bottom: i >= 27 })),
+  teamTrendLegend: [
+    { label: 'Engineering', color: '#0F6E56' },
+    { label: 'Product', color: '#1D9E75' },
+    { label: 'Design', color: '#85C4B0' },
+    { label: 'Sales', color: '#085041' },
   ],
 };

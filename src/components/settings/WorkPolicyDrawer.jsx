@@ -70,12 +70,12 @@ export default function WorkPolicyDrawer() {
   return (
     <div>
       {/* Warning banner */}
-      <div className="flex items-start gap-3 bg-[rgba(245,197,24,0.08)] border border-[rgba(245,197,24,0.2)] rounded-[14px] px-5 py-4 mb-5">
-        <div className="w-8 h-8 rounded-[9px] bg-[rgba(245,197,24,0.14)] flex items-center justify-center shrink-0">
-          <AlertTriangle size={15} className="text-[#B8860B]" />
+      <div className="flex items-start gap-3 bg-[rgba(15,110,86,0.08)] border border-[rgba(15,110,86,0.2)] rounded-[14px] px-5 py-4 mb-5">
+        <div className="w-8 h-8 rounded-[9px] bg-[rgba(15,110,86,0.14)] flex items-center justify-center shrink-0">
+          <AlertTriangle size={15} className="text-[#0F6E56]" />
         </div>
         <div>
-          <div className="text-sm font-bold text-[#633806] mb-0.5">Changes ripple across modules</div>
+          <div className="text-sm font-bold text-[#085041] mb-0.5">Changes ripple across modules</div>
           <div className="text-xs-plus text-text-muted leading-relaxed">
             Working days affect attendance absent-flagging. Expected hours drive the dashboard progress bar, late check-in detection, overtime calculation and productivity score targets in all reports.
           </div>

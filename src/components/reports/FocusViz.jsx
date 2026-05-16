@@ -1,119 +1,131 @@
 import { cn } from '@/utils/cn';
 import { focusData } from '@/mock/reports';
+import ReportShell from './shared/ReportShell';
+import { ReportCard } from './shared/ReportCard';
+import { ReportGrid2 } from './shared/ReportGrids';
+import ReportLineChart from './shared/ReportLineChart';
+import DoughnutChart from './shared/DoughnutChart';
+import ReportPagination from './shared/ReportPagination';
+import EmployeeCell from './shared/EmployeeCell';
+import Sparkline from './shared/Sparkline';
+import { RT } from './shared/reportTheme';
+import { usePaginatedRows } from './shared/usePaginatedRows';
 
 const BAND_BADGE = {
-  Deep: 'bg-[rgba(12,68,124,.1)] text-[#0C447C] border-[rgba(12,68,124,.2)]',
-  Moderate: 'bg-[rgba(55,138,221,.1)] text-[#185FA5] border-[rgba(55,138,221,.2)]',
-  Scattered: 'bg-[rgba(153,53,53,.1)] text-[#791F1F] border-[rgba(153,53,53,.2)]',
+  'Deep Focus': 'bg-[rgba(15,110,86,.1)] text-[#085041] border-[rgba(15,110,86,.2)]',
+  Moderate: 'bg-[rgba(29,158,117,.1)] text-[#0F6E56] border-[rgba(15,110,86,.2)]',
+  Fragmented: 'bg-[rgba(133,196,176,.25)] text-[#0A5040] border-[rgba(15,110,86,.15)]',
+  Scattered: 'bg-[rgba(15,110,86,.1)] text-[#085041] border-[rgba(15,110,86,.2)]',
 };
 
-export default function FocusViz() {
-  const { distribution, trendData, trendLabels, table } = focusData;
+const COACHING_STYLE = {
+  info: { bg: '#EAF2EE', border: 'rgba(15,110,86,.2)', title: RT.greenDark, body: RT.green },
+  success: { bg: '#F0F9F4', border: 'rgba(15,110,86,.18)', title: '#27500A', body: '#3D6028' },
+};
+
+export default function FocusViz({ report, onDateChange }) {
+  const { distribution, trendData, trendLabels, table, coaching } = focusData;
+  const { pageRows, paginationProps } = usePaginatedRows(table, {
+    pageSize: 5,
+    totalCount: 128,
+    totalPages: Math.ceil(128 / 5),
+  });
+
+  const doughnutSegments = distribution.map((d) => ({
+    label: d.band,
+    value: d.count,
+    color: d.color,
+  }));
 
   return (
-    <div className="space-y-5">
-      {/* Two column: Distribution + Trend */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Distribution */}
-        <div className="bg-surface-subtle rounded-[14px] p-5">
-          <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">Score Distribution</div>
-          <div className="space-y-3">
+    <ReportShell report={report} onDateChange={onDateChange}>
+      <ReportGrid2 className="mb-3">
+        <ReportCard title="Focus Score Trend — Apr 1–21" subtitle="Org-wide average daily focus score" className="mb-0">
+          <ReportLineChart
+            data={trendData}
+            labels={trendLabels}
+            color={RT.green}
+            fillColor={RT.greenFill}
+            height={200}
+          />
+        </ReportCard>
+        <ReportCard title="Focus Distribution" subtitle="How employees are distributed across score bands" className="mb-0">
+          <DoughnutChart segments={doughnutSegments} showCenter={false} hideLegend />
+          <div className="flex flex-wrap gap-2.5 mt-1 text-[10px] text-[#888] justify-center">
             {distribution.map((d) => (
-              <div key={d.band} className="flex items-center gap-2.5">
-                <span className="text-xs text-text-muted w-[110px] shrink-0">{d.band}</span>
-                <div className="flex-1 h-2.5 rounded-full bg-white overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${d.pct}%`, background: d.color }} />
-                </div>
-                <span className="text-xs font-bold w-8 text-right" style={{ color: d.color }}>{d.count}</span>
-              </div>
+              <span key={d.band} className="flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: d.color }} />
+                {d.band} · {d.count}
+              </span>
             ))}
           </div>
-        </div>
+        </ReportCard>
+      </ReportGrid2>
 
-        {/* Trend */}
-        <div className="bg-surface-subtle rounded-[14px] p-5">
-          <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">Score Trend — Apr 1–21</div>
-          <div className="relative h-[110px]">
-            {[0, 25, 50, 75, 100].map((v) => (
-              <div
-                key={v}
-                className="absolute left-0 right-0 border-t border-dashed border-black/[0.06]"
-                style={{ bottom: `${v}%` }}
-              />
-            ))}
-            <svg viewBox={`0 0 ${(trendData.length - 1) * 10} 100`} className="w-full h-full" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="focusGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgba(55,138,221,0.3)" />
-                  <stop offset="100%" stopColor="rgba(55,138,221,0)" />
-                </linearGradient>
-              </defs>
-              <path
-                d={`M0,${100 - trendData[0]} ${trendData.map((v, i) => `L${i * 10},${100 - v}`).join(' ')} L${(trendData.length - 1) * 10},100 L0,100 Z`}
-                fill="url(#focusGrad)"
-              />
-              <polyline
-                points={trendData.map((v, i) => `${i * 10},${100 - v}`).join(' ')}
-                fill="none"
-                stroke="#185FA5"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {trendData.map((v, i) => (
-                <circle key={i} cx={i * 10} cy={100 - v} r="2.5" fill="#185FA5" />
-              ))}
-            </svg>
-          </div>
-          <div className="flex justify-between mt-2">
-            {trendLabels.filter((_, i) => i % 2 === 0).map((l) => (
-              <span key={l} className="text-2xs text-text-light">{l}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Employee table */}
-      <div className="overflow-hidden rounded-[14px] border border-black/[0.05]">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="bg-black/[0.02] border-b border-black/5">
-              <th className="text-xs font-bold text-text-light uppercase tracking-wider py-3 px-4">Employee</th>
-              <th className="text-xs font-bold text-text-light uppercase tracking-wider py-3 px-4">Team</th>
-              <th className="text-xs font-bold text-text-light uppercase tracking-wider py-3 px-4">Score</th>
-              <th className="text-xs font-bold text-text-light uppercase tracking-wider py-3 px-4">Streak</th>
-              <th className="text-xs font-bold text-text-light uppercase tracking-wider py-3 px-4">Switches/hr</th>
-              <th className="text-xs font-bold text-text-light uppercase tracking-wider py-3 px-4">Band</th>
-            </tr>
-          </thead>
-          <tbody>
-            {table.map((e) => (
-              <tr key={e.init} className="border-b border-black/[0.04] last:border-b-0 hover:bg-primary/[0.02]">
-                <td className="py-3 px-4">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-2xs font-bold shrink-0" style={{ background: e.bg, color: e.fc }}>{e.init}</div>
-                    <span className="text-sm font-semibold text-text-primary">{e.name}</span>
-                  </div>
-                </td>
-                <td className="text-xs text-text-muted py-3 px-4">{e.team}</td>
-                <td className="py-3 px-4">
-                  <span className="text-sm font-bold" style={{ color: e.bandColor }}>{e.score}</span>
-                  <div className="h-[5px] rounded-full bg-neutral-pale mt-1.5 w-16 overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${e.score}%`, background: e.bandColor }} />
-                  </div>
-                </td>
-                <td className="text-xs text-text-secondary py-3 px-4">{e.streak}</td>
-                <td className="text-xs text-text-secondary py-3 px-4">{e.switches}</td>
-                <td className="py-3 px-4">
-                  <span className={cn('text-xs font-semibold px-2.5 py-1 rounded-[8px] border', BAND_BADGE[e.band] || 'bg-neutral-pale text-text-muted border-black/5')}>
-                    {e.band}
-                  </span>
-                </td>
+      <ReportCard
+        title="Employee Focus Score Table"
+        subtitle="Sorted by avg focus score (high to low). Score = (streak × 0.4) + (1/switches × 0.4) + (deep sessions × 0.2), normalized 0–100."
+        actions={
+          <span className="text-[9px] font-semibold px-2.5 py-1 rounded-lg border" style={{ background: RT.greenPale, color: RT.greenDark, borderColor: RT.greenBorder }}>
+            Longer streaks + fewer switches + more 30min blocks = higher score
+          </span>
+        }
+        bodyClassName="p-0"
+        className="mb-3"
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-[11px]">
+            <thead>
+              <tr className="bg-black/[0.02] border-b border-black/5">
+                {['Employee', 'Team', 'Focus Score', 'Score Band', 'Avg Streak', 'Switches/hr', 'Deep Sessions/day', 'Longest Streak', '7d Trend'].map((h) => (
+                  <th key={h} className="py-2.5 px-3 text-[9px] font-bold text-text-light uppercase tracking-wider whitespace-nowrap">{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+            </thead>
+            <tbody>
+              {pageRows.map((e) => (
+                <tr key={`${e.init}-${e.name}`} className="border-b border-black/[0.04] last:border-b-0 hover:bg-primary/[0.02]">
+                  <td className="py-2.5 px-3">
+                    <EmployeeCell init={e.init} name={e.name} role={e.role} avatarStyle={{ background: e.bg, color: e.fc }} />
+                  </td>
+                  <td className="px-3 text-text-muted">{e.team}</td>
+                  <td className="px-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-extrabold" style={{ color: e.bandColor }}>{e.score}</span>
+                      <div className="w-12 h-1.5 rounded-full overflow-hidden" style={{ background: RT.greenPale }}>
+                        <div className="h-full rounded-full" style={{ width: `${e.score}%`, background: e.bandColor }} />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-3">
+                    <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-lg border', BAND_BADGE[e.band])}>{e.band}</span>
+                  </td>
+                  <td className="px-3 text-text-secondary">{e.streak}</td>
+                  <td className="px-3 text-text-secondary">{e.switches}</td>
+                  <td className="px-3 text-text-secondary">{e.deep}</td>
+                  <td className="px-3 text-text-secondary">{e.longest}</td>
+                  <td className="px-3"><Sparkline values={e.spark} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <ReportPagination {...paginationProps} pages={[1, 2, 3, '…', 26]} />
+      </ReportCard>
+
+      <ReportCard title="Focus Coaching Recommendations" subtitle="Automated suggestions based on individual patterns">
+        <div className="grid grid-cols-3 gap-2.5">
+          {coaching.map((c) => {
+            const s = COACHING_STYLE[c.style];
+            return (
+              <div key={c.title} className="p-3 rounded-xl border" style={{ background: s.bg, borderColor: s.border }}>
+                <div className="text-[10px] font-bold mb-1.5" style={{ color: s.title }}>{c.title}</div>
+                <p className="text-[10px] leading-relaxed" style={{ color: s.body }}>{c.body}</p>
+              </div>
+            );
+          })}
+        </div>
+      </ReportCard>
+    </ReportShell>
   );
 }

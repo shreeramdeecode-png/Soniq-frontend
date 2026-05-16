@@ -35,7 +35,7 @@ function StealthEmployeeRow({ emp, onSave }) {
         <p className="text-sm font-semibold text-text-primary truncate">{emp.name}</p>
         <p className="text-xs-plus text-text-light truncate">{emp.team} · {emp.role}</p>
       </div>
-      <span className={cn('text-xs font-semibold mr-2', on ? 'text-status-danger' : 'text-text-light')}>
+      <span className={cn('text-xs font-semibold mr-2', on ? 'text-[#1D9E75]' : 'text-text-light')}>
         {on ? '● Active' : '○ Inactive'}
       </span>
       <Toggle on={on} onChange={() => setOn(!on)} />
@@ -66,8 +66,8 @@ export default function StealthDrawer() {
     <div>
       {/* Legal Gate */}
       <div className="dark-card p-8 mb-6 rounded-[22px]">
-        <div className="w-[52px] h-[52px] rounded-[15px] bg-[rgba(153,53,53,0.25)] border border-[rgba(153,53,53,0.35)] flex items-center justify-center mb-5">
-          <Lock size={26} className="text-[#F09595]" />
+        <div className="w-[52px] h-[52px] rounded-[15px] bg-[rgba(15,110,86,0.25)] border border-[rgba(15,110,86,0.35)] flex items-center justify-center mb-5">
+          <Lock size={26} className="text-[#85C4B0]" />
         </div>
         <h3 className="text-xl font-extrabold text-white tracking-tight mb-2">Legal Consent Required</h3>
         <p className="text-sm text-white/[0.48] max-w-[700px] leading-[1.8] mb-6">
@@ -80,12 +80,12 @@ export default function StealthDrawer() {
         {/* Consent checkbox */}
         <div
           onClick={() => setConsented(!consented)}
-          className="flex items-start gap-3 bg-[rgba(153,53,53,0.15)] border border-[rgba(153,53,53,0.3)] rounded-[14px] px-5 py-4 mb-5 cursor-pointer select-none"
+          className="flex items-start gap-3 bg-[rgba(15,110,86,0.15)] border border-[rgba(15,110,86,0.3)] rounded-[14px] px-5 py-4 mb-5 cursor-pointer select-none"
         >
           <div
             className={cn(
               'w-5 h-5 rounded-[6px] flex items-center justify-center border-2 transition-colors shrink-0 mt-0.5',
-              consented ? 'bg-[#993535] border-[#993535]' : 'border-[rgba(153,53,53,0.5)] bg-transparent',
+              consented ? 'bg-primary border-primary' : 'border-[rgba(15,110,86,0.5)] bg-transparent',
             )}
           >
             {consented && (
@@ -108,7 +108,7 @@ export default function StealthDrawer() {
           className={cn(
             'text-sm font-semibold rounded-pill px-7 py-3 transition-all',
             consented
-              ? 'bg-[linear-gradient(135deg,#993535,#7A2020)] text-white cursor-pointer hover:opacity-90'
+              ? 'bg-[linear-gradient(135deg,#0F6E56,#085041)] text-white cursor-pointer hover:opacity-90'
               : 'bg-white/10 text-white/30 cursor-not-allowed',
           )}
         >

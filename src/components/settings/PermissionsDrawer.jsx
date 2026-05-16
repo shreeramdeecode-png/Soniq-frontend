@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Shield, Users, Eye, Ban, Save, RotateCcw, Plus } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { modules, rolePermsData, roleMeta, permColors, permLabels } from '@/mock/settings';
+import { ROLE_META_BADGE } from '@/components/settings/settingsTheme';
 import { useToast } from '@/components/ui/Toast';
 
 const ROLE_ICONS = {
@@ -35,7 +36,7 @@ function RoleCard({ roleKey, meta, isSelected, onClick }) {
         <p className="text-xs-plus text-text-light mt-0.5">{meta.members}</p>
         <span className={cn(
           'inline-block text-[10px] font-semibold rounded-pill px-2.5 py-0.5 mt-2',
-          meta.badgeClass === 'dn' ? 'bg-neutral-warm/40 text-text-muted' : meta.badgeClass === 'db' ? 'bg-blue-500/10 text-blue-600' : 'bg-purple-500/10 text-purple-600',
+          ROLE_META_BADGE[meta.badgeClass] || ROLE_META_BADGE.dn,
         )}>
           {meta.badge}
         </span>

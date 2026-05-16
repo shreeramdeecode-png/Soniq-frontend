@@ -1,6 +1,7 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
 import { ChevronRight, Search } from 'lucide-react';
 import { settingsSections, settingsGroups } from '@/mock/settings';
+import { CHIP_STYLES } from '@/components/settings/settingsTheme';
 import { cn } from '@/utils/cn';
 
 const TeamsDrawer = lazy(() => import('@/components/settings/TeamsDrawer'));
@@ -19,14 +20,6 @@ const DRAWER_MAP = {
   stealth: StealthDrawer,
   defaults: DefaultsDrawer,
   access: PermissionsDrawer,
-};
-
-const CHIP_STYLES = {
-  default: 'bg-black/5 text-text-muted border border-black/[0.08]',
-  warn: 'bg-primary/[0.1] text-[#0F6E56] border border-primary/[0.2]',
-  danger: 'bg-[rgba(153,53,53,0.1)] text-[#791F1F] border border-[rgba(153,53,53,0.2)]',
-  merged: 'bg-[rgba(61,96,40,0.1)] text-[#27500A] border border-[rgba(61,96,40,0.2)]',
-  purple: 'bg-[rgba(83,74,183,0.1)] text-[#3C3489] border border-[rgba(83,74,183,0.2)]',
 };
 
 export default function SettingsPage() {
@@ -82,8 +75,8 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center gap-1.5 text-2xs text-text-light">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-[2px] bg-[#0F6E56] inline-block" />Org & People</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-[2px] bg-[#3B6D11] inline-block" />Work & Monitoring</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-[2px] bg-[#534AB7] inline-block" />Access & Controls</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-[2px] bg-[#1D9E75] inline-block" />Work & Monitoring</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-[2px] bg-[#085041] inline-block" />Access & Controls</span>
           </div>
         </div>
 
