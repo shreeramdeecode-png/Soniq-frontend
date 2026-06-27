@@ -1,12 +1,11 @@
-import { teams, ganttHours, currentTimePosition } from '@/mock/attendance';
-import { cn } from '@/utils/cn';
 
-const BLOCK_STYLES = {
-  productive: 'bg-gradient-to-r from-primary-light to-primary',
-  neutral: 'bg-gradient-to-r from-neutral-cool to-neutral-bone',
-  unproductive: 'bg-gradient-to-r from-ink-mid to-ink',
-  idle: 'bg-gradient-to-r from-[#E8D870] to-[#D8C860]',
-  break: 'bg-gradient-to-r from-[#F0E8C8] to-[#E8D8A8]',
+const BLOCK_BG = {
+  productive: '#0F6E56',
+  neutral: 'rgba(29,158,117,0.28)',
+  unproductive: '#1A1A1A',
+  idle: 'rgba(0,0,0,0.08)',
+  away: 'rgba(0,0,0,0.05)',
+  break: 'rgba(29,158,117,0.12)',
 };
 
 const hourPositions = [0, 9.09, 18.18, 27.27, 36.36, 45.45, 54.54, 63.63, 72.72, 81.81, 90.90];
@@ -14,8 +13,8 @@ const hourPositions = [0, 9.09, 18.18, 27.27, 36.36, 45.45, 54.54, 63.63, 72.72,
 function GanttBlock({ block }) {
   return (
     <div
-      className={cn('absolute top-0 h-full rounded-[5px] cursor-pointer z-[5] transition-all hover:brightness-110 hover:scale-y-110 hover:z-[15] group/block', BLOCK_STYLES[block.type])}
-      style={{ left: block.left, width: block.width }}
+      className="absolute top-0 h-full cursor-pointer z-[5] transition-all hover:opacity-80 hover:scale-y-110 hover:z-[15] group/block"
+      style={{ left: block.left, width: block.width, background: BLOCK_BG[block.type] || BLOCK_BG.neutral }}
     >
       <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 bg-gradient-to-br from-ink to-[#252525] rounded-[14px] p-[13px_16px] z-50 shadow-[0_10px_30px_rgba(0,0,0,0.4)] border border-white/[0.08] whitespace-nowrap opacity-0 pointer-events-none transition-opacity group-hover/block:opacity-100 min-w-[200px]">
         <div className="flex items-center gap-2 mb-2.5 pb-[9px] border-b border-white/[0.07]">
@@ -37,7 +36,7 @@ function GanttBlock({ block }) {
   );
 }
 
-function EmployeeRow({ emp }) {
+function EmployeeRow({ emp, currentTimePosition }) {
   return (
     <div className="grid grid-cols-[190px_1fr] border-b border-black/[0.04] last:border-b-0 group/row">
       {/* Left: employee info */}
@@ -60,7 +59,9 @@ function EmployeeRow({ emp }) {
             <div key={pos} className="absolute top-0 bottom-0 w-px bg-black/5 z-[1]" style={{ left: `${pos}%` }} />
           ))}
           {/* Current time line */}
-          <div className="absolute top-[-3px] bottom-[-3px] w-0.5 rounded-[1px] z-[20]" style={{ left: currentTimePosition, background: 'linear-gradient(180deg, #1D9E75, rgba(29,158,117,0.3))' }} />
+          {currentTimePosition && currentTimePosition !== 'none' && (
+            <div className="absolute top-[-3px] bottom-[-3px] w-0.5 rounded-[1px] z-[20]" style={{ left: currentTimePosition, background: 'linear-gradient(180deg, #1D9E75, rgba(29,158,117,0.3))' }} />
+          )}
           {/* Shift start */}
           <div className="absolute top-[-4px] bottom-[-4px] w-[2.5px] bg-ink rounded-[1px] z-10" style={{ left: '9.09%' }} />
 
@@ -75,7 +76,7 @@ function EmployeeRow({ emp }) {
               <span className="text-2xs-plus text-[#CCC] font-medium">No activity — Absent</span>
             </div>
           ) : (
-            emp.ganttBlocks.map((block, i) => (
+            emp.ganttBlocks && emp.ganttBlocks.map((block, i) => (
               <GanttBlock key={i} block={block} />
             ))
           )}
@@ -90,7 +91,7 @@ function EmployeeRow({ emp }) {
   );
 }
 
-export default function AttendanceGantt() {
+export default function AttendanceGantt({ teams = [], ganttHours = [], currentTimePosition = 'none', currentTimeLabel = '' }) {
   return (
     <div className="mx-8 mb-7 glossy-card rounded-[20px] overflow-hidden">
       {/* Header row with time axis */}
@@ -100,9 +101,11 @@ export default function AttendanceGantt() {
         </div>
         <div className="bg-[rgba(248,248,245,0.9)] relative">
           {/* Now label */}
-          <div className="absolute top-1.5 z-30 -translate-x-1/2 bg-primary rounded-[6px] py-0.5 px-1.5 text-[8px] font-bold text-white whitespace-nowrap shadow-[0_2px_6px_rgba(29,158,117,0.4)]" style={{ left: currentTimePosition }}>
-            Now 2:41 PM
-          </div>
+          {currentTimePosition && currentTimePosition !== 'none' && (
+            <div className="absolute top-1.5 z-30 -translate-x-1/2 bg-primary rounded-[6px] py-0.5 px-1.5 text-[8px] font-bold text-white whitespace-nowrap shadow-[0_2px_6px_rgba(29,158,117,0.4)]" style={{ left: currentTimePosition }}>
+              {currentTimeLabel}
+            </div>
+          )}
           <div className="flex h-[42px] relative">
             {ganttHours.map((hour) => (
               <div key={hour} className="flex-1 flex flex-col justify-end pb-1.5 pl-1 border-l border-black/[0.06]">
@@ -124,13 +127,15 @@ export default function AttendanceGantt() {
               <span className="text-2xs font-semibold bg-primary/[0.12] text-[#0F6E56] py-px px-[7px] rounded-[10px]">{team.present} present</span>
             </div>
             <div className="bg-primary/[0.02] relative h-[26px]">
-              <div className="absolute top-0 bottom-0 w-0.5 rounded-[1px] z-[20]" style={{ left: currentTimePosition, background: 'linear-gradient(180deg, #1D9E75, rgba(29,158,117,0.3))' }} />
+              {currentTimePosition && currentTimePosition !== 'none' && (
+                <div className="absolute top-0 bottom-0 w-0.5 rounded-[1px] z-[20]" style={{ left: currentTimePosition, background: 'linear-gradient(180deg, #1D9E75, rgba(29,158,117,0.3))' }} />
+              )}
             </div>
           </div>
 
           {/* Employee rows */}
           {team.employees.map((emp) => (
-            <EmployeeRow key={emp.id} emp={emp} />
+            <EmployeeRow key={emp.id} emp={emp} currentTimePosition={currentTimePosition} />
           ))}
         </div>
       ))}

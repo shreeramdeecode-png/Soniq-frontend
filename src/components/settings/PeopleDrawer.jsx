@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Edit3, Trash2, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { employees } from '@/mock/settings';
 import { ROLE_BADGE, STATUS_BADGE } from '@/components/settings/settingsTheme';
 import { useToast } from '@/components/ui/Toast';
 import Modal from '@/components/ui/Modal';
+import api from '@/utils/api';
+import { loadAllEmployees } from '@/components/settings/settingsAdapters';
 
 const PAGE_SIZE = 5;
 
@@ -69,15 +70,42 @@ function EmployeeRow({ emp, onEdit, onDelete }) {
 }
 
 export default function PeopleDrawer() {
+  const [employees, setEmployees] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('active');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newEmpName, setNewEmpName] = useState('');
+  const [newEmpEmail, setNewEmpEmail] = useState('');
+  const [newEmpRoleId, setNewEmpRoleId] = useState('');
+  const [teams, setTeams] = useState([]);
+  const [newEmpTeamId, setNewEmpTeamId] = useState('');
+  const [inviting, setInviting] = useState(false);
   const [deleteModal, setDeleteModal] = useState(null);
   const [editModal, setEditModal] = useState(null);
   const [editName, setEditName] = useState('');
   const toast = useToast();
+
+  useEffect(() => {
+    Promise.all([
+      loadAllEmployees(api),
+      api.get('/api/client/roles').then(r => r.data),
+      api.get('/api/client/teams').then(r => r.data),
+    ])
+      .then(([emps, roleData, teamData]) => {
+        setEmployees(emps);
+        const list = Array.isArray(roleData) ? roleData : (roleData.items ?? roleData.data ?? []);
+        setRoles(list);
+        if (list.length > 0) setNewEmpRoleId((list.find(r => r.name === 'Employee') ?? list[0]).id);
+        const tlist = Array.isArray(teamData) ? teamData : (teamData.items ?? teamData.data ?? []);
+        setTeams(tlist);
+        if (tlist.length > 0) setNewEmpTeamId(tlist[0].id);
+      })
+      .catch(() => toast.error('Failed to load employees'))
+      .finally(() => setLoading(false));
+  }, []);
 
   const counts = employees.reduce(
     (a, e) => { a[e.status] = (a[e.status] || 0) + 1; return a; },
@@ -103,23 +131,51 @@ export default function PeopleDrawer() {
     setPage(1);
   }
 
-  function handleAddSubmit() {
-    if (!newEmpName.trim()) return;
-    toast.success(`${newEmpName} added successfully`, 'Employee Added');
-    setNewEmpName('');
+  async function handleAddSubmit() {
+    if (!newEmpName.trim() || !newEmpEmail.trim() || !newEmpRoleId || inviting) return;
+    setInviting(true);
+    const email = newEmpEmail.trim();
     setShowAddModal(false);
+    setNewEmpName('');
+    setNewEmpEmail('');
+    try {
+      await api.post('/api/client/employees/invite', {
+        name: newEmpName.trim(),
+        email,
+        roleId: newEmpRoleId,
+        teamId: newEmpTeamId || undefined,
+      });
+      toast.success(`Invite sent to ${email}`, 'Employee Invited');
+      loadAllEmployees(api).then(setEmployees).catch(() => {});
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Failed to invite employee');
+    } finally {
+      setInviting(false);
+    }
   }
 
-  function handleEditSubmit() {
+  async function handleEditSubmit() {
     if (!editName.trim()) return;
-    toast.success(`${editModal.name} updated to ${editName}`, 'Employee Updated');
-    setEditModal(null);
-    setEditName('');
+    try {
+      await api.put(`/api/client/employees/${editModal.id}`, { name: editName.trim() });
+      toast.success(`Updated to ${editName}`, 'Employee Updated');
+      setEmployees((prev) => prev.map((e) => e.id === editModal.id ? { ...e, name: editName } : e));
+      setEditModal(null);
+      setEditName('');
+    } catch {
+      toast.error('Failed to update employee');
+    }
   }
 
-  function handleDeleteConfirm() {
-    toast.success(`${deleteModal.name} removed`, 'Employee Deleted');
-    setDeleteModal(null);
+  async function handleDeleteConfirm() {
+    try {
+      await api.post(`/api/client/employees/${deleteModal.id}/deactivate`, {});
+      toast.success(`${deleteModal.name} deactivated`, 'Employee Deactivated');
+      setEmployees((prev) => prev.filter((e) => e.id !== deleteModal.id));
+      setDeleteModal(null);
+    } catch {
+      toast.error('Failed to deactivate employee');
+    }
   }
 
   function openEdit(emp) {
@@ -128,6 +184,14 @@ export default function PeopleDrawer() {
   }
 
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1).slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -255,7 +319,7 @@ export default function PeopleDrawer() {
       </div>
 
       {/* Add Employee Modal */}
-      <Modal open={showAddModal} onClose={() => setShowAddModal(false)} title="Add Employee" subtitle="Add a new team member" size="sm">
+      <Modal open={showAddModal} onClose={() => setShowAddModal(false)} title="Invite Employee" subtitle="Send an invitation to a new team member" size="sm">
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-text-secondary mb-1.5">Full Name</label>
@@ -266,12 +330,43 @@ export default function PeopleDrawer() {
               className="w-full h-10 px-3.5 rounded-xl border border-black/10 bg-white/80 text-sm text-text-primary outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-text-lighter"
             />
           </div>
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary mb-1.5">Email Address</label>
+            <input
+              type="email"
+              value={newEmpEmail}
+              onChange={(e) => setNewEmpEmail(e.target.value)}
+              placeholder="e.g. ravi@company.com"
+              className="w-full h-10 px-3.5 rounded-xl border border-black/10 bg-white/80 text-sm text-text-primary outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-text-lighter"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary mb-1.5">Team</label>
+            <select
+              value={newEmpTeamId}
+              onChange={(e) => setNewEmpTeamId(e.target.value)}
+              className="w-full h-10 px-3.5 rounded-xl border border-black/10 bg-white/80 text-sm text-text-primary outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all"
+            >
+              {teams.length === 0 && <option value="">No teams yet</option>}
+              {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary mb-1.5">Role</label>
+            <select
+              value={newEmpRoleId}
+              onChange={(e) => setNewEmpRoleId(e.target.value)}
+              className="w-full h-10 px-3.5 rounded-xl border border-black/10 bg-white/80 text-sm text-text-primary outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all"
+            >
+              {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+            </select>
+          </div>
           <div className="flex justify-end gap-2 pt-2">
             <button onClick={() => setShowAddModal(false)} className="px-4 py-2 rounded-xl text-xs font-semibold text-text-muted hover:bg-black/5 cursor-pointer transition-colors">
               Cancel
             </button>
-            <button onClick={handleAddSubmit} className="primary-pill px-5 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer hover:opacity-90 transition-opacity">
-              Add Employee
+            <button onClick={handleAddSubmit} disabled={inviting} className="primary-pill px-5 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed">
+              {inviting ? 'Sending…' : 'Send Invite'}
             </button>
           </div>
         </div>
@@ -299,18 +394,18 @@ export default function PeopleDrawer() {
         </div>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal open={!!deleteModal} onClose={() => setDeleteModal(null)} title="Delete Employee" subtitle="This action cannot be undone" size="sm">
+      {/* Deactivate Confirmation Modal */}
+      <Modal open={!!deleteModal} onClose={() => setDeleteModal(null)} title="Deactivate Employee" subtitle="This will revoke their access" size="sm">
         <div className="space-y-4">
           <p className="text-sm text-text-secondary">
-            Are you sure you want to remove <strong>{deleteModal?.name}</strong>? This will revoke their access immediately.
+            Are you sure you want to deactivate <strong>{deleteModal?.name}</strong>? They will lose access immediately.
           </p>
           <div className="flex justify-end gap-2 pt-2">
             <button onClick={() => setDeleteModal(null)} className="px-4 py-2 rounded-xl text-xs font-semibold text-text-muted hover:bg-black/5 cursor-pointer transition-colors">
               Cancel
             </button>
             <button onClick={handleDeleteConfirm} className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-[#085041] hover:bg-[#0A5040] cursor-pointer transition-colors">
-              Delete
+              Deactivate
             </button>
           </div>
         </div>

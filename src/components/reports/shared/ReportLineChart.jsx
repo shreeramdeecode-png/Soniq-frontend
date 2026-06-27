@@ -28,6 +28,13 @@ export default function ReportLineChart({
   const tickStyle = labels.length > 12 ? TICK_FONT_SM : TICK_FONT;
 
   const points = data.map((v, i) => scalePoint(i, data.length, pad, plotW, plotH, v, min, max));
+  if (!points.length) {
+    return (
+      <div className="relative w-full flex items-center justify-center" style={{ height }}>
+        <span className="text-[11px] text-[#AAA]">No data for this period</span>
+      </div>
+    );
+  }
   const linePath = tensionLinePath(points, tension);
   const areaPath = `${linePath} L ${points[points.length - 1].x} ${baseline} L ${points[0].x} ${baseline} Z`;
 
@@ -61,9 +68,6 @@ export default function ReportLineChart({
           );
         })}
 
-        {points.map((p, i) => (
-          <line key={`v-${i}`} x1={p.x} y1={pad.top} x2={p.x} y2={baseline} stroke={GRID} strokeWidth={1} />
-        ))}
 
         {showFill && <path d={areaPath} fill={`url(#${gradId})`} />}
         <path

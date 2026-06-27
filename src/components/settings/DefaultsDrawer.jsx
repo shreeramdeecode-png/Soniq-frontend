@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { Monitor, Clock, Zap, Target, Calendar, Shield } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Monitor, Clock, Zap } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { dayLabels } from '@/mock/settings';
 import { useToast } from '@/components/ui/Toast';
+
+const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+import api from '@/utils/api';
 
 function Toggle({ on, onChange, label }) {
   return (
@@ -61,23 +63,85 @@ function DefaultCard({ icon: Icon, iconColor, previewBg, title, description, chi
   );
 }
 
+function wdToArray(wd) {
+  if (!wd) return [1, 1, 1, 1, 1, 0, 0];
+  return [
+    wd.mon ? 1 : 0, wd.tue ? 1 : 0, wd.wed ? 1 : 0,
+    wd.thu ? 1 : 0, wd.fri ? 1 : 0, wd.sat ? 1 : 0, wd.sun ? 1 : 0,
+  ];
+}
+
+function arrayToWd(arr) {
+  const keys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  return Object.fromEntries(keys.map((k, i) => [k, !!arr[i]]));
+}
+
 export default function DefaultsDrawer() {
   const toast = useToast();
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const [capOn, setCapOn] = useState(true);
   const [blurOn, setBlurOn] = useState(false);
-  const [interval, setInterval_] = useState(5);
-
-  const [checkIn, setCheckIn] = useState('09:30');
+  const [interval, setInterval_] = useState(10);
+  const [checkIn, setCheckIn] = useState('09:00');
   const [workHrs, setWorkHrs] = useState(8);
   const [prodHrs, setProdHrs] = useState(6);
-  const [targetScore, setTargetScore] = useState(80);
-
   const [alertsOn, setAlertsOn] = useState(true);
-  const [threshold, setThreshold] = useState(3);
+  const [threshold, setThreshold] = useState(5);
   const [wDays, setWDays] = useState([1, 1, 1, 1, 1, 0, 0]);
+
+  useEffect(() => {
+    api.get('/api/client/settings')
+      .then(({ data: s }) => {
+        setCapOn(s.defaultScreenshotEnabled ?? true);
+        setBlurOn(s.defaultBlurEnabled ?? false);
+        setInterval_(s.defaultCaptureIntervalMinutes ?? 10);
+        // defaultExpectedInTime arrives as "HH:MM:SS" — keep only HH:MM
+        const rawTime = typeof s.defaultExpectedInTime === 'string' ? s.defaultExpectedInTime.slice(0, 5) : '09:00';
+        setCheckIn(rawTime);
+        setWorkHrs(Math.round(Number(s.defaultWorkHoursPerDay ?? 8)));
+        setProdHrs(Math.round(Number(s.defaultProductiveHoursPerDay ?? 6)));
+        setAlertsOn(s.defaultIdleAlertEnabled ?? true);
+        setThreshold(s.defaultMinIdleTimeMinutes ?? 5);
+        setWDays(wdToArray(s.defaultWorkDays));
+      })
+      .catch(() => { /* keep defaults on error */ })
+      .finally(() => setLoading(false));
+  }, []);
 
   function toggleDay(i) {
     setWDays((prev) => prev.map((d, idx) => (idx === i ? (d ? 0 : 1) : d)));
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await api.put('/api/client/settings', {
+        defaultScreenshotEnabled: capOn,
+        defaultBlurEnabled: blurOn,
+        defaultCaptureIntervalMinutes: interval,
+        defaultExpectedInTime: `${checkIn}:00`,
+        defaultWorkHoursPerDay: workHrs,
+        defaultProductiveHoursPerDay: prodHrs,
+        defaultIdleAlertEnabled: alertsOn,
+        defaultMinIdleTimeMinutes: threshold,
+        defaultWorkDays: arrayToWd(wDays),
+      });
+      toast.success('Organisation defaults saved successfully', 'Defaults Updated');
+    } catch {
+      toast.error('Failed to save defaults — please try again');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
@@ -121,7 +185,6 @@ export default function DefaultsDrawer() {
           </div>
           <Stepper label="Work hours" value={workHrs} onChange={setWorkHrs} min={1} max={16} suffix="h" />
           <Stepper label="Productive hrs" value={prodHrs} onChange={setProdHrs} min={1} max={16} suffix="h" />
-          <Stepper label="Target score" value={targetScore} onChange={setTargetScore} min={0} max={100} suffix="%" />
         </DefaultCard>
 
         {/* Idle Detection */}
@@ -137,7 +200,7 @@ export default function DefaultsDrawer() {
           <div className="pt-2">
             <span className="text-xs font-medium text-text-secondary block mb-2">Working Days</span>
             <div className="flex items-center gap-1.5">
-              {dayLabels.map((d, i) => (
+              {DAY_LABELS.map((d, i) => (
                 <button
                   key={d}
                   onClick={() => toggleDay(i)}
@@ -159,10 +222,11 @@ export default function DefaultsDrawer() {
       {/* Save */}
       <div className="flex items-center justify-end mt-5 pt-5 border-t border-black/5">
         <button
-          onClick={() => toast.success('Organisation defaults saved successfully', 'Defaults Updated')}
-          className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity"
+          onClick={handleSave}
+          disabled={saving}
+          className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-60"
         >
-          Save All Defaults
+          {saving ? 'Saving…' : 'Save All Defaults'}
         </button>
       </div>
     </div>

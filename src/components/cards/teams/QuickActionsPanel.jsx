@@ -1,8 +1,12 @@
 import { Monitor, FileText, UserPlus, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GlossyCard from '@/components/ui/GlossyCard';
-import { quickActions } from '@/mock/teamDetail';
-import { useToast } from '@/components/ui/Toast';
+
+const quickActions = [
+  { label: 'View Screenshots', icon: 'monitor' },
+  { label: 'Generate Report', icon: 'file' },
+  { label: 'Add Member', icon: 'user-plus' },
+];
 
 const ICONS = {
   monitor: Monitor,
@@ -10,22 +14,18 @@ const ICONS = {
   'user-plus': UserPlus,
 };
 
-const ACTION_HANDLERS = {
-  'View Screenshots': (navigate) => navigate('/screenshots'),
-  'Generate Report': (navigate) => navigate('/reports'),
-};
-
-export default function QuickActionsPanel() {
+export default function QuickActionsPanel({ onAddMember }) {
   const navigate = useNavigate();
-  const toast = useToast();
+
+  const ACTION_HANDLERS_RUNTIME = {
+    'View Screenshots': () => navigate('/screenshots'),
+    'Generate Report': () => navigate('/reports'),
+    'Add Member': () => onAddMember?.(),
+  };
 
   function handleAction(label) {
-    const handler = ACTION_HANDLERS[label];
-    if (handler) {
-      handler(navigate);
-    } else {
-      toast.info('Feature coming soon');
-    }
+    const handler = ACTION_HANDLERS_RUNTIME[label];
+    if (handler) handler();
   }
 
   return (

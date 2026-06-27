@@ -1,8 +1,12 @@
-import { useState } from 'react';
-import { AlertTriangle, RotateCcw, Save, ChevronUp, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { employees, dayLabels } from '@/mock/settings';
 import { useToast } from '@/components/ui/Toast';
+import api from '@/utils/api';
+import { loadAllEmployees } from '@/components/settings/settingsAdapters';
+
+const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const DAY_KEYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 const QUICK_PRESETS = [
   { label: 'Mon – Fri', days: [1, 1, 1, 1, 1, 0, 0] },
@@ -37,25 +41,51 @@ function Stepper({ label, value, onChange, min = 0, max = 100, suffix = '' }) {
 }
 
 export default function WorkPolicyDrawer() {
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState('days');
   const [activePreset, setActivePreset] = useState(0);
+  const [days, setDays] = useState([1, 1, 1, 1, 1, 0, 0]);
+  const [checkIn, setCheckIn] = useState('09:00');
+  const [workHrs, setWorkHrs] = useState(8);
+  const [prodHrs, setProdHrs] = useState(6);
   const toast = useToast();
 
-  const selected = employees[selectedIdx];
-  const [days, setDays] = useState(selected.days);
-  const [checkIn, setCheckIn] = useState('09:00 AM');
-  const [workHrs, setWorkHrs] = useState(selected.hrs);
-  const [prodHrs, setProdHrs] = useState(selected.pHrs);
-  const [target, setTarget] = useState(selected.tgt);
+  useEffect(() => {
+    loadAllEmployees(api)
+      .then((list) => {
+        setEmployees(list);
+        if (list.length > 0) loadEmployeeSettings(list[0]);
+      })
+      .catch(() => toast.error('Failed to load employees'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function loadEmployeeSettings(emp) {
+    if (!emp?.id) return;
+    setSettingsLoading(true);
+    try {
+      const { data: s } = await api.get(`/api/client/employees/${emp.id}/settings`);
+      setDays(DAY_KEYS.map(k => s[k] ? 1 : 0));
+      setWorkHrs(Math.round(Number(s.expectedWorkHoursPerDay ?? 8)));
+      setProdHrs(Math.round(Number(s.expectedProductiveHoursPerDay ?? 6)));
+      const rawTime = typeof s.expectedInTime === 'string' ? s.expectedInTime.slice(0, 5) : '09:00';
+      setCheckIn(rawTime);
+    } catch {
+      // keep current values on error
+    } finally {
+      setSettingsLoading(false);
+    }
+  }
+
+  const selected = employees[selectedIdx] ?? { name: '…', team: '…', id: null };
 
   function handleSelectEmployee(i) {
     setSelectedIdx(i);
-    const emp = employees[i];
-    setDays(emp.days);
-    setWorkHrs(emp.hrs);
-    setProdHrs(emp.pHrs);
-    setTarget(emp.tgt);
+    loadEmployeeSettings(employees[i]);
   }
 
   function toggleDay(i) {
@@ -65,6 +95,46 @@ export default function WorkPolicyDrawer() {
   function applyPreset(preset, idx) {
     setDays([...preset]);
     setActivePreset(idx);
+  }
+
+  async function handleSaveSchedule() {
+    if (!selected.id) return;
+    setSaving(true);
+    try {
+      await api.put(`/api/client/employees/${selected.id}/settings/work-days`,
+        Object.fromEntries(DAY_KEYS.map((k, i) => [k, !!days[i]]))
+      );
+      toast.success(`Schedule saved for ${selected.name}`, 'Work Policy Updated');
+    } catch {
+      toast.error('Failed to save schedule');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveTargets() {
+    if (!selected.id) return;
+    setSaving(true);
+    try {
+      await api.put(`/api/client/employees/${selected.id}/settings/work-hours`, {
+        expectedWorkHoursPerDay: workHrs,
+        expectedProductiveHoursPerDay: prodHrs,
+        expectedInTime: `${checkIn}:00`,
+      });
+      toast.success(`Targets saved for ${selected.name}`, 'Targets Updated');
+    } catch {
+      toast.error('Failed to save targets');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
@@ -119,9 +189,14 @@ export default function WorkPolicyDrawer() {
         {/* Right panel */}
         <div className="p-6">
           {/* Employee header */}
-          <div className="mb-5">
-            <h4 className="text-lg font-bold text-text-primary">{selected.name}</h4>
-            <p className="text-xs-plus text-text-light mt-0.5">{selected.team} · Select a tab to configure</p>
+          <div className="mb-5 flex items-center gap-3">
+            <div>
+              <h4 className="text-lg font-bold text-text-primary">{selected.name}</h4>
+              <p className="text-xs-plus text-text-light mt-0.5">{selected.team} · Select a tab to configure</p>
+            </div>
+            {settingsLoading && (
+              <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin ml-2" />
+            )}
           </div>
 
           {/* Tabs */}
@@ -149,7 +224,7 @@ export default function WorkPolicyDrawer() {
             <div>
               {/* Day grid */}
               <div className="grid grid-cols-7 gap-2 mb-6">
-                {dayLabels.map((d, i) => (
+                {DAY_LABELS.map((d, i) => (
                   <div key={d} className="flex flex-col items-center cursor-pointer" onClick={() => toggleDay(i)}>
                     <span className={cn('text-2xs font-bold uppercase tracking-wide mb-1.5', days[i] ? 'text-text-primary' : 'text-text-light')}>
                       {d}
@@ -195,21 +270,17 @@ export default function WorkPolicyDrawer() {
               {/* Actions */}
               <div className="flex items-center justify-end gap-3">
                 <button
-                  onClick={() => {
-                    const emp = employees[selectedIdx];
-                    setDays(emp.days);
-                    setActivePreset(0);
-                    toast.info('Schedule reset to defaults');
-                  }}
+                  onClick={() => { loadEmployeeSettings(selected); setActivePreset(0); toast.info('Schedule reset'); }}
                   className="flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text-secondary cursor-pointer px-4 py-2"
                 >
                   Reset
                 </button>
                 <button
-                  onClick={() => toast.success(`Schedule saved for ${selected.name}`, 'Work Policy Updated')}
-                  className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={handleSaveSchedule}
+                  disabled={saving || settingsLoading}
+                  className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-60"
                 >
-                  Save Schedule
+                  {saving ? 'Saving…' : 'Save Schedule'}
                 </button>
               </div>
             </div>
@@ -228,29 +299,31 @@ export default function WorkPolicyDrawer() {
                 </div>
                 <Stepper label="Work Hours / Day" value={workHrs} onChange={setWorkHrs} min={1} max={16} suffix="h" />
                 <Stepper label="Productive Hrs / Day" value={prodHrs} onChange={setProdHrs} min={1} max={16} suffix="h" />
-                <Stepper label="Productivity Target %" value={target} onChange={setTarget} min={0} max={100} suffix="%" />
+                <div className="bg-surface-subtle rounded-[13px] p-4">
+                  <div className="text-2xs font-semibold text-text-light uppercase tracking-wider mb-2">Productivity Target</div>
+                  <div className="flex items-center h-9 px-3 rounded-[10px] bg-white border border-black/10">
+                    <span className="text-sm font-bold text-text-primary">
+                      {workHrs > 0 ? Math.round((prodHrs / workHrs) * 100) : 0}%
+                    </span>
+                    <span className="ml-2 text-xs text-text-light">({prodHrs}h of {workHrs}h)</span>
+                  </div>
+                </div>
               </div>
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3">
                 <button
-                  onClick={() => {
-                    const emp = employees[selectedIdx];
-                    setCheckIn('09:00 AM');
-                    setWorkHrs(emp.hrs);
-                    setProdHrs(emp.pHrs);
-                    setTarget(emp.tgt);
-                    toast.info('Targets reset to defaults');
-                  }}
+                  onClick={() => loadEmployeeSettings(selected)}
                   className="flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text-secondary cursor-pointer px-4 py-2"
                 >
                   Reset
                 </button>
                 <button
-                  onClick={() => toast.success(`Targets saved for ${selected.name}`, 'Targets Updated')}
-                  className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={handleSaveTargets}
+                  disabled={saving || settingsLoading}
+                  className="primary-pill text-white text-xs font-semibold rounded-pill px-5 py-2.5 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-60"
                 >
-                  Save Targets
+                  {saving ? 'Saving…' : 'Save Targets'}
                 </button>
               </div>
             </div>

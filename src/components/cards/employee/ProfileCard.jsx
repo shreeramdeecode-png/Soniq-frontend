@@ -1,5 +1,4 @@
 import { Users } from 'lucide-react';
-import { profileData } from '@/mock/employeeProfile';
 
 function ProductivityGauge({ score }) {
   const circumference = 2 * Math.PI * 40;
@@ -7,7 +6,7 @@ function ProductivityGauge({ score }) {
   const dashOffset = circumference * 0.25;
 
   return (
-    <div className="relative w-[100px] h-[100px] mx-auto mt-3.5 mb-1.5">
+    <div className="relative w-[100px] h-[100px] mx-auto mt-3.5 mb-1.5 font-poppins">
       <svg width="100" height="100" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
         <circle
@@ -37,44 +36,50 @@ function ProductivityGauge({ score }) {
   );
 }
 
-export default function ProfileCard() {
-  const p = profileData;
+export default function ProfileCard({ profile }) {
+  if (!profile) {
+    return (
+      <div className="dark-card p-[22px] flex items-center justify-center min-h-[300px] text-white/50">
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
-    <div className="dark-card p-[22px] flex flex-col items-center text-center">
+    <div className="dark-card p-[22px] flex flex-col items-center text-center font-poppins">
       {/* Avatar */}
       <div
         className="w-20 h-20 rounded-full flex items-center justify-center text-[26px] font-bold mb-3 shadow-[0_4px_16px_rgba(29,158,117,0.4),0_1px_0_rgba(255,255,255,0.3)_inset]"
-        style={{ background: p.avatarBg, color: p.avatarColor }}
+        style={{ background: profile.avatarBg, color: profile.avatarColor }}
       >
-        {p.initials}
+        {profile.initials}
       </div>
-      <div className="text-[17px] font-bold text-white tracking-tight">{p.name}</div>
-      <div className="text-[11px] text-white/45 mt-0.5">{p.role}</div>
+      <div className="text-[17px] font-bold text-white tracking-tight">{profile.name}</div>
+      <div className="text-[11px] text-white/45 mt-0.5">{profile.role}</div>
 
       {/* Team pill */}
       <div className="flex items-center gap-[5px] mt-1.5 py-1 px-3 rounded-[20px] bg-primary/[0.12] border border-primary/20">
         <Users size={10} stroke="#1D9E75" strokeWidth={2} />
-        <span className="text-xs-plus text-primary-light font-medium">{p.team}</span>
+        <span className="text-xs-plus text-primary-light font-medium">{profile.team}</span>
       </div>
 
       {/* Live status */}
       <div className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-[20px] bg-white/[0.07] my-3 text-sm text-white font-medium">
-        <span className="w-[7px] h-[7px] rounded-full bg-primary-light animate-pulse" />
-        {p.status}
+        <span className={`w-[7px] h-[7px] rounded-full ${profile.isWorking ? 'bg-primary-light animate-pulse' : 'bg-[#CCC]'}`} />
+        {profile.status}
       </div>
 
       {/* Productivity gauge */}
-      <ProductivityGauge score={p.productivityScore} />
+      <ProductivityGauge score={profile.productivityScore} />
       <div className="text-xs text-white/45 text-center mb-3">
-        Productivity Score · {p.productivityLabel}
+        Productivity Score · {profile.productivityLabel}
       </div>
 
       {/* Divider */}
       <div className="w-full h-px bg-white/[0.07] my-3" />
 
       {/* Info rows */}
-      {p.info.map((row) => (
+      {profile.info.map((row) => (
         <div key={row.label} className="flex items-center justify-between w-full py-[5px]">
           <span className="text-xs text-white/35">{row.label}</span>
           <span className={`text-[11px] font-medium ${row.highlight ? 'text-primary-light' : 'text-white/80'}`}>
@@ -92,14 +97,16 @@ export default function ProfileCard() {
         <div className="flex items-center gap-1.5">
           <div
             className="w-[18px] h-[18px] rounded-[5px] flex items-center justify-center text-[7px] font-bold border border-white/[0.08]"
-            style={{ background: p.currentApp.iconBg, color: p.currentApp.iconColor }}
+            style={{ background: profile.currentApp?.iconBg || '#1A1A1A', color: profile.currentApp?.iconColor || '#FFF' }}
           >
-            {p.currentApp.abbr}
+            {profile.currentApp?.abbr || '—'}
           </div>
-          <span className="text-[11px] text-white/70 font-medium">{p.currentApp.name}</span>
-          <span className="text-2xs py-0.5 px-1.5 rounded-lg bg-primary/[0.12] text-primary-light font-semibold">
-            {p.currentApp.category}
-          </span>
+          <span className="text-[11px] text-white/70 font-medium truncate max-w-[80px]">{profile.currentApp?.name || 'Inactive'}</span>
+          {profile.currentApp?.category && (
+            <span className="text-2xs py-0.5 px-1.5 rounded-lg bg-primary/[0.12] text-primary-light font-semibold">
+              {profile.currentApp.category}
+            </span>
+          )}
         </div>
       </div>
     </div>

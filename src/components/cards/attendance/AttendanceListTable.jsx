@@ -1,14 +1,14 @@
-import { teams } from '@/mock/attendance';
+import { useState } from 'react';
 import { Users } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
-const SEG_STYLES = {
-  productive: 'bg-gradient-to-r from-primary-light to-primary',
-  neutral: 'bg-gradient-to-r from-neutral-cool to-neutral-bone',
-  unproductive: 'bg-gradient-to-r from-ink-mid to-ink',
-  idle: 'bg-gradient-to-r from-[#E8D870] to-[#D8C860]',
-  away: 'bg-gradient-to-r from-[#E0E0D8] to-[#D0D0C8]',
-  break: 'bg-gradient-to-r from-[#F0E8C8] to-[#E8D8A8]',
+const SEG_BG = {
+  productive: '#0F6E56',
+  neutral: 'rgba(29,158,117,0.28)',
+  unproductive: '#1A1A1A',
+  idle: 'rgba(0,0,0,0.08)',
+  away: 'rgba(0,0,0,0.05)',
+  break: 'rgba(29,158,117,0.12)',
 };
 
 const STATUS_STYLES = {
@@ -24,9 +24,11 @@ const SCORE_STYLES = {
 };
 
 function TimelineBar({ segments }) {
-  if (!segments.length) {
+  const [hovered, setHovered] = useState(null);
+
+  if (!segments || !segments.length) {
     return (
-      <div className="relative h-7 rounded-[6px] overflow-hidden" style={{ background: 'repeating-linear-gradient(45deg, #F5F5F0, #F5F5F0 4px, #EEEEE8 4px, #EEEEE8 10px)' }}>
+      <div className="relative h-7 overflow-hidden" style={{ background: 'repeating-linear-gradient(45deg, #F5F5F0, #F5F5F0 4px, #EEEEE8 4px, #EEEEE8 10px)' }}>
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-xs text-[#CCC] font-medium">No activity recorded</span>
         </div>
@@ -35,11 +37,31 @@ function TimelineBar({ segments }) {
   }
 
   return (
-    <div className="relative h-7 bg-surface-muted rounded-[6px] overflow-visible group">
+    <div className="relative h-7 bg-surface-muted overflow-visible">
       <div className="absolute top-[-4px] bottom-[-4px] w-[2px] bg-ink rounded-[1px] z-[2]" style={{ left: '0%' }} />
       {segments.map((seg, i) => (
-        <div key={i} className="absolute top-0 h-full" style={{ left: seg.left, width: seg.width }}>
-          <div className={cn('w-full h-full rounded-[3px] cursor-pointer transition-all hover:opacity-80 hover:brightness-110', SEG_STYLES[seg.type])} />
+        <div
+          key={i}
+          className="absolute top-0 h-full"
+          style={{ left: seg.left, width: seg.width, zIndex: hovered === i ? 20 : 1 }}
+          onMouseEnter={() => setHovered(i)}
+          onMouseLeave={() => setHovered(null)}
+        >
+          <div
+            className="w-full h-full cursor-pointer transition-all"
+            style={{
+              background: SEG_BG[seg.type] || SEG_BG.neutral,
+              opacity: hovered !== null && hovered !== i ? 0.4 : 1,
+            }}
+          />
+          {hovered === i && (
+            <div className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 bg-ink text-white rounded-[8px] px-2.5 py-1.5 whitespace-nowrap pointer-events-none shadow-lg z-30 font-poppins">
+              <div className="text-[10px] font-semibold text-white">{seg.app}</div>
+              <div className="text-[9px] text-white/60 mt-[2px]">{seg.time}</div>
+              <div className="text-[9px] text-primary-light font-semibold mt-[1px]">{seg.dur}</div>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-[4px] border-transparent border-t-ink" />
+            </div>
+          )}
         </div>
       ))}
       <div className="absolute top-[-4px] bottom-[-4px] border-l-2 border-dashed border-text-muted/40 z-[2]" style={{ left: '75%' }} />
@@ -47,7 +69,7 @@ function TimelineBar({ segments }) {
   );
 }
 
-export default function AttendanceListTable() {
+export default function AttendanceListTable({ teams = [] }) {
   return (
     <div className="px-8 pb-6">
       <div className="glossy-card overflow-hidden rounded-card">

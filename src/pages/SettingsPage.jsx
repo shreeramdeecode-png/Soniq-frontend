@@ -1,16 +1,30 @@
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useMemo } from 'react';
 import { ChevronRight, Search } from 'lucide-react';
-import { settingsSections, settingsGroups } from '@/mock/settings';
 import { CHIP_STYLES } from '@/components/settings/settingsTheme';
-import { cn } from '@/utils/cn';
+import TeamsDrawer from '@/components/settings/TeamsDrawer';
+import PeopleDrawer from '@/components/settings/PeopleDrawer';
+import WorkPolicyDrawer from '@/components/settings/WorkPolicyDrawer';
+import MonitoringDrawer from '@/components/settings/MonitoringDrawer';
+import StealthDrawer from '@/components/settings/StealthDrawer';
+import DefaultsDrawer from '@/components/settings/DefaultsDrawer';
+import PermissionsDrawer from '@/components/settings/PermissionsDrawer';
 
-const TeamsDrawer = lazy(() => import('@/components/settings/TeamsDrawer'));
-const PeopleDrawer = lazy(() => import('@/components/settings/PeopleDrawer'));
-const WorkPolicyDrawer = lazy(() => import('@/components/settings/WorkPolicyDrawer'));
-const MonitoringDrawer = lazy(() => import('@/components/settings/MonitoringDrawer'));
-const StealthDrawer = lazy(() => import('@/components/settings/StealthDrawer'));
-const DefaultsDrawer = lazy(() => import('@/components/settings/DefaultsDrawer'));
-const PermissionsDrawer = lazy(() => import('@/components/settings/PermissionsDrawer'));
+const settingsSections = [
+  { id: 'teams', num: '01', name: 'Teams & Structure', hint: 'Create, rename and manage your teams · member counts and productivity rings', barColor: '#0F6E56', chips: [{ label: 'Teams', class: 'default' }], group: 'org' },
+  { id: 'people', num: '02', name: 'People & Roles', hint: 'Invite employees, assign teams and roles · EXE installation status · work mode', barColor: '#1D9E75', chips: [{ label: 'Employees', class: 'default' }], group: 'org' },
+  { id: 'workpolicy', num: '03', name: 'Work Policy', hint: 'Working schedule and productivity targets · per employee · affects dashboard and reports', barColor: '#085041', chips: [{ label: 'Schedule + Targets merged', class: 'merged' }], group: 'work' },
+  { id: 'monitoring', num: '04', name: 'Monitoring Controls', hint: 'Screen capture toggle · Gaussian blur · interval · idle detection threshold per employee', barColor: '#0F6E56', chips: [{ label: 'Capture + Idle merged', class: 'merged' }, { label: 'Syncs in 1h', class: 'default' }], group: 'work' },
+  { id: 'stealth', num: '05', name: 'Silent Tracking', hint: 'Invisible background monitoring · gated behind mandatory legal consent · never merged with other sections', barColor: '#0A5040', chips: [{ label: 'Legal gate', class: 'danger' }], group: 'work' },
+  { id: 'defaults', num: '06', name: 'Org Defaults', hint: 'Global fallbacks auto-applied to every new employee · per-employee settings always override these', barColor: '#1D9E75', chips: [{ label: 'Org-wide', class: 'purple' }], group: 'access' },
+  { id: 'access', num: '07', name: 'Permissions & Access', hint: 'Role-based module access · colour-fill bar matrix · create custom roles', barColor: '#0F6E56', chips: [{ label: 'Role matrix', class: 'purple' }], group: 'access' },
+];
+
+const settingsGroups = [
+  { id: 'org', name: 'Organisation & People', color: '#0F6E56', count: '2 sections' },
+  { id: 'work', name: 'Work & Monitoring', color: '#1D9E75', count: '3 sections' },
+  { id: 'access', name: 'Access & Controls', color: '#085041', count: '2 sections' },
+];
+import { cn } from '@/utils/cn';
 
 const DRAWER_MAP = {
   teams: TeamsDrawer,
@@ -135,9 +149,7 @@ export default function SettingsPage() {
                     {isOpen && DrawerComponent && (
                       <div className="border-b border-black/5">
                         <div className="py-6 px-8">
-                          <Suspense fallback={<div className="flex items-center justify-center py-8"><div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /></div>}>
-                            <DrawerComponent />
-                          </Suspense>
+                          <DrawerComponent />
                         </div>
                       </div>
                     )}

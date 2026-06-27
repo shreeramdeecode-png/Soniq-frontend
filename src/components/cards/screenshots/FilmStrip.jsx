@@ -1,6 +1,5 @@
-import { useState, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Code, Globe, Clock, Play } from 'lucide-react';
-import { filmStripItems } from '@/mock/screenshotDetail';
+import { useRef } from 'react';
+import { ChevronLeft, ChevronRight, Code, Globe, Clock, Play, Monitor } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 const ICON_MAP = {
@@ -8,10 +7,17 @@ const ICON_MAP = {
   globe: Globe,
   clock: Clock,
   video: Play,
+  monitor: Monitor,
 };
 
-export default function FilmStrip() {
-  const [activeId, setActiveId] = useState(2);
+function getProdBarBg(category) {
+  if (category === 'productive') return '#1D9E75';
+  if (category === 'unproductive') return '#1A1A1A';
+  if (category === 'idle') return '#D97706';
+  return '#C8C8C0';
+}
+
+export default function FilmStrip({ items = [], activeId, onSelect }) {
   const stripRef = useRef(null);
 
   function scrollStrip(direction) {
@@ -46,15 +52,16 @@ export default function FilmStrip() {
 
       {/* Strip */}
       <div ref={stripRef} className="flex gap-[7px] overflow-x-auto scrollbar-hide scroll-smooth">
-        {filmStripItems.map((item) => {
-          const Icon = ICON_MAP[item.iconType] || null;
-          const isDark = item.bg.includes('#1A1A1A') || item.bg.includes('#1E1E1E');
-          const isActive = item.id === activeId;
+        {items.map((item) => {
+          const Icon = ICON_MAP[item.iconType] || Monitor;
+          const bg = item.bgStyle || 'linear-gradient(135deg, #1A1A1A, #2D2D2D)';
+          const isDark = bg.includes('#1A1A1A') || bg.includes('#1E1E1E') || bg.includes('#252520');
+          const isActive = String(item.id) === String(activeId);
 
           return (
             <div
               key={item.id}
-              onClick={() => setActiveId(item.id)}
+              onClick={() => onSelect(item.id)}
               className={cn(
                 'shrink-0 rounded-[9px] overflow-hidden cursor-pointer relative transition-transform hover:scale-[1.04]',
                 isActive && 'outline-[2.5px] outline outline-primary outline-offset-2'
@@ -62,23 +69,33 @@ export default function FilmStrip() {
             >
               {/* Image */}
               <div
-                className="w-[92px] h-[58px] flex items-center justify-center"
-                style={{ background: item.bg, ...(item.blurred ? { filter: 'blur(5px)', transform: 'scale(1.08)' } : {}) }}
+                className="w-[92px] h-[58px] flex items-center justify-center relative overflow-hidden"
+                style={{ background: bg }}
               >
-                {!item.blurred && Icon && (
-                  <Icon size={24} stroke={isDark ? 'rgba(29,158,117,0.4)' : '#AAA'} strokeWidth={1.5} />
+                {item.thumbnailUrl || item.imageUrl ? (
+                  <img
+                    src={item.thumbnailUrl || item.imageUrl}
+                    alt={item.time}
+                    className={cn("w-full h-full object-cover", item.blurred && "blur-[3px] scale-105")}
+                  />
+                ) : (
+                  <div className={cn("w-full h-full flex items-center justify-center", item.blurred && "blur-[3px]")}>
+                    {Icon && (
+                      <Icon size={20} stroke={isDark ? 'rgba(29,158,117,0.4)' : '#AAA'} strokeWidth={1.5} />
+                    )}
+                  </div>
+                )}
+
+                {/* Blur overlay */}
+                {item.blurred && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-[2]">
+                    <span className="text-[12px]">🔒</span>
+                  </div>
                 )}
               </div>
 
-              {/* Blur overlay */}
-              {item.blurred && (
-                <div className="absolute top-0 left-0 right-0 h-[58px] flex items-center justify-center bg-[rgba(20,20,20,0.4)]">
-                  <span className="text-[16px]">🔒</span>
-                </div>
-              )}
-
               {/* Productivity bar */}
-              <div className="h-[3px] w-full" style={{ background: item.prodBarBg }} />
+              <div className="h-[3px] w-full" style={{ background: getProdBarBg(item.category) }} />
 
               {/* Time */}
               <div className={cn(

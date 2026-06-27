@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Search, Filter, ChevronRight } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GlossyCard from '@/components/ui/GlossyCard';
-import { employees, teamTabs } from '@/mock/teamDetail';
 import { cn } from '@/utils/cn';
 
 const PAGE_SIZE = 5;
@@ -31,7 +30,7 @@ function StatusBadge({ status, label }) {
   );
 }
 
-export default function EmployeeTable() {
+export default function EmployeeTable({ employees = [], teamId }) {
   const [activeTab, setActiveTab] = useState('all');
   const [searchValue, setSearchValue] = useState('');
   const [page, setPage] = useState(0);
@@ -55,7 +54,7 @@ export default function EmployeeTable() {
     }
 
     return result;
-  }, [activeTab, searchValue]);
+  }, [employees, activeTab, searchValue]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages - 1);
@@ -73,7 +72,7 @@ export default function EmployeeTable() {
       <div className="flex items-center justify-between mb-3.5">
         <h3 className="text-lg font-semibold text-text-primary">Team Members</h3>
         <div className="flex items-center gap-2">
-          <div className="glass-pill flex items-center gap-1.5 px-3 h-8 rounded-pill text-[11px] text-text-lighter">
+          <div className="glass-pill flex items-center gap-1.5 px-3 h-8 rounded-pill text-[11px] text-text-lighter font-poppins">
             <Search size={11} stroke="#BBB" strokeWidth={2} />
             <input
               type="text"
@@ -83,15 +82,20 @@ export default function EmployeeTable() {
               className="bg-transparent border-none outline-none text-[11px] text-text-primary placeholder:text-text-lighter w-[120px]"
             />
           </div>
-          <button className="glass-pill flex items-center gap-[5px] px-3 h-8 rounded-pill text-[11px] text-text-secondary cursor-pointer">
+          <button className="glass-pill flex items-center gap-[5px] px-3 h-8 rounded-pill text-[11px] text-text-secondary cursor-pointer font-poppins">
             <Filter size={11} stroke="#888" strokeWidth={2} />
             Filter
           </button>
         </div>
       </div>
 
-      <div className="flex items-center gap-0.5 bg-black/5 rounded-[10px] p-[3px] w-fit mb-3.5">
-        {teamTabs.map((tab) => (
+      <div className="flex items-center gap-0.5 bg-black/5 rounded-[10px] p-[3px] w-fit mb-3.5 font-poppins">
+        {[
+          { id: 'all', label: `All (${employees.length})` },
+          { id: 'working', label: `Working (${employees.filter(e => e.status === 'work').length})` },
+          { id: 'privacy', label: `Idle (${employees.filter(e => e.status === 'privacy').length})` },
+          { id: 'offline', label: `Offline (${employees.filter(e => e.status === 'offline').length})` },
+        ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => handleTabChange(tab.id)}
@@ -112,7 +116,7 @@ export default function EmployeeTable() {
           <thead>
             <tr>
               {['Employee', 'Status', 'Check In', 'Active Hrs', 'Productivity', 'Score', 'Most Used App'].map((h) => (
-                <th key={h} className="text-xs font-semibold text-text-light uppercase tracking-wide py-2 px-3 text-left border-b border-black/[0.06]">
+                <th key={h} className="text-xs font-semibold text-text-light uppercase tracking-wide py-2 px-3 text-left border-b border-black/[0.06] font-poppins">
                   {h}
                 </th>
               ))}
@@ -123,7 +127,7 @@ export default function EmployeeTable() {
               <tr
                 key={emp.id}
                 className="cursor-pointer hover:bg-primary/[0.04] transition-colors"
-                onClick={() => navigate(`/teams/engineering/employee/${emp.id}`)}
+                onClick={() => navigate(`/teams/${teamId}/employee/${emp.id}`)}
               >
                 <td className="py-2.5 px-3 border-b border-black/[0.04]">
                   <div className="flex items-center gap-[9px]">
@@ -133,19 +137,19 @@ export default function EmployeeTable() {
                     >
                       {emp.initials}
                     </div>
-                    <div>
-                      <div className="text-sm-plus font-semibold text-text-primary">{emp.name}</div>
-                      <div className="text-xs text-text-light">{emp.email}</div>
+                    <div className="min-w-0">
+                      <div className="text-sm-plus font-semibold text-text-primary truncate">{emp.name}</div>
+                      <div className="text-xs text-text-light truncate">{emp.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="py-2.5 px-3 border-b border-black/[0.04]">
                   <StatusBadge status={emp.status} label={emp.statusLabel} />
                 </td>
-                <td className="py-2.5 px-3 border-b border-black/[0.04] text-[11px] text-text-secondary">
+                <td className="py-2.5 px-3 border-b border-black/[0.04] text-[11px] text-text-secondary font-poppins">
                   {emp.checkIn}
                 </td>
-                <td className="py-2.5 px-3 border-b border-black/[0.04] text-sm font-semibold text-text-primary">
+                <td className="py-2.5 px-3 border-b border-black/[0.04] text-sm font-semibold text-text-primary font-poppins">
                   {emp.activeHrs}
                 </td>
                 <td className="py-2.5 px-3 border-b border-black/[0.04]">
@@ -155,13 +159,13 @@ export default function EmployeeTable() {
                 </td>
                 <td className="py-2.5 px-3 border-b border-black/[0.04]">
                   <span
-                    className="inline-flex py-0.5 px-2 rounded-lg text-xs font-bold"
+                    className="inline-flex py-0.5 px-2 rounded-lg text-xs font-bold font-poppins"
                     style={{ background: emp.scoreBg, color: emp.scoreColor }}
                   >
-                    {emp.scoreLabel}
+                    {emp.productivity}%
                   </span>
                 </td>
-                <td className="py-2.5 px-3 border-b border-black/[0.04] text-[11px] text-text-muted">
+                <td className="py-2.5 px-3 border-b border-black/[0.04] text-[11px] text-text-muted font-poppins truncate max-w-[120px]">
                   {emp.topApp}
                 </td>
               </tr>
@@ -170,7 +174,7 @@ export default function EmployeeTable() {
         </table>
       </div>
 
-      <div className="flex justify-between items-center pt-3 border-t border-black/5 mt-1">
+      <div className="flex justify-between items-center pt-3 border-t border-black/5 mt-1 font-poppins">
         <span className="text-[11px] text-text-light">
           Showing {showingCount} of {totalCount} employees
         </span>

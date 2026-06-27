@@ -1,9 +1,75 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Download } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
-import { reports } from '@/mock/reports';
 import { downloadReportExport } from '@/utils/reportExport';
+import DateRangePicker from '@/components/ui/DateRangePicker';
+
+const reports = [
+  {
+    id: 'workpulse', num: '01', name: 'Work Pulse', fullName: 'Work Pulse Report',
+    desc: 'Hour-by-hour productivity rhythm · peak windows · dead zones · distraction patterns',
+    accent: '#0F6E56', tag: 'Rhythm', tagBg: 'rgba(15,110,86,.12)', tagColor: '#085041',
+    meta: 'Org productivity trend', exportInfo: 'Work Pulse Report · Updated live',
+    kpis: [
+      { label: 'Day-of-Week', value: 'Mon–Fri', sub: 'Avg productivity per day' },
+      { label: 'Top Distraction', value: 'Unproductive apps', sub: 'By total time spent' },
+    ],
+  },
+  {
+    id: 'burnout', num: '02', name: 'Burnout & Wellbeing', fullName: 'Burnout & Wellbeing',
+    desc: 'Flags overworked employees before they burn out · overtime trends · after-hours activity',
+    accent: '#085041', tag: 'Wellbeing', tagBg: 'rgba(15,110,86,.1)', tagColor: '#085041',
+    meta: 'Risk distribution', exportInfo: 'Burnout & Wellbeing Report · Updated live',
+    kpis: [
+      { label: 'Overworked', value: '—', sub: 'Avg daily OT > 2h' },
+      { label: 'At Risk', value: '—', sub: '1–2 burnout signals' },
+      { label: 'Healthy', value: '—', sub: 'Within normal ranges' },
+    ],
+  },
+  {
+    id: 'focus', num: '03', name: 'Focus Score', fullName: 'Focus Score Report',
+    desc: 'Deep work quality · focus streaks · context-switching · session depth · score 0–100',
+    accent: '#0F6E56', tag: 'Concentration', tagBg: 'rgba(15,110,86,.1)', tagColor: '#085041',
+    meta: 'Focus bands', exportInfo: 'Focus Score Report · Updated live',
+    kpis: [
+      { label: 'Deep Focus', value: '≥75%', sub: 'Employees in top band' },
+      { label: 'Scattered', value: '<25%', sub: 'Employees needing coaching' },
+    ],
+  },
+  {
+    id: 'tools', num: '04', name: 'Tool Intelligence', fullName: 'Tool Intelligence',
+    desc: 'App and website productivity · software ROI · underused licenses · wasted seat costs',
+    accent: '#0F6E56', tag: 'Software ROI', tagBg: 'rgba(29,158,117,.1)', tagColor: '#085041',
+    meta: 'App usage tracked', exportInfo: 'Tool Intelligence Report · Updated live',
+    kpis: [
+      { label: 'Productive Split', value: '—', sub: '% of total tracked time' },
+      { label: 'Top App', value: '—', sub: 'Most used productive app' },
+    ],
+  },
+  {
+    id: 'attendance', num: '05', name: 'Attendance', fullName: 'Attendance & Punctuality',
+    desc: 'Beyond present/absent · late arrivals · early exits · habitual patterns · streak records',
+    accent: '#0F6E56', tag: 'Punctuality', tagBg: 'rgba(88,88,88,.08)', tagColor: '#0F6E56',
+    meta: 'Attendance rate', exportInfo: 'Attendance Report · Updated live',
+    kpis: [
+      { label: 'Attendance Rate', value: '—', sub: 'Last 21 working days' },
+      { label: 'Absences by Day', value: 'Mon–Fri', sub: 'Pattern analysis' },
+    ],
+  },
+  {
+    id: 'leaderboard', num: '06', name: 'Team Leaderboard', fullName: 'Team Leaderboard',
+    desc: 'Live productivity rankings · top performer patterns · coaching opportunities · rank movement',
+    accent: '#0F6E56', tag: 'Rankings', tagBg: 'rgba(15,110,86,.1)', tagColor: '#085041',
+    meta: 'Employee rankings', exportInfo: 'Team Leaderboard · Updated live',
+    kpis: [
+      { label: 'Rank #1', value: '—', sub: 'Top productivity score' },
+      { label: 'Top Team', value: '—', sub: 'Highest avg score' },
+    ],
+  },
+];
+import { transformReportData } from '@/utils/reportTransform';
 import { cn } from '@/utils/cn';
+import api from '@/utils/api';
 
 const WorkPulseViz = lazy(() => import('@/components/reports/WorkPulseViz'));
 const BurnoutViz = lazy(() => import('@/components/reports/BurnoutViz'));
@@ -21,26 +87,90 @@ const VIZ_MAP = {
   leaderboard: LeaderboardViz,
 };
 
+// Map report id → export type accepted by the backend
+const EXPORT_TYPE_MAP = {
+  workpulse: 'productivity',
+  burnout: 'effort',
+  focus: 'productivity',
+  tools: 'app-usage',
+  attendance: 'attendance',
+  leaderboard: 'productivity',
+};
+
+function toDateStr(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+function getDefaultFrom() {
+  const d = new Date();
+  d.setDate(d.getDate() - 29);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 export default function ReportsPage() {
   const toast = useToast();
   const [activeIdx, setActiveIdx] = useState(0);
+  const [liveData, setLiveData] = useState({});
+  const [dataLoading, setDataLoading] = useState(true);
+  const [dateRange, setDateRange] = useState({ from: getDefaultFrom(), to: new Date() });
+
+  const from = toDateStr(dateRange.from);
+  const to = toDateStr(dateRange.to);
+
+  useEffect(() => {
+    let cancelled = false;
+    setDataLoading(true);
+    Promise.all([
+      api.get(`/api/client/reports/productivity-trend?from=${from}&to=${to}`).then(r => r.data).catch(() => []),
+      api.get(`/api/client/reports/app-usage?from=${from}&to=${to}`).then(r => r.data).catch(() => []),
+      api.get(`/api/client/reports/effort?from=${from}&to=${to}`).then(r => r.data).catch(() => []),
+      api.get(`/api/client/reports/attendance?from=${from}&to=${to}`).then(r => r.data).catch(() => []),
+      api.get(`/api/client/reports/hourly-heatmap?from=${from}&to=${to}`).then(r => r.data).catch(() => ({})),
+    ]).then(([trend, apps, effort, attendance, hourly]) => {
+      if (!cancelled) {
+        setLiveData(transformReportData({ trend, apps, effort, attendance, hourly }));
+      }
+    }).catch(console.error).finally(() => {
+      if (!cancelled) setDataLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [from, to]);
 
   const active = reports[activeIdx];
   const VizComponent = VIZ_MAP[active.id];
 
-  const handleDateChange = () => {
-    toast.info('Date range updated — report data refreshed');
+  const handleDateChange = (range) => {
+    setDateRange(range);
   };
 
-  const handleExport = (format) => {
-    const ok = downloadReportExport(active.id, format);
-    if (ok) {
-      toast.success(
-        format === 'csv' ? 'Report exported as CSV' : 'Report downloaded as Excel',
-        'Export complete',
-      );
+  const handleExport = async (format) => {
+    if (format === 'csv') {
+      try {
+        const exportType = EXPORT_TYPE_MAP[active.id] ?? 'productivity';
+        const response = await api.get(
+          `/api/client/reports/export?type=${exportType}&from=${from}&to=${to}`,
+          { responseType: 'blob' },
+        );
+        const url = URL.createObjectURL(response.data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${active.id}-report-${from}-${to}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        toast.success('Report exported as CSV', 'Export complete');
+      } catch {
+        toast.error('Could not export this report');
+      }
     } else {
-      toast.error('Could not export this report');
+      const ok = downloadReportExport(active.id, format);
+      if (ok) {
+        toast.success('Report downloaded as Excel', 'Export complete');
+      } else {
+        toast.error('Could not export this report');
+      }
     }
   };
 
@@ -52,6 +182,12 @@ export default function ReportsPage() {
           <h1 className="text-4xl font-bold text-text-primary tracking-tight">Intelligence Reports</h1>
           <p className="text-xs-plus text-text-light mt-1">6 reports · click a numbered tile to switch</p>
         </div>
+        <DateRangePicker
+          from={dateRange.from}
+          to={dateRange.to}
+          onChange={handleDateChange}
+          variant="solid"
+        />
       </div>
 
       <div className="glossy-card rounded-[22px] overflow-hidden">
@@ -61,6 +197,12 @@ export default function ReportsPage() {
             <div className="text-xs text-text-light mt-1">{active.desc}</div>
           </div>
           <div className="flex items-center gap-2.5">
+            {dataLoading && (
+              <div className="flex items-center gap-1.5 text-xs text-text-light mr-2">
+                <div className="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                <span>Loading live data…</span>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => handleExport('csv')}
@@ -122,7 +264,13 @@ export default function ReportsPage() {
               </div>
             }
           >
-            {VizComponent && <VizComponent report={active} onDateChange={handleDateChange} />}
+            {VizComponent && (
+              <VizComponent
+                report={active}
+                onDateChange={handleDateChange}
+                liveData={liveData}
+              />
+            )}
           </Suspense>
         </div>
 

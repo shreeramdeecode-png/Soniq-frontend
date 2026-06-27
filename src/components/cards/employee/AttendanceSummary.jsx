@@ -1,14 +1,21 @@
 import GlossyCard from '@/components/ui/GlossyCard';
-import { attendanceData } from '@/mock/employeeProfile';
 
-export default function AttendanceSummary() {
-  const { tiles, monthlyPct, avgCheckIn, avgCheckOut, onTimeRate } = attendanceData;
+export default function AttendanceSummary({ attendance }) {
+  if (!attendance) {
+    return (
+      <GlossyCard className="p-4 flex items-center justify-center min-h-[150px] text-xs text-text-light font-poppins">
+        Loading attendance stats...
+      </GlossyCard>
+    );
+  }
+
+  const { tiles = [], monthlyPct = 0, avgCheckIn = '—', avgCheckOut = '—', onTimeRate = '0%' } = attendance;
 
   return (
     <GlossyCard className="p-4">
       <h4 className="text-md font-semibold text-text-primary mb-3.5">Attendance — This Month</h4>
 
-      <div className="grid grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-3 gap-2.5 font-poppins">
         {tiles.map((tile) => (
           <div
             key={tile.label}
@@ -22,7 +29,7 @@ export default function AttendanceSummary() {
       </div>
 
       {/* Monthly attendance progress */}
-      <div className="mt-3.5">
+      <div className="mt-3.5 font-poppins">
         <div className="flex justify-between text-xs-plus text-text-muted mb-1">
           <span>Monthly attendance</span>
           <span className="font-semibold text-text-primary">{monthlyPct}%</span>
@@ -36,7 +43,7 @@ export default function AttendanceSummary() {
       </div>
 
       {/* Stats rows */}
-      <div className="mt-3">
+      <div className="mt-3 font-poppins">
         <div className="flex justify-between text-xs-plus text-text-muted mb-1">
           <span>Avg check-in time</span>
           <span className="font-semibold text-text-primary">{avgCheckIn}</span>

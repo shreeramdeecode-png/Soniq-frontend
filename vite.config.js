@@ -13,6 +13,23 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    proxy: {
+      '/api': {
+        target: 'https://soniqbackend.deecodes.io',
+        changeOrigin: true,
+        secure: true,
+      },
+      '/webhooks': {
+        target: 'https://soniqbackend.deecodes.io',
+        changeOrigin: true,
+        secure: true,
+      },
+      '^/screenshots/.+': {
+        target: 'https://soniqbackend.deecodes.io',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',

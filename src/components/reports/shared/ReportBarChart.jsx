@@ -1,6 +1,8 @@
 import { GRID, TICK_FONT, TICK_FONT_SM } from './chartUtils';
 import { RT } from './reportTheme';
 
+const trunc = (s, n = 15) => (typeof s === 'string' && s.length > n ? s.slice(0, n - 1) + '…' : s);
+
 export default function ReportBarChart({
   data,
   labels,
@@ -71,12 +73,13 @@ export default function ReportBarChart({
           {data.map((val, i) => {
             const y = pad.top + i * rowH + rowH * 0.18;
             const barH = rowH * 0.64;
-            const w = (val / max) * plotW;
-            const fill = colors?.[i] ?? colors ?? RT.green;
+            const w = Math.min(val / max, 1) * plotW;
+            const fill = Array.isArray(colors) ? (colors[i] ?? RT.green) : (colors ?? RT.green);
             return (
               <g key={labels[i]}>
                 <text x={pad.left - 8} y={y + barH / 2 + 3.5} textAnchor="end" fill="#AAA" style={TICK_FONT_SM}>
-                  {labels[i]}
+                  <title>{labels[i]}</title>
+                  {trunc(labels[i])}
                 </text>
                 <rect x={pad.left} y={y} width={w} height={barH} rx={borderRadius} fill={fill} />
                 <text x={pad.left + w + 6} y={y + barH / 2 + 3.5} fill="#AAA" style={TICK_FONT_SM}>
@@ -115,11 +118,11 @@ export default function ReportBarChart({
         })}
 
         {data.map((val, i) => {
-          const bh = (val / max) * plotH;
+          const bh = Math.min(val / max, 1) * plotH;
           const x = pad.left + i * barW + gap / 2;
           const w = barW - gap;
           const y = pad.top + plotH - bh;
-          const fill = colors?.[i] ?? colors ?? RT.green;
+          const fill = Array.isArray(colors) ? (colors[i] ?? RT.green) : (colors ?? RT.green);
           return (
             <g key={i}>
               <rect x={x} y={y} width={w} height={bh} rx={borderRadius} fill={fill} />

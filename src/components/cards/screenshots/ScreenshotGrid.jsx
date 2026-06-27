@@ -2,8 +2,13 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Grid3X3, List, Code, Monitor, Clock, Globe } from 'lucide-react';
 import GlossyCard from '@/components/ui/GlossyCard';
-import { screenshots } from '@/mock/screenshots';
 import { cn } from '@/utils/cn';
+import api, { BACKEND_URL } from '@/utils/api';
+
+function toAbsUrl(url) {
+  if (!url) return null;
+  return url.startsWith('/') ? `${BACKEND_URL}${url}` : url;
+}
 
 const CATEGORY_BADGE = {
   productive: { className: 'bg-primary/[0.12] text-[#0F6E56] border border-primary/20', label: 'Productive' },
@@ -20,8 +25,38 @@ const ICON_MAP = {
   slack: Monitor,
 };
 
+function getIconType(appName = '') {
+  if (!appName) return 'monitor';
+  const name = appName.toLowerCase();
+  if (name.includes('code') || name.includes('vs') || name.includes('intellij') || name.includes('terminal')) return 'code';
+  if (name.includes('chrome') || name.includes('firefox') || name.includes('safari') || name.includes('browser') || name.includes('website')) return 'chrome';
+  if (name.includes('slack')) return 'slack';
+  if (name.includes('clock') || name.includes('idle') || name.includes('no activity')) return 'clock';
+  return 'monitor';
+}
+
+function getBgStyle(id) {
+  const gradients = [
+    'linear-gradient(135deg, #1A1A1A, #2D2D2D)',
+    'linear-gradient(135deg, #252520, #1E1E18)',
+    'linear-gradient(135deg, #1E1E1E, #282828)',
+    'linear-gradient(135deg, #3A3520, #2A2818)',
+    'linear-gradient(135deg, #2B1B3D, #1A1128)',
+    'linear-gradient(135deg, #1A1A2E, #16213E)',
+    'linear-gradient(135deg, #2D2B55, #1E1B3D)',
+    'linear-gradient(135deg, #00274D, #001B36)',
+    'linear-gradient(135deg, #1A3A5C, #0F2640)',
+    'linear-gradient(135deg, #03363D, #022B31)',
+  ];
+  let sum = 0;
+  for (let i = 0; i < String(id).length; i++) {
+    sum += String(id).charCodeAt(i);
+  }
+  return gradients[sum % gradients.length];
+}
+
 function ScreenshotThumb({ shot, onClick }) {
-  const badge = CATEGORY_BADGE[shot.category];
+  const badge = CATEGORY_BADGE[shot.category] || CATEGORY_BADGE.neutral;
   const Icon = ICON_MAP[shot.iconType] || Monitor;
   const isIdle = shot.idle;
   const isDark = shot.bgStyle.includes('#1A1A1A') || shot.bgStyle.includes('#1E1E1E') || shot.bgStyle.includes('#252520') || shot.bgStyle.includes('#3A3520');
@@ -29,11 +64,17 @@ function ScreenshotThumb({ shot, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="rounded-tile overflow-hidden cursor-pointer relative transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)]"
+      className="rounded-tile overflow-hidden cursor-pointer relative transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)] font-poppins"
     >
       {/* Image area */}
       <div className="w-full h-28 flex items-center justify-center relative overflow-hidden" style={{ background: shot.bgStyle }}>
-        {shot.blurred ? (
+        {(shot.thumbnailUrl || shot.imageUrl) ? (
+          <img
+            src={shot.thumbnailUrl || shot.imageUrl}
+            alt={shot.app}
+            className={cn("w-full h-full object-cover", shot.blurred && "blur-[6px] scale-105")}
+          />
+        ) : shot.blurred ? (
           <>
             <div className="w-full h-full flex items-center justify-center blur-[12px] brightness-[0.85] scale-110">
               <Monitor size={40} stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
@@ -77,7 +118,9 @@ function ScreenshotThumb({ shot, onClick }) {
   );
 }
 
-export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '', employeeId }) {
+export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '', employeeId, from, to }) {
+  const [screenshots, setScreenshots] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState('grid');
   const [sortOrder, setSortOrder] = useState('newest');
   const [sortOpen, setSortOpen] = useState(false);
@@ -86,16 +129,64 @@ export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '
 
   useEffect(() => {
     setVisibleCount(8);
-  }, [employeeId]);
+  }, [employeeId, categoryFilter, searchQuery]);
+
+  useEffect(() => {
+    if (!employeeId) return;
+
+    async function fetchScreenshots() {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        params.append('employeeId', employeeId);
+        params.append('pageSize', '50');
+        if (from) params.append('from', from instanceof Date ? from.toISOString().slice(0, 10) : from);
+        if (to) {
+          const toDate = to instanceof Date ? new Date(to) : new Date(to);
+          toDate.setHours(23, 59, 59, 999);
+          params.append('to', toDate.toISOString());
+        }
+
+        const res = await api.get(`/api/client/screenshots?${params.toString()}`);
+        const items = res.data?.items || [];
+
+        if (items.length > 0) {
+          const mapped = items.map((s) => {
+            const timeStr = new Date(s.capturedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateStr = new Date(s.capturedAt).toLocaleDateString([], { month: 'short', day: 'numeric' });
+            return {
+              id: s.id,
+              employeeId: s.employeeId,
+              time: `${timeStr} · ${dateStr}`,
+              app: `${s.appName || 'Active Window'} · ${s.appDomain || 'Application'}`,
+              category: s.isIdle ? 'idle' : (s.productivityStatus || 'neutral').toLowerCase(),
+              blurred: s.isBlurred,
+              idle: s.isIdle,
+              bgStyle: getBgStyle(s.id),
+              imageUrl: toAbsUrl(s.imageUrl),
+              thumbnailUrl: toAbsUrl(s.thumbnailUrl),
+              iconType: getIconType(s.appName),
+            };
+          });
+          setScreenshots(mapped);
+        } else {
+          setScreenshots([]);
+        }
+      } catch (err) {
+        console.error('Failed to load screenshots:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchScreenshots();
+  }, [employeeId, from, to]);
 
   const filteredScreenshots = useMemo(() => {
     let result = [...screenshots];
 
-    if (employeeId) {
-      result = result.filter((s) => s.employeeId === employeeId);
-    }
-
-    if (categoryFilter !== 'all') {
+    // Filter by category (productive / neutral / unproductive / idle) — matches the badge shown
+    if (categoryFilter && categoryFilter !== 'all') {
       result = result.filter((s) => s.category === categoryFilter);
     }
 
@@ -109,14 +200,22 @@ export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '
     if (sortOrder === 'oldest') result.reverse();
 
     return result;
-  }, [categoryFilter, searchQuery, sortOrder, employeeId]);
+  }, [screenshots, searchQuery, sortOrder, categoryFilter]);
+
+  if (loading) {
+    return (
+      <GlossyCard className="p-[16px_20px] flex-1 flex items-center justify-center py-24">
+        <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </GlossyCard>
+    );
+  }
 
   return (
-    <GlossyCard className="p-[16px_20px] flex-1">
+    <GlossyCard className="p-[16px_20px] flex-1 font-poppins">
       {/* Top row */}
       <div className="flex items-center justify-between mb-3.5">
         <div>
-          <h3 className="text-md font-semibold text-text-primary">{filteredScreenshots.length} Screenshots — Today, Apr 16</h3>
+          <h3 className="text-md font-semibold text-text-primary">{filteredScreenshots.length} Screenshots</h3>
           <p className="text-xs-plus text-text-light">
             {categoryFilter !== 'all' ? `Filtered by: ${categoryFilter}` : 'Most recent first'} · Click to open full view
           </p>
@@ -146,13 +245,13 @@ export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '
           <div className="flex gap-0.5 bg-black/5 rounded-lg p-[3px]">
             <button
               onClick={() => setViewMode('grid')}
-              className={cn('w-[26px] h-[26px] rounded-[6px] flex items-center justify-center cursor-pointer', viewMode === 'grid' && 'bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)]')}
+              className={cn('w-[26px] h-[26px] rounded-[6px] flex items-center justify-center cursor-pointer border-none', viewMode === 'grid' ? 'bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)]' : 'bg-transparent')}
             >
               <Grid3X3 size={13} stroke={viewMode === 'grid' ? '#1A1A1A' : '#AAA'} strokeWidth={2} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={cn('w-[26px] h-[26px] rounded-[6px] flex items-center justify-center cursor-pointer', viewMode === 'list' && 'bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)]')}
+              className={cn('w-[26px] h-[26px] rounded-[6px] flex items-center justify-center cursor-pointer border-none', viewMode === 'list' ? 'bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1)]' : 'bg-transparent')}
             >
               <List size={13} stroke={viewMode === 'list' ? '#1A1A1A' : '#AAA'} strokeWidth={2} />
             </button>
@@ -163,7 +262,7 @@ export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '
       {/* Grid / List */}
       {filteredScreenshots.length > 0 ? (
         viewMode === 'grid' ? (
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {filteredScreenshots.slice(0, visibleCount).map((shot) => (
               <ScreenshotThumb key={shot.id} shot={shot} onClick={() => navigate(`/screenshots/${shot.id}`)} />
             ))}
@@ -171,7 +270,7 @@ export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '
         ) : (
           <div className="flex flex-col gap-1.5">
             {filteredScreenshots.slice(0, visibleCount).map((shot) => {
-              const badge = CATEGORY_BADGE[shot.category];
+              const badge = CATEGORY_BADGE[shot.category] || CATEGORY_BADGE.neutral;
               const Icon = ICON_MAP[shot.iconType] || Monitor;
               return (
                 <div
@@ -180,9 +279,13 @@ export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '
                   className="flex items-center gap-3 p-2.5 rounded-tile bg-white/60 border border-black/[0.05] cursor-pointer hover:bg-white/80 transition-colors"
                 >
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: shot.bgStyle }}>
-                    <Icon size={18} stroke="#888" strokeWidth={1.5} />
+                    {shot.imageUrl ? (
+                      <img src={shot.imageUrl} alt={shot.app} className="w-full h-full object-cover rounded-lg" />
+                    ) : (
+                      <Icon size={18} stroke="#888" strokeWidth={1.5} />
+                    )}
                   </div>
-                  <span className="text-xs-plus font-semibold text-text-primary w-16 shrink-0">{shot.time}</span>
+                  <span className="text-xs-plus font-semibold text-text-primary w-24 shrink-0">{shot.time.split(' · ')[0]}</span>
                   <span className="text-xs-plus text-text-muted flex-1 truncate">{shot.app}</span>
                   <span className={cn('text-[8.5px] font-semibold py-0.5 px-[7px] rounded-[6px] shrink-0', badge.className)}>
                     {badge.label}
@@ -211,7 +314,7 @@ export default function ScreenshotGrid({ categoryFilter = 'all', searchQuery = '
           {visibleCount < filteredScreenshots.length && (
             <button
               onClick={() => setVisibleCount(prev => Math.min(prev + 8, filteredScreenshots.length))}
-              className="flex items-center gap-[7px] py-2 px-[22px] rounded-pill bg-white/70 border-[1.5px] border-white/90 text-sm font-medium text-text-secondary cursor-pointer hover:bg-white/90 transition-colors"
+              className="flex items-center gap-[7px] py-2 px-[22px] rounded-pill bg-white/70 border-[1.5px] border-white/90 text-sm font-medium text-text-secondary cursor-pointer hover:bg-white/90 transition-colors border-none"
             >
               <ChevronDown size={13} stroke="#666" strokeWidth={2} />
               Load more screenshots

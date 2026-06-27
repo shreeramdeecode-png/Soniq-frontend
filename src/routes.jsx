@@ -1,8 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import DashboardLayout from '@/layouts/DashboardLayout';
-import { ROUTES } from '@/constants/routes';
+import DashboardLayout from '@/components/common/DashboardLayout';
+import ProtectedRoute from '@/components/common/ProtectedRoute';
+import { ROUTES } from '@/constants';
 
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const TeamsListPage = lazy(() => import('@/pages/TeamsListPage'));
 const TeamDetailPage = lazy(() => import('@/pages/TeamDetailPage'));
@@ -26,7 +28,14 @@ export default function AppRoutes() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        <Route element={<DashboardLayout />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.TEAMS} element={<TeamsListPage />} />
           <Route path={ROUTES.TEAMS_DETAIL} element={<TeamDetailPage />} />

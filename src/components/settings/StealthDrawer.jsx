@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Lock, Save, ShieldAlert } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Lock, Save } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { employees } from '@/mock/settings';
 import { useToast } from '@/components/ui/Toast';
+import api from '@/utils/api';
+import { loadAllEmployees } from '@/components/settings/settingsAdapters';
 
 function Toggle({ on, onChange }) {
   return (
@@ -20,8 +21,31 @@ function Toggle({ on, onChange }) {
   );
 }
 
-function StealthEmployeeRow({ emp, onSave }) {
+function StealthEmployeeRow({ emp, onSave, onError }) {
   const [on, setOn] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!emp.id) return;
+    api.get(`/api/client/employees/${emp.id}/settings/stealth`)
+      .then(({ data }) => setOn(data.stealthEnabled ?? false))
+      .catch(() => {});
+  }, [emp.id]);
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await api.put(`/api/client/employees/${emp.id}/settings/stealth`, {
+        stealthEnabled: on,
+        consentAcknowledged: true,
+      });
+      onSave(emp.name, on);
+    } catch {
+      onError?.();
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="flex items-center gap-4 py-4 px-5 hover:bg-black/[0.015] transition-colors rounded-[16px] border border-white/[0.98] bg-white/[0.86] shadow-[0_2px_0_rgba(255,255,255,0.95)_inset] mb-2">
@@ -40,19 +64,27 @@ function StealthEmployeeRow({ emp, onSave }) {
       </span>
       <Toggle on={on} onChange={() => setOn(!on)} />
       <button
-        onClick={() => onSave(emp.name, on)}
-        className="primary-pill text-white text-xs font-semibold rounded-pill px-4 py-2 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity ml-2"
+        onClick={handleSave}
+        disabled={saving}
+        className="primary-pill text-white text-xs font-semibold rounded-pill px-4 py-2 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity ml-2 disabled:opacity-60"
       >
-        <Save size={12} /> Save
+        <Save size={12} /> {saving ? '…' : 'Save'}
       </button>
     </div>
   );
 }
 
 export default function StealthDrawer() {
+  const [employees, setEmployees] = useState([]);
   const [consented, setConsented] = useState(false);
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(() => localStorage.getItem('soniq_stealth_unlocked') === '1');
   const toast = useToast();
+
+  useEffect(() => {
+    loadAllEmployees(api)
+      .then(setEmployees)
+      .catch(() => {});
+  }, []);
 
   function handleSave(name, isOn) {
     if (isOn) {
@@ -60,6 +92,10 @@ export default function StealthDrawer() {
     } else {
       toast.success(`Silent tracking disabled for ${name}`, 'Stealth Mode');
     }
+  }
+
+  function handleError() {
+    toast.error('Failed to save stealth setting');
   }
 
   return (
@@ -102,6 +138,7 @@ export default function StealthDrawer() {
         <button
           disabled={!consented}
           onClick={() => {
+            localStorage.setItem('soniq_stealth_unlocked', '1');
             setUnlocked(true);
             toast.info('Silent tracking panel unlocked', 'Access Granted');
           }}
@@ -116,11 +153,23 @@ export default function StealthDrawer() {
         </button>
       </div>
 
+      {/* Re-lock button */}
+      {unlocked && (
+        <div className="flex justify-end mb-3">
+          <button
+            onClick={() => { localStorage.removeItem('soniq_stealth_unlocked'); setUnlocked(false); setConsented(false); toast.info('Silent tracking locked', 'Access Revoked'); }}
+            className="text-xs font-semibold text-text-muted hover:text-red-500 flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+          >
+            <Lock size={11} /> Lock Silent Tracking
+          </button>
+        </div>
+      )}
+
       {/* Employee list */}
       <div className={cn('transition-all duration-400', !unlocked && 'opacity-20 blur-[3px] pointer-events-none select-none')}>
         <div className="flex flex-col gap-2">
           {employees.map((emp) => (
-            <StealthEmployeeRow key={emp.email} emp={emp} onSave={handleSave} />
+            <StealthEmployeeRow key={emp.email} emp={emp} onSave={handleSave} onError={handleError} />
           ))}
         </div>
       </div>

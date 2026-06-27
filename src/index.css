@@ -270,21 +270,24 @@
     border-radius: 8px 8px 0 0;
   }
 
-  /* Heatmap cell variants */
+  /* Heatmap cell variants — green intensity scale */
   .hmap-excellent {
     background: linear-gradient(135deg, #1D9E75, #0F6E56);
   }
 
   .hmap-good {
-    background: linear-gradient(135deg, #2D2D2D, #1A1A1A);
+    background: rgba(29, 158, 117, 0.55);
+    border: 1px solid rgba(29, 158, 117, 0.7);
   }
 
   .hmap-avg {
-    background: linear-gradient(135deg, #888, #666);
+    background: rgba(29, 158, 117, 0.2);
+    border: 1px solid rgba(29, 158, 117, 0.3);
   }
 
   .hmap-low {
-    background: linear-gradient(135deg, #D8D8D0, #C0C0B8);
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.06);
   }
 
   .scrollbar-hide {

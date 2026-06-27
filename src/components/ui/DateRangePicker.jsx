@@ -140,7 +140,8 @@ export default function DateRangePicker({ from: initialFrom, to: initialTo, onCh
   }
 
   function applyPreset(days) {
-    const end = new Date(2026, 3, 16);
+    const end = new Date();
+    end.setHours(0, 0, 0, 0);
     const start = new Date(end);
     start.setDate(start.getDate() - days + 1);
     setFrom(start);

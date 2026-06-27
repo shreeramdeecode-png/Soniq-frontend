@@ -1,9 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Edit3, Trash2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { settingsTeams } from '@/mock/settings';
 import { useToast } from '@/components/ui/Toast';
 import Modal from '@/components/ui/Modal';
+import api from '@/utils/api';
+
+const TEAM_COLORS = [
+  { bg: 'rgba(15,110,86,0.12)', text: '#085041', ring: '#0F6E56' },
+  { bg: 'rgba(29,158,117,0.12)', text: '#085041', ring: '#1D9E75' },
+  { bg: 'rgba(8,80,65,0.12)', text: '#085041', ring: '#085041' },
+  { bg: 'rgba(39,192,136,0.12)', text: '#085041', ring: '#27C088' },
+  { bg: 'rgba(51,168,112,0.12)', text: '#085041', ring: '#33A870' },
+  { bg: 'rgba(30,122,92,0.12)', text: '#085041', ring: '#1E7A5C' },
+];
+
+function adaptTeam(t, idx) {
+  const palette = TEAM_COLORS[idx % TEAM_COLORS.length];
+  const memberCount = t.employeeCount ?? t.memberCount ?? 0;
+  const circum = 2 * Math.PI * 20;
+  const fill = Math.min(1, memberCount / 20) * circum;
+  return {
+    ...t,
+    init: (t.name ?? '?')[0].toUpperCase(),
+    bgColor: palette.bg,
+    textColor: palette.text,
+    ringColor: palette.ring,
+    ringDash: `${fill.toFixed(1)} ${circum.toFixed(1)}`,
+    members: memberCount,
+    score: t.avgProductivityScore ?? t.avgScore ?? 0,
+    scoreColor: '#0F6E56',
+    desc: t.description ?? '',
+  };
+}
 
 function TeamCard({ team, onEdit, onDelete }) {
   return (
@@ -76,46 +104,73 @@ function CreateTeamCard({ onClick }) {
 
 export default function TeamsDrawer() {
   const toast = useToast();
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState(null);
   const [editModal, setEditModal] = useState(null);
   const [editName, setEditName] = useState('');
   const [createModal, setCreateModal] = useState(false);
   const [newName, setNewName] = useState('');
 
-  function handleEdit(team) {
-    setEditModal(team);
-    setEditName(team.name);
+  function loadTeams() {
+    setLoading(true);
+    api.get('/api/client/teams')
+      .then(({ data }) => {
+        const list = Array.isArray(data) ? data : (data.data ?? []);
+        setTeams(list.map((t, i) => adaptTeam(t, i)));
+      })
+      .catch(() => toast.error('Failed to load teams'))
+      .finally(() => setLoading(false));
   }
 
-  function handleEditSave() {
-    toast.success(`Team renamed to "${editName}"`, 'Team Updated');
-    setEditModal(null);
+  useEffect(() => { loadTeams(); }, []);
+
+  function handleEdit(team) { setEditModal(team); setEditName(team.name); }
+
+  async function handleEditSave() {
+    try {
+      await api.put(`/api/client/teams/${editModal.id}`, { name: editName });
+      toast.success(`Team renamed to "${editName}"`, 'Team Updated');
+      setEditModal(null);
+      loadTeams();
+    } catch { toast.error('Failed to rename team'); }
   }
 
-  function handleDelete(team) {
-    setDeleteModal(team);
+  function handleDelete(team) { setDeleteModal(team); }
+
+  async function confirmDelete() {
+    try {
+      await api.delete(`/api/client/teams/${deleteModal.id}`);
+      toast.success(`Team "${deleteModal.name}" deleted`, 'Team Removed');
+      setDeleteModal(null);
+      loadTeams();
+    } catch { toast.error('Failed to delete team'); }
   }
 
-  function confirmDelete() {
-    toast.success(`Team "${deleteModal.name}" deleted`, 'Team Removed');
-    setDeleteModal(null);
+  async function handleCreate() {
+    if (!newName.trim()) { toast.warning('Please enter a team name'); return; }
+    try {
+      await api.post('/api/client/teams', { name: newName.trim() });
+      toast.success(`Team "${newName}" created`, 'Team Created');
+      setNewName('');
+      setCreateModal(false);
+      loadTeams();
+    } catch { toast.error('Failed to create team'); }
   }
 
-  function handleCreate() {
-    if (!newName.trim()) {
-      toast.warning('Please enter a team name');
-      return;
-    }
-    toast.success(`Team "${newName}" created`, 'Team Created');
-    setNewName('');
-    setCreateModal(false);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
     <div className="p-5">
       <div className="grid grid-cols-3 gap-4">
-        {settingsTeams.map((team) => (
-          <TeamCard key={team.name} team={team} onEdit={handleEdit} onDelete={handleDelete} />
+        {teams.map((team) => (
+          <TeamCard key={team.id} team={team} onEdit={handleEdit} onDelete={handleDelete} />
         ))}
         <CreateTeamCard onClick={() => setCreateModal(true)} />
       </div>

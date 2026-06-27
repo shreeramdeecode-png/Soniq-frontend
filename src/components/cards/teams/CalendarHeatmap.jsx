@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import GlossyCard from '@/components/ui/GlossyCard';
-import { heatmapData } from '@/mock/teamDetail';
+import api from '@/utils/api';
 import { cn } from '@/utils/cn';
 
 const CELL_VARIANTS = {
@@ -13,72 +13,51 @@ const CELL_VARIANTS = {
   low: 'hmap-low',
 };
 
-const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const VARIANTS = ['excellent', 'good', 'avg', 'good', 'excellent'];
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
-function generateMonthCells(year, month) {
-  const firstDay = new Date(year, month, 1).getDay();
-  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = new Date();
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  const cells = [];
-
-  for (let i = 0; i < startOffset; i++) {
-    cells.push({ day: null, variant: 'empty' });
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(year, month, d);
-    const dayOfWeek = date.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    const isToday = date.toDateString() === today.toDateString();
-
-    if (isWeekend) {
-      cells.push({ day: d, variant: 'weekend' });
-    } else {
-      const seed = (d * 7 + month * 31) % 10;
-      const variant = seed < 2 ? 'low' : seed < 4 ? 'avg' : seed < 7 ? 'good' : 'excellent';
-      const hours = (5 + (seed / 10) * 3.5).toFixed(1) + 'h';
-      cells.push({ day: d, hours, variant, today: isToday });
-    }
-  }
-
-  const remaining = 7 - (cells.length % 7);
-  if (remaining < 7) {
-    for (let i = 0; i < remaining; i++) {
-      cells.push({ day: null, variant: 'empty' });
-    }
-  }
-
-  return cells;
-}
+const LEGEND = [
+  { label: 'Excellent', bg: 'linear-gradient(135deg, #1D9E75, #0F6E56)' },
+  { label: 'Good', bg: 'rgba(29, 158, 117, 0.55)', border: '1px solid rgba(29, 158, 117, 0.7)' },
+  { label: 'Average', bg: 'rgba(29, 158, 117, 0.2)', border: '1px solid rgba(29, 158, 117, 0.3)' },
+  { label: 'Low', bg: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.06)' },
+];
 
 function HeatmapCell({ day, hours, variant, today }) {
   const isWeekend = variant === 'weekend';
   const isEmpty = variant === 'empty';
-  const isLow = variant === 'low';
 
   return (
     <div
       className={cn(
-        'h-9 rounded-lg flex flex-col items-center justify-center cursor-pointer relative transition-transform hover:scale-105',
+        'h-9 rounded-lg flex flex-col items-center justify-center cursor-pointer relative transition-transform hover:scale-105 font-poppins',
         CELL_VARIANTS[variant]
       )}
       style={today ? { outline: '2px solid #1D9E75', outlineOffset: '2px' } : undefined}
     >
       {day && (
         <div className={cn(
-          'text-xs font-semibold leading-none',
-          (isEmpty || isWeekend) ? 'text-[#DDD]' : isLow ? 'text-text-muted' : 'text-white'
+          'text-xs font-semibold leading-none font-poppins',
+          (isEmpty || isWeekend) ? 'text-[#DDD]'
+            : variant === 'excellent' ? 'text-white'
+            : variant === 'good' ? 'text-[#0F6E56]'
+            : variant === 'avg' ? 'text-[#1D9E75]'
+            : 'text-text-muted'
         )}>
           {day}
         </div>
       )}
       {hours && (
         <div className={cn(
-          'text-[8px] mt-px',
-          isLow ? 'text-text-light' : 'text-white/70'
+          'text-[8px] mt-px font-poppins',
+          variant === 'excellent' ? 'text-white/75'
+            : variant === 'good' ? 'text-[#0F6E56]/80'
+            : variant === 'avg' ? 'text-[#1D9E75]/70'
+            : 'text-text-light'
         )}>
           {hours}
         </div>
@@ -87,25 +66,99 @@ function HeatmapCell({ day, hours, variant, today }) {
   );
 }
 
-export default function CalendarHeatmap() {
+export default function CalendarHeatmap({ teamId }) {
   const [monthOffset, setMonthOffset] = useState(0);
+  const [apiCells, setApiCells] = useState([]);
 
-  const { monthLabel, cells } = useMemo(() => {
-    const baseDate = new Date(2026, 3 + monthOffset, 1);
-    const year = baseDate.getFullYear();
-    const month = baseDate.getMonth();
-
-    if (monthOffset === 0) {
-      return { monthLabel: heatmapData.month, cells: heatmapData.cells };
-    }
-
-    return {
-      monthLabel: `${MONTH_NAMES[month]} ${year}`,
-      cells: generateMonthCells(year, month),
-    };
+  const baseDate = useMemo(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() + monthOffset);
+    return d;
   }, [monthOffset]);
 
-  const { days, legend } = heatmapData;
+  const year = baseDate.getFullYear();
+  const month = baseDate.getMonth(); // 0-indexed
+  const monthLabel = `${MONTH_NAMES[month]} ${year}`;
+
+  useEffect(() => {
+    if (!teamId) return;
+
+    async function fetchCalendar() {
+      try {
+        const yearParam = year;
+        const monthParam = month + 1; // 1-indexed for backend
+
+        const res = await api.get(`/api/client/teams/${teamId}/calendar?year=${yearParam}&month=${monthParam}`);
+        const data = res.data || [];
+
+        // Generate normal month cells structure
+        const firstDay = new Date(year, month, 1).getDay();
+        const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+
+        const cells = [];
+
+        // Padding for offset
+        for (let i = 0; i < startOffset; i++) {
+          cells.push({ day: null, variant: 'empty' });
+        }
+
+        // Create map of API responses by day string
+        const apiMap = new Map();
+        data.forEach(item => {
+          const dateDay = new Date(item.date).getUTCDate();
+          apiMap.set(dateDay, item);
+        });
+
+        // Generate days
+        for (let d = 1; d <= daysInMonth; d++) {
+          const date = new Date(year, month, d);
+          const dayOfWeek = date.getDay();
+          const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+          const isToday = date.toDateString() === today.toDateString();
+
+          if (isWeekend) {
+            cells.push({ day: d, variant: 'weekend' });
+          } else {
+            // Check if backend has tracked data for this day
+            const apiData = apiMap.get(d);
+            if (apiData) {
+              const score = apiData.avgProductivityScore != null ? Number(apiData.avgProductivityScore) : 0;
+              const hoursVal = apiData.totalProductiveSeconds / 3600;
+              const hStr = Math.floor(hoursVal);
+              const mStr = Math.round((hoursVal % 1) * 60);
+              const hoursLabel = `${hStr}h ${mStr}m`;
+
+              let variant = 'low';
+              if (score >= 85) variant = 'excellent';
+              else if (score >= 70) variant = 'good';
+              else if (score >= 50) variant = 'avg';
+
+              cells.push({ day: d, hours: hoursLabel, variant, today: isToday });
+            } else {
+              // No tracked data — show as empty (grey), not fake data
+              cells.push({ day: d, variant: 'empty', today: isToday });
+            }
+          }
+        }
+
+        // Pad end
+        const remaining = 7 - (cells.length % 7);
+        if (remaining < 7) {
+          for (let i = 0; i < remaining; i++) {
+            cells.push({ day: null, variant: 'empty' });
+          }
+        }
+
+        setApiCells(cells);
+      } catch (err) {
+        console.error('Error fetching calendar stats:', err);
+      }
+    }
+
+    fetchCalendar();
+  }, [teamId, year, month]);
 
   return (
     <GlossyCard className="p-4.5">
@@ -113,7 +166,7 @@ export default function CalendarHeatmap() {
         <h3 className="text-lg font-semibold text-text-primary">
           Work Hours Calendar — {monthLabel}
         </h3>
-        <div className="flex items-center gap-2.5 text-sm-plus text-text-primary font-medium">
+        <div className="flex items-center gap-2.5 text-sm-plus text-text-primary font-medium font-poppins">
           <button
             onClick={() => setMonthOffset((p) => p - 1)}
             className="w-[26px] h-[26px] rounded-full border border-black/10 flex items-center justify-center cursor-pointer bg-white/60 hover:bg-white/90 transition-colors"
@@ -131,20 +184,20 @@ export default function CalendarHeatmap() {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 mb-1.5">
-        {days.map((d) => (
+      <div className="grid grid-cols-7 gap-1 mb-1.5 font-poppins">
+        {DAYS.map((d) => (
           <div key={d} className="text-2xs-plus text-text-lighter text-center font-medium">{d}</div>
         ))}
       </div>
 
       <div className="grid grid-cols-7 gap-1">
-        {cells.map((cell, i) => (
+        {apiCells.map((cell, i) => (
           <HeatmapCell key={i} {...cell} />
         ))}
       </div>
 
-      <div className="flex items-center gap-3 mt-2.5 justify-end">
-        {legend.map((leg) => (
+      <div className="flex items-center gap-3 mt-2.5 justify-end font-poppins">
+        {LEGEND.map((leg) => (
           <div key={leg.label} className="flex items-center gap-[5px] text-2xs-plus text-text-muted">
             <div
               className="w-2.5 h-2.5 rounded-[3px]"
@@ -157,3 +210,4 @@ export default function CalendarHeatmap() {
     </GlossyCard>
   );
 }
+

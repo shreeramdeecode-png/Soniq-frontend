@@ -15,18 +15,23 @@ export default function DoughnutChart({
   const cy = 50;
   const innerR = r * cutout;
 
-  const arcs = segments.map((seg) => {
-    const start = (cumulative / total) * 2 * Math.PI - Math.PI / 2;
-    cumulative += seg.value;
-    const end = (cumulative / total) * 2 * Math.PI - Math.PI / 2;
-    const x1 = cx + r * Math.cos(start);
-    const y1 = cy + r * Math.sin(start);
-    const x2 = cx + r * Math.cos(end);
-    const y2 = cy + r * Math.sin(end);
-    const large = end - start > Math.PI ? 1 : 0;
-    const d = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
-    return <path key={seg.label} d={d} fill={seg.color} />;
-  });
+  // A single band at 100% can't be drawn as one SVG arc (start === end) — render a full ring
+  const fullSegment = total > 0 ? segments.find((s) => s.value === total) : null;
+
+  const arcs = fullSegment
+    ? [<circle key={fullSegment.label} cx={cx} cy={cy} r={r} fill={fullSegment.color} />]
+    : segments.map((seg) => {
+        const start = (cumulative / total) * 2 * Math.PI - Math.PI / 2;
+        cumulative += seg.value;
+        const end = (cumulative / total) * 2 * Math.PI - Math.PI / 2;
+        const x1 = cx + r * Math.cos(start);
+        const y1 = cy + r * Math.sin(start);
+        const x2 = cx + r * Math.cos(end);
+        const y2 = cy + r * Math.sin(end);
+        const large = end - start > Math.PI ? 1 : 0;
+        const d = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
+        return <path key={seg.label} d={d} fill={seg.color} />;
+      });
 
   const center = centerValue ?? segments[0]?.value;
 

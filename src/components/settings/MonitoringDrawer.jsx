@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Info, Save, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { employees } from '@/mock/settings';
 import { useToast } from '@/components/ui/Toast';
+import api from '@/utils/api';
+import { loadAllEmployees } from '@/components/settings/settingsAdapters';
 
 function groupByTeam(list) {
   return list.reduce((acc, emp) => {
@@ -27,12 +28,48 @@ function Toggle({ on, onChange }) {
   );
 }
 
-function MonitoringRow({ emp, onSave }) {
+function MonitoringRow({ emp, onSave, onError }) {
   const [capOn, setCapOn] = useState(emp.cap);
   const [blur, setBlur] = useState(emp.blur);
   const [interval, setInterval_] = useState(emp.interval);
   const [idleOn, setIdleOn] = useState(emp.idle);
   const [idleMin, setIdleMin] = useState(emp.idleMin);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!emp.id) return;
+    api.get(`/api/client/employees/${emp.id}/settings`)
+      .then(({ data: s }) => {
+        setCapOn(s.screenCaptureEnabled ?? true);
+        setBlur(s.blurEnabled ?? false);
+        setInterval_(s.captureIntervalMinutes ?? 10);
+        setIdleOn(s.idleAlertEnabled ?? true);
+        setIdleMin(s.minIdleTimeMinutes ?? 5);
+      })
+      .catch(() => {});
+  }, [emp.id]);
+
+  async function handleSaveClick() {
+    setSaving(true);
+    try {
+      await Promise.all([
+        api.put(`/api/client/employees/${emp.id}/settings/screenshot`, {
+          screenCaptureEnabled: capOn,
+          blurEnabled: blur,
+          captureIntervalMinutes: interval,
+        }),
+        api.put(`/api/client/employees/${emp.id}/settings/idle-alert`, {
+          idleAlertEnabled: idleOn,
+          minIdleTimeMinutes: idleMin,
+        }),
+      ]);
+      onSave(emp.name);
+    } catch {
+      onError?.();
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const pct = ((idleMin - 1) / 4) * 100;
 
@@ -105,25 +142,48 @@ function MonitoringRow({ emp, onSave }) {
 
       {/* Save */}
       <button
-        onClick={() => onSave?.(emp.name)}
-        className="primary-pill text-white text-xs font-semibold rounded-pill px-4 py-2 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity ml-3 shrink-0"
+        onClick={handleSaveClick}
+        disabled={saving}
+        className="primary-pill text-white text-xs font-semibold rounded-pill px-4 py-2 flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity ml-3 shrink-0 disabled:opacity-60"
       >
-        <Save size={11} /> Save
+        <Save size={11} /> {saving ? '…' : 'Save'}
       </button>
     </div>
   );
 }
 
 export default function MonitoringDrawer() {
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const toast = useToast();
   const PAGE_SIZE = 5;
-  const totalPages = Math.ceil(employees.length / PAGE_SIZE);
+
+  useEffect(() => {
+    loadAllEmployees(api)
+      .then(setEmployees)
+      .catch(() => toast.error('Failed to load employees'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const totalPages = Math.max(1, Math.ceil(employees.length / PAGE_SIZE));
   const paginatedEmployees = employees.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const grouped = groupByTeam(paginatedEmployees);
 
   function handleSave(name) {
     toast.success(`Monitoring settings saved for ${name}`, 'Settings Saved');
+  }
+
+  function handleError() {
+    toast.error('Failed to save monitoring settings');
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
@@ -159,7 +219,7 @@ export default function MonitoringDrawer() {
               <div className="flex-1 h-px bg-primary/10" />
             </div>
             {members.map((emp) => (
-              <MonitoringRow key={emp.email} emp={emp} onSave={handleSave} />
+              <MonitoringRow key={emp.email} emp={emp} onSave={handleSave} onError={handleError} />
             ))}
           </div>
         ))}

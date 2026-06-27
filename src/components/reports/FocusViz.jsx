@@ -1,5 +1,4 @@
 import { cn } from '@/utils/cn';
-import { focusData } from '@/mock/reports';
 import ReportShell from './shared/ReportShell';
 import { ReportCard } from './shared/ReportCard';
 import { ReportGrid2 } from './shared/ReportGrids';
@@ -18,17 +17,57 @@ const BAND_BADGE = {
   Scattered: 'bg-[rgba(15,110,86,.1)] text-[#085041] border-[rgba(15,110,86,.2)]',
 };
 
+const BAND_COLOR = {
+  'Deep Focus': '#0F6E56',
+  Moderate: '#1D9E75',
+  Fragmented: '#27C088',
+  Scattered: '#085041',
+};
+
 const COACHING_STYLE = {
   info: { bg: '#EAF2EE', border: 'rgba(15,110,86,.2)', title: RT.greenDark, body: RT.green },
   success: { bg: '#F0F9F4', border: 'rgba(15,110,86,.18)', title: '#27500A', body: '#3D6028' },
 };
 
-export default function FocusViz({ report, onDateChange }) {
-  const { distribution, trendData, trendLabels, table, coaching } = focusData;
+function deriveCoaching(distribution = []) {
+  const deep = distribution.find((d) => d.band === 'Deep Focus')?.count ?? 0;
+  const scattered = distribution.find((d) => d.band === 'Scattered')?.count ?? 0;
+  const fragmented = distribution.find((d) => d.band === 'Fragmented')?.count ?? 0;
+  return [
+    {
+      title: 'Protect deep focus blocks',
+      body: deep > 0
+        ? `${deep} employees are in Deep Focus. Block 2-hour uninterrupted windows in the mornings to preserve this.`
+        : 'Schedule 2-hour focused blocks in the morning when distractions are lowest.',
+      style: 'success',
+    },
+    {
+      title: 'Reduce context switching',
+      body: fragmented > 0
+        ? `${fragmented} employees are Fragmented. Encourage batching similar tasks and turning off non-urgent notifications.`
+        : 'Encourage grouping similar tasks together and minimising app-switching throughout the day.',
+      style: 'info',
+    },
+    {
+      title: 'Coach scattered employees',
+      body: scattered > 0
+        ? `${scattered} employees are Scattered. Consider time-boxing exercises and structured daily plans.`
+        : 'No scattered employees this period. Keep reinforcing focus habits across the team.',
+      style: 'info',
+    },
+  ];
+}
+
+export default function FocusViz({ report, onDateChange, liveData = {} }) {
+  const distribution = liveData.focusDistribution ?? [];
+  const trendData = liveData.focusTrendData ?? [];
+  const trendLabels = liveData.focusTrendLabels ?? [];
+  const table = liveData.focusTable ?? [];
+  const coaching = deriveCoaching(distribution);
   const { pageRows, paginationProps } = usePaginatedRows(table, {
     pageSize: 5,
-    totalCount: 128,
-    totalPages: Math.ceil(128 / 5),
+    totalCount: table.length,
+    totalPages: Math.ceil(table.length / 5),
   });
 
   const doughnutSegments = distribution.map((d) => ({
@@ -37,16 +76,22 @@ export default function FocusViz({ report, onDateChange }) {
     color: d.color,
   }));
 
+  const kpis = [
+    { label: 'Deep Focus', value: String(distribution.find((d) => d.band === 'Deep Focus')?.count ?? 0), sub: 'Employees in top band (≥75%)' },
+    { label: 'Scattered', value: String(distribution.find((d) => d.band === 'Scattered')?.count ?? 0), sub: 'Needing coaching (<25%)' },
+  ];
+
   return (
-    <ReportShell report={report} onDateChange={onDateChange}>
+    <ReportShell report={{ ...report, kpis }} onDateChange={onDateChange}>
       <ReportGrid2 className="mb-3">
-        <ReportCard title="Focus Score Trend — Apr 1–21" subtitle="Org-wide average daily focus score" className="mb-0">
+        <ReportCard title="Focus Score Trend — Last 7 Days" subtitle="Org-wide average daily focus score" className="mb-0">
           <ReportLineChart
             data={trendData}
             labels={trendLabels}
             color={RT.green}
             fillColor={RT.greenFill}
             height={200}
+            yTickStep={20}
           />
         </ReportCard>
         <ReportCard title="Focus Distribution" subtitle="How employees are distributed across score bands" className="mb-0">
@@ -83,34 +128,42 @@ export default function FocusViz({ report, onDateChange }) {
               </tr>
             </thead>
             <tbody>
-              {pageRows.map((e) => (
-                <tr key={`${e.init}-${e.name}`} className="border-b border-black/[0.04] last:border-b-0 hover:bg-primary/[0.02]">
-                  <td className="py-2.5 px-3">
-                    <EmployeeCell init={e.init} name={e.name} role={e.role} avatarStyle={{ background: e.bg, color: e.fc }} />
-                  </td>
-                  <td className="px-3 text-text-muted">{e.team}</td>
-                  <td className="px-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-extrabold" style={{ color: e.bandColor }}>{e.score}</span>
-                      <div className="w-12 h-1.5 rounded-full overflow-hidden" style={{ background: RT.greenPale }}>
-                        <div className="h-full rounded-full" style={{ width: `${e.score}%`, background: e.bandColor }} />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-3">
-                    <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-lg border', BAND_BADGE[e.band])}>{e.band}</span>
-                  </td>
-                  <td className="px-3 text-text-secondary">{e.streak}</td>
-                  <td className="px-3 text-text-secondary">{e.switches}</td>
-                  <td className="px-3 text-text-secondary">{e.deep}</td>
-                  <td className="px-3 text-text-secondary">{e.longest}</td>
-                  <td className="px-3"><Sparkline values={e.spark} /></td>
-                </tr>
-              ))}
+              {table.length === 0 ? (
+                <tr><td colSpan={9} className="py-8 text-center text-[11px] text-[#AAA]">No focus data for this period</td></tr>
+              ) : (
+                pageRows.map((e) => {
+                  const scoreNum = parseInt(e.score) || 0;
+                  const bandColor = BAND_COLOR[e.band] ?? RT.green;
+                  return (
+                    <tr key={`${e.init}-${e.name}`} className="border-b border-black/[0.04] last:border-b-0 hover:bg-primary/[0.02]">
+                      <td className="py-2.5 px-3">
+                        <EmployeeCell init={e.init} name={e.name} role={e.designation} avatarStyle={{ background: 'rgba(15,110,86,.12)', color: RT.green }} />
+                      </td>
+                      <td className="px-3 text-text-muted">{e.team}</td>
+                      <td className="px-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-extrabold" style={{ color: bandColor }}>{scoreNum}%</span>
+                          <div className="w-12 h-1.5 rounded-full overflow-hidden" style={{ background: RT.greenPale }}>
+                            <div className="h-full rounded-full" style={{ width: `${scoreNum}%`, background: bandColor }} />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3">
+                        <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-lg border', BAND_BADGE[e.band])}>{e.band}</span>
+                      </td>
+                      <td className="px-3 text-text-secondary">{e.streak ? `${e.streak}m` : '—'}</td>
+                      <td className="px-3 text-text-secondary">{e.switchesHr ? `${e.switchesHr}/hr` : '—'}</td>
+                      <td className="px-3 text-text-secondary">—</td>
+                      <td className="px-3 text-text-secondary">—</td>
+                      <td className="px-3"><Sparkline values={e.sparkScore ?? []} /></td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
-        <ReportPagination {...paginationProps} pages={[1, 2, 3, '…', 26]} />
+        <ReportPagination {...paginationProps} pages={[1, 2, 3, '…']} />
       </ReportCard>
 
       <ReportCard title="Focus Coaching Recommendations" subtitle="Automated suggestions based on individual patterns">
